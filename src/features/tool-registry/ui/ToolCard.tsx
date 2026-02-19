@@ -56,8 +56,8 @@ export function ToolCard({
             <ToolIcon className="size-4" />
           </span>
           <div className="min-w-0">
-            <h3 className="truncate text-sm font-semibold">{tool.name}</h3>
-            <p className="truncate text-[11px] text-indigo-100/65">{tool.description}</p>
+            <h3 className="text-sm font-semibold leading-tight">{tool.name}</h3>
+            <p className="text-[11px] leading-tight text-indigo-100/65">{tool.description}</p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">

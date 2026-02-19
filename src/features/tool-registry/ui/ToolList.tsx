@@ -122,7 +122,7 @@ export function ToolList() {
   }
 
   return (
-    <section className="mx-auto w-full max-w-7xl overflow-hidden rounded-2xl border border-slate-300/70 bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-950/85 dark:shadow-black/40">
+    <section className="w-full overflow-hidden bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur dark:bg-slate-950/85 dark:shadow-black/40">
       <header className="flex items-center gap-3 border-b border-slate-300/70 bg-slate-50/85 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80 sm:px-4">
         <button
           type="button"
