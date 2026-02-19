@@ -22,3 +22,12 @@
 
 ## Collaboration Constraint
 - If credentials in this environment prevent push, stop after commit and provide exact push command for the user's terminal.
+
+## Command Handoff (Mandatory)
+- Always provide the exact commands the user must run to complete the next step.
+- Commands must be copy/paste ready and ordered.
+- Include only the minimum required commands for the current state (no generic extras).
+- When relevant, include:
+  - run/verify commands (`npm run lint`, `npm run test`, etc.)
+  - git commands (branch, add, commit, push)
+  - PR command (`gh pr create ...`) when a branch is ready
