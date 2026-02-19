@@ -1189,7 +1189,7 @@ export function ToolList() {
   }
 
   return (
-    <section className="relative z-10 flex h-[100dvh] w-full flex-col overflow-hidden [--app-header-h:64px]">
+    <section className="relative z-10 flex min-h-[100dvh] w-full flex-col [--app-header-h:64px] lg:h-[100dvh] lg:overflow-hidden">
       <header className="sticky top-0 z-20 flex min-h-[var(--app-header-h)] items-center gap-3 border-b border-slate-200/80 bg-white/85 px-3 py-2 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80 sm:px-4">
         <button
           type="button"
