@@ -133,6 +133,12 @@ function downloadTextFile(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url)
 }
 
+const toolbarButtonClass =
+  'inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300'
+
+const toolbarGroupClass =
+  'flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-1.5 dark:border-slate-700 dark:bg-slate-900/50'
+
 export function JsonFormatterTool() {
   const { showToast } = useToast()
   const [source, setSource] = useState(sample)
@@ -299,7 +305,7 @@ export function JsonFormatterTool() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+            className={toolbarButtonClass}
             onClick={() => setSource(sample)}
           >
             <Sparkles className="size-3.5" />
@@ -307,7 +313,7 @@ export function JsonFormatterTool() {
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-rose-400 hover:text-rose-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-400 dark:hover:text-rose-300"
+            className={toolbarButtonClass}
             onClick={() => setSource('')}
           >
             <Eraser className="size-3.5" />
@@ -315,7 +321,7 @@ export function JsonFormatterTool() {
           </button>
           <button
             type="button"
-            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
               resolveRefs
                 ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
                 : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
@@ -323,11 +329,14 @@ export function JsonFormatterTool() {
             onClick={() => setResolveRefs((state) => !state)}
           >
             <Network className="size-3.5" />
-            Resolver referencias (ref/$ref/$id): {resolveRefs ? 'Activo' : 'Inactivo'}
+            Refs
+            <span className="rounded bg-black/10 px-1.5 py-0.5 text-[10px] dark:bg-white/15">
+              {resolveRefs ? 'ON' : 'OFF'}
+            </span>
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
+            className={toolbarButtonClass}
             onClick={validateSource}
           >
             <CheckCircle2 className="size-3.5" />
@@ -345,10 +354,10 @@ export function JsonFormatterTool() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Entrada
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className={toolbarGroupClass}>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  className={toolbarButtonClass}
                   onClick={sortSourceKeys}
                 >
                   <Sparkles className="size-3.5" />
@@ -356,7 +365,7 @@ export function JsonFormatterTool() {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-violet-400 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-400 dark:hover:text-violet-300"
+                  className={toolbarButtonClass}
                   onClick={minifySource}
                 >
                   <Minimize2 className="size-3.5" />
@@ -378,71 +387,81 @@ export function JsonFormatterTool() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Salida
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-violet-400 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-400 dark:hover:text-violet-300"
-                  onClick={() => setIsOutputMinified((value) => !value)}
-                >
-                  <Minimize2 className="size-3.5" />
-                  {isOutputMinified ? 'Expandir' : 'Minificar'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
-                  onClick={() => setWrapLines((value) => !value)}
-                >
-                  <WrapText className="size-3.5" />
-                  {wrapLines ? 'No wrap' : 'Wrap'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
-                  onClick={() => setShowLineNumbers((value) => !value)}
-                >
-                  <ListOrdered className="size-3.5" />
-                  {showLineNumbers ? 'Sin lineas' : 'Lineas'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
-                  onClick={copyOutput}
-                >
-                  <Copy className="size-3.5" />
-                  Copiar
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-                  onClick={downloadOutput}
-                >
-                  <Download className="size-3.5" />
-                  Descargar
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-                  onClick={() => setIsOutputFullscreen(true)}
-                >
-                  <Expand className="size-3.5" />
-                  Expandir
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
-                  onClick={exportCsv}
-                >
-                  <FileText className="size-3.5" />
-                  CSV
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
-                  onClick={exportExcel}
-                >
-                  <FileSpreadsheet className="size-3.5" />
-                  Excel
-                </button>
+              <div className="grid gap-1.5">
+                <div className={toolbarGroupClass}>
+                  <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Vista
+                  </span>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setIsOutputMinified((value) => !value)}
+                  >
+                    <Minimize2 className="size-3.5" />
+                    {isOutputMinified ? 'Expandir' : 'Minificar'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setWrapLines((value) => !value)}
+                  >
+                    <WrapText className="size-3.5" />
+                    {wrapLines ? 'No wrap' : 'Wrap'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setShowLineNumbers((value) => !value)}
+                  >
+                    <ListOrdered className="size-3.5" />
+                    {showLineNumbers ? 'Sin lineas' : 'Lineas'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setIsOutputFullscreen(true)}
+                  >
+                    <Expand className="size-3.5" />
+                    Expandir
+                  </button>
+                </div>
+                <div className={toolbarGroupClass}>
+                  <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Datos
+                  </span>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={copyOutput}
+                  >
+                    <Copy className="size-3.5" />
+                    Copiar
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={downloadOutput}
+                  >
+                    <Download className="size-3.5" />
+                    Descargar
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={exportCsv}
+                  >
+                    <FileText className="size-3.5" />
+                    CSV
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={exportExcel}
+                  >
+                    <FileSpreadsheet className="size-3.5" />
+                    Excel
+                  </button>
+                </div>
               </div>
             </div>
             <div className="h-[320px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
