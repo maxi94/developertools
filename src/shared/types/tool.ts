@@ -23,6 +23,7 @@ export type ToolId =
   | 'spacing-preview'
   | 'svg-optimizer'
   | 'image-to-base64'
+  | 'case-converter'
 export type ToolStatus = 'ready' | 'planned'
 export type ToolCategory =
   | 'Datos'
