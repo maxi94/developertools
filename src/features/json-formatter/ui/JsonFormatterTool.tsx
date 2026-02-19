@@ -350,7 +350,7 @@ export function JsonFormatterTool() {
 
         <div className="grid gap-3 lg:grid-cols-2">
           <label className="grid gap-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="grid min-h-[116px] content-start gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Entrada
               </span>
@@ -383,7 +383,7 @@ export function JsonFormatterTool() {
           </label>
 
           <label className="grid gap-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="grid min-h-[116px] content-start gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Salida
               </span>
