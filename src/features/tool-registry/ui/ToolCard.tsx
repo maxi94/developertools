@@ -16,6 +16,7 @@ interface ToolCardProps {
   isFavorite: boolean
   onSelect: (toolId: ToolDefinition['id']) => void
   onToggleFavorite: (toolId: ToolDefinition['id']) => void
+  compact?: boolean
 }
 
 export function ToolCard({
@@ -24,6 +25,7 @@ export function ToolCard({
   isFavorite,
   onSelect,
   onToggleFavorite,
+  compact = false,
 }: ToolCardProps) {
   const iconByTool = {
     'json-formatter': Braces,
@@ -51,13 +53,14 @@ export function ToolCard({
         }
       }}
       aria-pressed={isActive}
+      title={compact ? tool.name : undefined}
     >
-      <div className="mb-2 flex items-start justify-between gap-2">
+      <div className={`flex items-start justify-between gap-2 ${compact ? '' : 'mb-2'}`}>
         <div className="flex min-w-0 flex-1 items-center gap-2 text-left">
           <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-md bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
             <ToolIcon className="size-4" />
           </span>
-          <h3 className="truncate text-sm font-semibold">{tool.name}</h3>
+          {!compact ? <h3 className="truncate text-sm font-semibold">{tool.name}</h3> : null}
         </div>
         <button
           type="button"
@@ -75,21 +78,25 @@ export function ToolCard({
           <Star className={`size-4 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
       </div>
-      <p className="mb-3 text-xs text-slate-600 dark:text-slate-300">{tool.description}</p>
-      <span
-        className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${
-          tool.status === 'ready'
-            ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
-            : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
-        }`}
-      >
-        {tool.status === 'ready' ? (
-          <CheckCircle2 className="size-3.5" />
-        ) : (
-          <Clock3 className="size-3.5" />
-        )}
-        {tool.status === 'ready' ? 'Lista' : 'Proximamente'}
-      </span>
+      {!compact ? (
+        <>
+          <p className="mb-3 text-xs text-slate-600 dark:text-slate-300">{tool.description}</p>
+          <span
+            className={`inline-flex items-center gap-1 rounded-md px-2 py-1 text-[10px] font-semibold uppercase tracking-wide ${
+              tool.status === 'ready'
+                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300'
+                : 'bg-amber-500/20 text-amber-700 dark:text-amber-300'
+            }`}
+          >
+            {tool.status === 'ready' ? (
+              <CheckCircle2 className="size-3.5" />
+            ) : (
+              <Clock3 className="size-3.5" />
+            )}
+            {tool.status === 'ready' ? 'Lista' : 'Proximamente'}
+          </span>
+        </>
+      ) : null}
     </article>
   )
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Menu, PanelLeft, Star, X } from 'lucide-react'
+import { ChevronLeft, Menu, PanelLeft, Star, X } from 'lucide-react'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
@@ -10,6 +10,7 @@ import { UuidTool } from '@/features/uuid/ui/UuidTool'
 import type { ToolId } from '@/shared/types/tool'
 
 const FAVORITES_KEY = 'developer-tools-favorites'
+const SIDEBAR_KEY = 'developer-tools-sidebar-collapsed'
 
 function getInitialFavorites(): ToolId[] {
   const raw = window.localStorage.getItem(FAVORITES_KEY)
@@ -30,46 +31,59 @@ function getInitialFavorites(): ToolId[] {
   }
 }
 
+function getInitialSidebarState(): boolean {
+  return window.localStorage.getItem(SIDEBAR_KEY) === 'true'
+}
+
 interface MenuPanelProps {
   activeToolId: ToolId
   favoriteToolIds: ToolId[]
   onSelect: (toolId: ToolId) => void
   onToggleFavorite: (toolId: ToolId) => void
+  compact?: boolean
 }
 
-function MenuPanel({ activeToolId, favoriteToolIds, onSelect, onToggleFavorite }: MenuPanelProps) {
+function MenuPanel({
+  activeToolId,
+  favoriteToolIds,
+  onSelect,
+  onToggleFavorite,
+  compact = false,
+}: MenuPanelProps) {
   const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
 
   return (
     <div className="grid gap-4">
-      <section className="rounded-xl border border-slate-200/90 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/40">
-        <h3 className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-          <Star className="size-3.5" />
-          Favoritos
-        </h3>
-        {favoriteTools.length > 0 ? (
-          <div className="flex flex-wrap gap-1.5">
-            {favoriteTools.map((tool) => (
-              <button
-                key={tool.id}
-                type="button"
-                className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
-                  tool.id === activeToolId
-                    ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
-                    : 'border-slate-300 bg-white text-slate-700 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400'
-                }`}
-                onClick={() => onSelect(tool.id)}
-              >
-                {tool.name}
-              </button>
-            ))}
-          </div>
-        ) : (
-          <p className="text-xs text-slate-500 dark:text-slate-400">
-            Marca herramientas con estrella para tener acceso rapido.
-          </p>
-        )}
-      </section>
+      {!compact ? (
+        <section>
+          <h3 className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            <Star className="size-3.5" />
+            Accesos rapidos
+          </h3>
+          {favoriteTools.length > 0 ? (
+            <div className="flex flex-wrap gap-1.5">
+              {favoriteTools.map((tool) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
+                    tool.id === activeToolId
+                      ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
+                      : 'border-slate-300 bg-white text-slate-700 hover:border-blue-400 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400'
+                  }`}
+                  onClick={() => onSelect(tool.id)}
+                >
+                  {tool.name}
+                </button>
+              ))}
+            </div>
+          ) : (
+            <p className="text-xs text-slate-500 dark:text-slate-400">
+              Marca una herramienta con estrella.
+            </p>
+          )}
+        </section>
+      ) : null}
 
       <nav className="grid gap-2" aria-label="Menu de funcionalidades">
         {tools.map((tool) => (
@@ -80,6 +94,7 @@ function MenuPanel({ activeToolId, favoriteToolIds, onSelect, onToggleFavorite }
             isFavorite={favoriteToolIds.includes(tool.id)}
             onSelect={onSelect}
             onToggleFavorite={onToggleFavorite}
+            compact={compact}
           />
         ))}
       </nav>
@@ -91,12 +106,17 @@ export function ToolList() {
   const [activeToolId, setActiveToolId] = useState<ToolId>('json-formatter')
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(getInitialSidebarState)
 
   const activeTool = useMemo(() => tools.find((tool) => tool.id === activeToolId), [activeToolId])
 
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
   }, [favoriteToolIds])
+
+  useEffect(() => {
+    window.localStorage.setItem(SIDEBAR_KEY, String(isSidebarCollapsed))
+  }, [isSidebarCollapsed])
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
@@ -119,7 +139,13 @@ export function ToolList() {
   }
 
   return (
-    <section className="mx-auto grid w-full max-w-7xl gap-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
+    <section
+      className={`mx-auto grid w-full max-w-7xl gap-4 lg:items-start ${
+        isSidebarCollapsed
+          ? 'lg:grid-cols-[84px_minmax(0,1fr)]'
+          : 'lg:grid-cols-[300px_minmax(0,1fr)]'
+      }`}
+    >
       <button
         type="button"
         className="inline-flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/85 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:hidden dark:border-slate-700/70 dark:bg-slate-900/85 dark:text-slate-100"
@@ -129,16 +155,36 @@ export function ToolList() {
         Menu
       </button>
 
-      <aside className="hidden max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-300/70 bg-white/90 p-4 shadow-xl shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/40">
-        <h2 className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-          <PanelLeft className="size-3.5" />
-          Menu
-        </h2>
+      <aside className="hidden max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-300/70 bg-white/90 p-3 shadow-xl shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/40">
+        <div className="mb-3 flex items-center justify-between gap-2">
+          {!isSidebarCollapsed ? (
+            <h2 className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+              <PanelLeft className="size-3.5" />
+              Navegacion
+            </h2>
+          ) : (
+            <span className="inline-flex size-8 items-center justify-center rounded-md bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300">
+              <PanelLeft className="size-4" />
+            </span>
+          )}
+          <button
+            type="button"
+            className="inline-flex size-8 items-center justify-center rounded-md border border-slate-300 text-slate-600 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
+            onClick={() => setIsSidebarCollapsed((state) => !state)}
+            aria-label={isSidebarCollapsed ? 'Expandir menu' : 'Colapsar menu'}
+          >
+            <ChevronLeft
+              className={`size-4 transition-transform ${isSidebarCollapsed ? 'rotate-180' : ''}`}
+            />
+          </button>
+        </div>
+
         <MenuPanel
           activeToolId={activeToolId}
           favoriteToolIds={favoriteToolIds}
           onSelect={selectTool}
           onToggleFavorite={toggleFavorite}
+          compact={isSidebarCollapsed}
         />
       </aside>
 
