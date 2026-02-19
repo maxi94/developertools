@@ -181,7 +181,7 @@ export function sortJsonKeysDeep(value: unknown): JsonValue {
   }
 
   const output: Record<string, JsonValue> = {}
-  const keys = Object.keys(value).toSorted((a, b) => a.localeCompare(b))
+  const keys = Object.keys(value).sort((a, b) => a.localeCompare(b))
   for (const key of keys) {
     output[key] = sortJsonKeysDeep(value[key])
   }

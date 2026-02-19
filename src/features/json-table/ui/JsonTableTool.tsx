@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ReactNode } from 'react'
 import { Database, FileSpreadsheet, FileText, Sparkles } from 'lucide-react'
 
 const sampleJson = `[
@@ -118,7 +118,7 @@ function downloadText(content: string, filename: string, mime: string) {
   URL.revokeObjectURL(url)
 }
 
-function renderNestedValue(value: unknown): JSX.Element {
+function renderNestedValue(value: unknown): ReactNode {
   if (value === null || value === undefined) {
     return <span className="text-slate-500 dark:text-slate-400">null</span>
   }

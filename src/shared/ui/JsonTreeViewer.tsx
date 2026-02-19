@@ -338,7 +338,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       byDepth.set(depth, bucket)
     }
 
-    const depthKeys = Array.from(byDepth.keys()).toSorted((a, b) => a - b)
+    const depthKeys = Array.from(byDepth.keys()).sort((a, b) => a - b)
     const positions: SvgNodePosition[] = []
     const posById = new Map<string, { x: number; y: number }>()
     const colWidth = 210
@@ -362,7 +362,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       }
     }
 
-    const maxRows = Math.max(1, ...depthKeys.map((depth) => (byDepth.get(depth) ?? []).length))
+    const maxRows = Math.max(1, ...depthKeys.map((depth: number) => (byDepth.get(depth) ?? []).length))
     return {
       width: Math.max(760, depthKeys.length * colWidth + 220),
       height: Math.max(260, maxRows * rowHeight + 80),
