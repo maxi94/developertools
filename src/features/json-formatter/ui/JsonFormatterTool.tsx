@@ -1,18 +1,19 @@
 import { useMemo, useState } from 'react'
 import { Eraser, Network, Sparkles } from 'lucide-react'
-import { formatJson, parseAndFormatJson } from '@/shared/lib/json'
+import { parseAndFormatJson } from '@/shared/lib/json'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
 
 const sample = `{
   "definiciones": {
     "usuarioBase": {
+      "$id": "UsuarioBase",
       "nombre": "Matti",
       "rol": "developer",
       "permisos": ["read", "write"]
     }
   },
   "usuario": {
-    "ref": "#/definiciones/usuarioBase",
+    "$ref": "UsuarioBase",
     "equipo": "tools"
   }
 }`
@@ -26,7 +27,7 @@ export function JsonFormatterTool() {
       const parsed = parseAndFormatJson(source, { resolveRefs })
       return {
         status: 'success' as const,
-        formatted: formatJson(source, { resolveRefs }),
+        formatted: JSON.stringify(parsed, null, 2),
         parsed,
       }
     } catch (error) {
@@ -48,7 +49,7 @@ export function JsonFormatterTool() {
         <div className="mb-3">
           <h2 className="m-0 text-xl font-semibold">Formateador JSON</h2>
           <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-            La entrada y salida permanecen en tu navegador.
+            La entrada y salida permanecen en tu navegador. Soporta ref/$ref y referencias por $id.
           </p>
         </div>
 
@@ -79,7 +80,7 @@ export function JsonFormatterTool() {
             onClick={() => setResolveRefs((state) => !state)}
           >
             <Network className="size-3.5" />
-            Resolver ref/$ref: {resolveRefs ? 'Activo' : 'Inactivo'}
+            Resolver referencias (ref/$ref/$id): {resolveRefs ? 'Activo' : 'Inactivo'}
           </button>
         </div>
 

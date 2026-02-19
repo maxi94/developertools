@@ -7,6 +7,7 @@ interface FormatJsonOptions {
 
 const REF_KEYS = ['$ref', 'ref'] as const
 const REF_KEY_SET = new Set<string>(REF_KEYS)
+const ID_KEY = '$id'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -18,7 +19,7 @@ function parsePointer(pointer: string): string[] {
   }
 
   if (!pointer.startsWith('#/')) {
-    throw new Error('Solo se soportan referencias locales tipo #/ruta')
+    throw new Error('Referencia invalida. Usa #/ruta para punteros JSON.')
   }
 
   return pointer
@@ -44,9 +45,62 @@ function resolvePointer(root: unknown, pointer: string): unknown {
   }, root)
 }
 
-function resolveRefs(value: unknown, root: unknown, stack: Set<string>): JsonValue {
+function collectIdTargets(root: unknown): Map<string, unknown> {
+  const targets = new Map<string, unknown>()
+
+  const visit = (value: unknown) => {
+    if (Array.isArray(value)) {
+      value.forEach(visit)
+      return
+    }
+
+    if (!isRecord(value)) {
+      return
+    }
+
+    const id = value[ID_KEY]
+    if (typeof id === 'string' && id.trim().length > 0) {
+      targets.set(id, value)
+      if (!id.startsWith('#')) {
+        targets.set(`#${id}`, value)
+      }
+    }
+
+    for (const child of Object.values(value)) {
+      visit(child)
+    }
+  }
+
+  visit(root)
+
+  return targets
+}
+
+function resolveReferenceTarget(
+  root: unknown,
+  idTargets: Map<string, unknown>,
+  reference: string,
+): unknown {
+  if (reference === '#' || reference.startsWith('#/')) {
+    return resolvePointer(root, reference)
+  }
+
+  const targetById = idTargets.get(reference) ?? idTargets.get(reference.replace(/^#/, ''))
+  if (targetById !== undefined) {
+    return targetById
+  }
+
+  throw new Error(`Referencia no encontrada: ${reference}`)
+}
+
+function resolveRefs(
+  value: unknown,
+  root: unknown,
+  idTargets: Map<string, unknown>,
+  stack: Set<string>,
+): JsonValue {
   if (Array.isArray(value)) {
-    return value.map((item) => resolveRefs(item, root, stack)) as JsonValue
+    return value.map((item) => resolveRefs(item, root, idTargets, stack)) as JsonValue
   }
 
   if (!isRecord(value)) {
@@ -57,7 +111,7 @@ function resolveRefs(value: unknown, root: unknown, stack: Set<string>): JsonVal
   if (!refKey) {
     const output: Record<string, JsonValue> = {}
     for (const [key, child] of Object.entries(value)) {
-      output[key] = resolveRefs(child, root, stack)
+      output[key] = resolveRefs(child, root, idTargets, stack)
     }
     return output
   }
@@ -68,8 +122,8 @@ function resolveRefs(value: unknown, root: unknown, stack: Set<string>): JsonVal
   }
 
   stack.add(pointer)
-  const target = resolvePointer(root, pointer)
-  const resolvedTarget = resolveRefs(target, root, stack)
+  const target = resolveReferenceTarget(root, idTargets, pointer)
+  const resolvedTarget = resolveRefs(target, root, idTargets, stack)
   stack.delete(pointer)
 
   const inlineEntries = Object.entries(value).filter(([key]) => !REF_KEY_SET.has(key))
@@ -83,7 +137,7 @@ function resolveRefs(value: unknown, root: unknown, stack: Set<string>): JsonVal
 
   const inlineObject: Record<string, JsonValue> = {}
   for (const [key, child] of inlineEntries) {
-    inlineObject[key] = resolveRefs(child, root, stack)
+    inlineObject[key] = resolveRefs(child, root, idTargets, stack)
   }
 
   return { ...resolvedTarget, ...inlineObject }
@@ -91,8 +145,9 @@ function resolveRefs(value: unknown, root: unknown, stack: Set<string>): JsonVal
 
 export function parseAndFormatJson(rawValue: string, options?: FormatJsonOptions): JsonValue {
   const parsedValue = JSON.parse(rawValue)
+  const idTargets = collectIdTargets(parsedValue)
   return options?.resolveRefs
-    ? resolveRefs(parsedValue, parsedValue, new Set())
+    ? resolveRefs(parsedValue, parsedValue, idTargets, new Set())
     : (parsedValue as JsonValue)
 }
 
