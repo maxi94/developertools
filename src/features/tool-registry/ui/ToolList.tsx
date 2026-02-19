@@ -84,8 +84,30 @@ export function ToolList() {
         )}
       </section>
 
+      <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:hidden dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          Menu rapido
+        </h2>
+        <div className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-1">
+          {tools.map((tool) => (
+            <button
+              key={tool.id}
+              type="button"
+              className={`shrink-0 rounded-full border px-3 py-1.5 text-xs font-semibold transition ${
+                tool.id === activeToolId
+                  ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
+                  : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
+              }`}
+              onClick={() => setActiveToolId(tool.id)}
+            >
+              {tool.name}
+            </button>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
-        <aside className="h-fit rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+        <aside className="hidden h-fit rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
           <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             Menu de funcionalidades
           </h2>
