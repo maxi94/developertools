@@ -1,0 +1,162 @@
+:root {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #0f172a;
+  background: radial-gradient(circle at top, #f1f5f9 0%, #e2e8f0 100%);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  min-height: 100vh;
+}
+
+.app-shell {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 2rem 1rem 3rem;
+}
+
+.app-header {
+  margin-bottom: 1.5rem;
+}
+
+.app-kicker {
+  margin: 0;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #0369a1;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.app-header h1 {
+  margin: 0.5rem 0;
+  font-size: clamp(1.8rem, 4vw, 2.7rem);
+}
+
+.app-subtitle {
+  margin: 0;
+  color: #334155;
+}
+
+.tool-layout {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: minmax(220px, 280px) 1fr;
+}
+
+.tool-sidebar {
+  background: #ffffffd9;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  backdrop-filter: blur(6px);
+}
+
+.tool-sidebar h2 {
+  margin: 0 0 0.8rem;
+  font-size: 1rem;
+}
+
+.tool-list {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tool-card {
+  background: #f8fafc;
+  border: 1px solid #cbd5e1;
+  border-radius: 10px;
+  padding: 0.8rem;
+}
+
+.tool-card h2 {
+  margin: 0;
+  font-size: 0.98rem;
+}
+
+.tool-card p {
+  margin: 0.4rem 0 0;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.tool-panel {
+  background: #ffffffd9;
+  border-radius: 12px;
+  padding: 1rem;
+  border: 1px solid #cbd5e1;
+  backdrop-filter: blur(6px);
+}
+
+.tool-panel-header h2 {
+  margin: 0;
+}
+
+.tool-panel-header p {
+  margin: 0.3rem 0 1rem;
+  color: #334155;
+}
+
+.tool-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.tool-field {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.tool-field span {
+  font-size: 0.88rem;
+  font-weight: 600;
+}
+
+.tool-field textarea {
+  width: 100%;
+  min-height: 280px;
+  resize: vertical;
+  border-radius: 10px;
+  border: 1px solid #94a3b8;
+  padding: 0.75rem;
+  font:
+    400 0.9rem/1.4 Consolas,
+    Monaco,
+    'Courier New',
+    monospace;
+  background: #f8fafc;
+  color: #0f172a;
+}
+
+.tool-field textarea[data-status='error'] {
+  border-color: #dc2626;
+  color: #991b1b;
+}
+
+@media (max-width: 900px) {
+  .tool-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .tool-grid {
+    grid-template-columns: 1fr;
+  }
+}
