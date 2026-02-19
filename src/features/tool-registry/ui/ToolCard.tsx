@@ -1,21 +1,23 @@
-﻿import Binary from 'lucide-react/dist/esm/icons/binary'
-import Braces from 'lucide-react/dist/esm/icons/braces'
-import Clock3 from 'lucide-react/dist/esm/icons/clock-3'
-import Database from 'lucide-react/dist/esm/icons/database'
-import DatabaseZap from 'lucide-react/dist/esm/icons/database-zap'
-import FileCode2 from 'lucide-react/dist/esm/icons/file-code-2'
-import FileImage from 'lucide-react/dist/esm/icons/file-image'
-import FileJson2 from 'lucide-react/dist/esm/icons/file-json-2'
-import FileText from 'lucide-react/dist/esm/icons/file-text'
-import Fingerprint from 'lucide-react/dist/esm/icons/fingerprint-pattern'
-import FlaskConical from 'lucide-react/dist/esm/icons/flask-conical'
-import KeyRound from 'lucide-react/dist/esm/icons/key-round'
-import KeySquare from 'lucide-react/dist/esm/icons/key-square'
-import Link2 from 'lucide-react/dist/esm/icons/link-2'
-import Pin from 'lucide-react/dist/esm/icons/pin'
-import ScanSearch from 'lucide-react/dist/esm/icons/scan-search'
-import Scissors from 'lucide-react/dist/esm/icons/scissors'
-import Star from 'lucide-react/dist/esm/icons/star'
+﻿import {
+  Binary,
+  Braces,
+  Clock3,
+  Database,
+  DatabaseZap,
+  FileCode2,
+  FileImage,
+  FileJson2,
+  FileText,
+  FingerprintPattern as Fingerprint,
+  FlaskConical,
+  KeyRound,
+  KeySquare,
+  Link2,
+  Pin,
+  ScanSearch,
+  Scissors,
+  Star,
+} from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -123,4 +125,3 @@ export function ToolCard({
     </article>
   )
 }
-

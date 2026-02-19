@@ -1,13 +1,15 @@
 import { useDeferredValue, useMemo, useState } from 'react'
-import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2'
-import Copy from 'lucide-react/dist/esm/icons/copy'
-import Download from 'lucide-react/dist/esm/icons/download'
-import Eraser from 'lucide-react/dist/esm/icons/eraser'
-import FileSpreadsheet from 'lucide-react/dist/esm/icons/file-spreadsheet'
-import FileText from 'lucide-react/dist/esm/icons/file-text'
-import Minimize2 from 'lucide-react/dist/esm/icons/minimize-2'
-import Network from 'lucide-react/dist/esm/icons/network'
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
+import {
+  CheckCircle2,
+  Copy,
+  Download,
+  Eraser,
+  FileSpreadsheet,
+  FileText,
+  Minimize2,
+  Network,
+  Sparkles,
+} from 'lucide-react'
 import { parseAndFormatJson, sortJsonKeysDeep } from '@/shared/lib/json'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
 

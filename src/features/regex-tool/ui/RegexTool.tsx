@@ -1,7 +1,5 @@
 ﻿import { useMemo, useState } from 'react'
-import Copy from 'lucide-react/dist/esm/icons/copy'
-import FileCode2 from 'lucide-react/dist/esm/icons/file-code-2'
-import Regex from 'lucide-react/dist/esm/icons/regex'
+import { Copy, FileCode2, Regex } from 'lucide-react'
 import {
   buildRegexGraph,
   evaluateRegex,

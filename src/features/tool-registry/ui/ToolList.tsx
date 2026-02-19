@@ -9,26 +9,28 @@
   type ComponentType,
   type LazyExoticComponent,
 } from 'react'
-import BookOpenText from 'lucide-react/dist/esm/icons/book-open-text'
-import Braces from 'lucide-react/dist/esm/icons/braces'
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
-import ChevronsLeft from 'lucide-react/dist/esm/icons/chevrons-left'
-import ChevronsRight from 'lucide-react/dist/esm/icons/chevrons-right'
-import Code2 from 'lucide-react/dist/esm/icons/code-2'
-import Database from 'lucide-react/dist/esm/icons/database'
-import Fingerprint from 'lucide-react/dist/esm/icons/fingerprint-pattern'
-import Globe2 from 'lucide-react/dist/esm/icons/globe-2'
-import Menu from 'lucide-react/dist/esm/icons/menu'
-import MoonStar from 'lucide-react/dist/esm/icons/moon-star'
-import PanelLeft from 'lucide-react/dist/esm/icons/panel-left'
-import Pin from 'lucide-react/dist/esm/icons/pin'
-import PinOff from 'lucide-react/dist/esm/icons/pin-off'
-import Search from 'lucide-react/dist/esm/icons/search'
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
-import Star from 'lucide-react/dist/esm/icons/star'
-import Sun from 'lucide-react/dist/esm/icons/sun'
-import X from 'lucide-react/dist/esm/icons/x'
+import {
+  BookOpenText,
+  Braces,
+  ChevronDown,
+  ChevronRight,
+  ChevronsLeft,
+  ChevronsRight,
+  Code2,
+  Database,
+  FingerprintPattern as Fingerprint,
+  Globe2,
+  Menu,
+  MoonStar,
+  PanelLeft,
+  Pin,
+  PinOff,
+  Search,
+  Sparkles,
+  Star,
+  Sun,
+  X,
+} from 'lucide-react'
 import {
   categoryOrder,
   createCategoryRecord,

@@ -1,14 +1,16 @@
 ﻿import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react'
-import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
-import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
-import Expand from 'lucide-react/dist/esm/icons/expand'
-import LocateFixed from 'lucide-react/dist/esm/icons/locate-fixed'
-import Minimize2 from 'lucide-react/dist/esm/icons/minimize-2'
-import Network from 'lucide-react/dist/esm/icons/network'
-import Search from 'lucide-react/dist/esm/icons/search'
-import TreePine from 'lucide-react/dist/esm/icons/tree-pine'
-import ZoomIn from 'lucide-react/dist/esm/icons/zoom-in'
-import ZoomOut from 'lucide-react/dist/esm/icons/zoom-out'
+import {
+  ChevronDown,
+  ChevronRight,
+  Expand,
+  LocateFixed,
+  Minimize2,
+  Network,
+  Search,
+  TreePine,
+  ZoomIn,
+  ZoomOut,
+} from 'lucide-react'
 
 interface JsonTreeViewerProps {
   data: unknown

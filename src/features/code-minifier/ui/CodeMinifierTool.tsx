@@ -1,11 +1,5 @@
 import { useRef, useState, type ChangeEventHandler } from 'react'
-import CheckCircle2 from 'lucide-react/dist/esm/icons/check-circle-2'
-import Copy from 'lucide-react/dist/esm/icons/copy'
-import Download from 'lucide-react/dist/esm/icons/download'
-import Eraser from 'lucide-react/dist/esm/icons/eraser'
-import FileDown from 'lucide-react/dist/esm/icons/file-down'
-import Minimize2 from 'lucide-react/dist/esm/icons/minimize-2'
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
+import { CheckCircle2, Copy, Download, Eraser, FileDown, Minimize2, Sparkles } from 'lucide-react'
 import { getDownloadFileName, transformCode, type CodeLanguage } from '@/shared/lib/code-minifier'
 
 const sampleByLanguage: Record<CodeLanguage, string> = {
