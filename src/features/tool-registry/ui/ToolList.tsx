@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { Menu, PanelLeft, Search, Star, X } from 'lucide-react'
+import { Menu, MoonStar, PanelLeft, Search, Star, Sun, X } from 'lucide-react'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
@@ -7,6 +7,7 @@ import { tools } from '@/features/tool-registry/model/tools'
 import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
 import { UuidTool } from '@/features/uuid/ui/UuidTool'
+import { useTheme } from '@/shared/hooks/useTheme'
 import type { ToolId } from '@/shared/types/tool'
 
 const FAVORITES_KEY = 'developer-tools-favorites'
@@ -33,6 +34,8 @@ function getInitialFavorites(): ToolId[] {
 interface SidebarContentProps {
   activeToolId: ToolId
   favoriteToolIds: ToolId[]
+  menuTools: typeof tools
+  searchTerm: string
   onSelect: (toolId: ToolId) => void
   onToggleFavorite: (toolId: ToolId) => void
 }
@@ -40,10 +43,12 @@ interface SidebarContentProps {
 function SidebarContent({
   activeToolId,
   favoriteToolIds,
+  menuTools,
+  searchTerm,
   onSelect,
   onToggleFavorite,
 }: SidebarContentProps) {
-  const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
+  const favoriteTools = menuTools.filter((tool) => favoriteToolIds.includes(tool.id))
 
   return (
     <>
@@ -75,7 +80,7 @@ function SidebarContent({
       </div>
 
       <nav className="grid gap-2" aria-label="Menu de funcionalidades">
-        {tools.map((tool) => (
+        {menuTools.map((tool) => (
           <ToolCard
             key={tool.id}
             tool={tool}
@@ -86,16 +91,34 @@ function SidebarContent({
           />
         ))}
       </nav>
+      {menuTools.length === 0 ? (
+        <p className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs text-indigo-100/80">
+          No se encontraron herramientas para: <strong>{searchTerm}</strong>
+        </p>
+      ) : null}
     </>
   )
 }
 
 export function ToolList() {
+  const { theme, toggleTheme } = useTheme()
   const [activeToolId, setActiveToolId] = useState<ToolId>('json-formatter')
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [searchTerm, setSearchTerm] = useState('')
 
   const activeTool = useMemo(() => tools.find((tool) => tool.id === activeToolId), [activeToolId])
+  const normalizedSearch = searchTerm.trim().toLowerCase()
+  const filteredTools = useMemo(() => {
+    if (!normalizedSearch) {
+      return tools
+    }
+
+    return tools.filter((tool) => {
+      const target = `${tool.name} ${tool.description}`.toLowerCase()
+      return target.includes(normalizedSearch)
+    })
+  }, [normalizedSearch])
 
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
@@ -145,10 +168,19 @@ export function ToolList() {
           <input
             className="w-full bg-transparent outline-none placeholder:text-slate-400"
             placeholder="Buscar herramienta..."
-            value={tools.find((tool) => tool.id === activeToolId)?.name ?? ''}
-            readOnly
+            value={searchTerm}
+            onChange={(event) => setSearchTerm(event.target.value)}
+            spellCheck={false}
           />
         </label>
+        <button
+          type="button"
+          className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+          onClick={toggleTheme}
+        >
+          {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
+          <span className="hidden sm:inline">{theme === 'dark' ? 'Claro' : 'Oscuro'}</span>
+        </button>
       </header>
 
       <div className="grid min-h-[calc(100vh-8rem)] lg:grid-cols-[280px_minmax(0,1fr)]">
@@ -160,6 +192,8 @@ export function ToolList() {
           <SidebarContent
             activeToolId={activeToolId}
             favoriteToolIds={favoriteToolIds}
+            menuTools={filteredTools}
+            searchTerm={searchTerm}
             onSelect={selectTool}
             onToggleFavorite={toggleFavorite}
           />
@@ -218,6 +252,8 @@ export function ToolList() {
         <SidebarContent
           activeToolId={activeToolId}
           favoriteToolIds={favoriteToolIds}
+          menuTools={filteredTools}
+          searchTerm={searchTerm}
           onSelect={selectTool}
           onToggleFavorite={toggleFavorite}
         />
