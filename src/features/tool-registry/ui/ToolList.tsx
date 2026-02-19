@@ -1,9 +1,12 @@
 import { useMemo, useState } from 'react'
 import { Menu, X } from 'lucide-react'
+import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
+import { JwtTool } from '@/features/jwt/ui/JwtTool'
 import { tools } from '@/features/tool-registry/model/tools'
 import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
+import { UuidTool } from '@/features/uuid/ui/UuidTool'
 import type { ToolId } from '@/shared/types/tool'
 
 export function ToolList() {
@@ -46,11 +49,13 @@ export function ToolList() {
         </div>
       </aside>
 
-      {activeTool?.id === 'json-formatter' ? (
-        <JsonFormatterTool />
-      ) : (
+      {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
+      {activeTool?.id === 'base64' ? <Base64Tool /> : null}
+      {activeTool?.id === 'jwt' ? <JwtTool /> : null}
+      {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+      {activeTool?.id === 'url-codec' ? (
         <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
-      )}
+      ) : null}
     </section>
   )
 }

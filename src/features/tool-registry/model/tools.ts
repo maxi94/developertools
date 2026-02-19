@@ -11,7 +11,19 @@ export const tools: ToolDefinition[] = [
     id: 'base64',
     name: 'Codificador Base64',
     description: 'Codifica y decodifica texto de forma rapida.',
-    status: 'planned',
+    status: 'ready',
+  },
+  {
+    id: 'jwt',
+    name: 'Visualizador JWT',
+    description: 'Decodifica header y payload para inspeccion.',
+    status: 'ready',
+  },
+  {
+    id: 'uuid',
+    name: 'Generador UUID',
+    description: 'Genera UUID v4 y valida su formato.',
+    status: 'ready',
   },
   {
     id: 'url-codec',

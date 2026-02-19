@@ -1,4 +1,4 @@
-import { Binary, Braces, CheckCircle2, Clock3, Link2 } from 'lucide-react'
+import { Binary, Braces, CheckCircle2, Clock3, Fingerprint, KeyRound, Link2 } from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -8,7 +8,14 @@ interface ToolCardProps {
 }
 
 export function ToolCard({ tool, isActive, onSelect }: ToolCardProps) {
-  const ToolIcon = tool.id === 'json-formatter' ? Braces : tool.id === 'base64' ? Binary : Link2
+  const iconByTool = {
+    'json-formatter': Braces,
+    base64: Binary,
+    jwt: KeyRound,
+    uuid: Fingerprint,
+    'url-codec': Link2,
+  } as const
+  const ToolIcon = iconByTool[tool.id]
 
   return (
     <button

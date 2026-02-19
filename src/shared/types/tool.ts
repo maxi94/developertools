@@ -1,4 +1,4 @@
-export type ToolId = 'json-formatter' | 'base64' | 'url-codec'
+export type ToolId = 'json-formatter' | 'base64' | 'jwt' | 'uuid' | 'url-codec'
 export type ToolStatus = 'ready' | 'planned'
 
 export interface ToolDefinition {
