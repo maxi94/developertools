@@ -188,6 +188,14 @@ export const tools: ToolDefinition[] = [
     version: '1.0.0',
   },
   {
+    id: 'case-converter',
+    name: 'Case Converter',
+    description: 'Convierte texto entre camelCase, snake_case, kebab-case y mas.',
+    category: 'Formateadores',
+    status: 'ready',
+    version: '1.0.0',
+  },
+  {
     id: 'readme-generator',
     name: 'Generador README',
     description: 'Crea README.md con plantilla y vista previa.',

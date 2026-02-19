@@ -97,6 +97,10 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     name: 'Image to Base64',
     description: 'Convert local images to Data URL/Base64.',
   },
+  'case-converter': {
+    name: 'Case Converter',
+    description: 'Convert text between camelCase, snake_case, kebab-case and more.',
+  },
   'svg-optimizer': {
     name: 'SVG Optimizer/Preview',
     description: 'Minify SVG, preview and export the result.',

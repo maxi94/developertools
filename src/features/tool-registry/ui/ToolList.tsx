@@ -231,6 +231,10 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
     () => import('@/features/code-minifier/ui/CodeMinifierTool'),
     'CodeMinifierTool',
   ),
+  'case-converter': lazyNamedTool(
+    () => import('@/features/case-converter/ui/CaseConverterTool'),
+    'CaseConverterTool',
+  ),
   'sql-mongo-converter': lazyNamedTool(
     () => import('@/features/sql-mongo/ui/SqlMongoConverterTool'),
     'SqlMongoConverterTool',
