@@ -1,0 +1,111 @@
+import { useMemo, useState } from 'react'
+import { Copy, Ruler } from 'lucide-react'
+import { useI18n } from '@/shared/i18n/useI18n'
+
+export function SpacingPreviewTool() {
+  const { language } = useI18n()
+  const isEnglish = language === 'en'
+  const [radius, setRadius] = useState(16)
+  const [padding, setPadding] = useState(20)
+  const [margin, setMargin] = useState(24)
+  const [gap, setGap] = useState(12)
+
+  const safeMargin = Math.min(48, margin)
+
+  const cssOutput = useMemo(
+    () =>
+      [
+        `border-radius: ${radius}px;`,
+        `padding: ${padding}px;`,
+        `margin: ${margin}px;`,
+        `gap: ${gap}px;`,
+      ].join('\n'),
+    [gap, margin, padding, radius],
+  )
+
+  return (
+    <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+      <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
+        <Ruler className="size-5" />
+        {isEnglish ? 'Border Radius / Spacing Preview' : 'Preview de Border Radius / Espaciado'}
+      </h2>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+        {isEnglish
+          ? 'Redesigned preview: centered card, stable layout and clear visual rhythm.'
+          : 'Preview rediseñado: card centrada, bloque estable y lectura visual clara.'}
+      </p>
+
+      <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
+        <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+          {[
+            { label: 'Border radius', value: radius, set: setRadius, min: 0, max: 72 },
+            { label: 'Padding', value: padding, set: setPadding, min: 0, max: 72 },
+            { label: 'Margin', value: margin, set: setMargin, min: 0, max: 80 },
+            { label: 'Gap', value: gap, set: setGap, min: 0, max: 48 },
+          ].map((item) => (
+            <label key={item.label} className="grid gap-1.5">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {item.label}: {item.value}px
+              </span>
+              <input
+                type="range"
+                min={item.min}
+                max={item.max}
+                value={item.value}
+                onChange={(event) => item.set(Number(event.target.value))}
+              />
+            </label>
+          ))}
+        </section>
+
+        <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+          <div className="rounded-xl border border-slate-300/80 bg-slate-100 p-4 dark:border-slate-700 dark:bg-slate-950/45">
+            <div className="grid min-h-[360px] place-items-center rounded-xl border border-dashed border-slate-300 bg-[linear-gradient(to_right,rgba(148,163,184,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.16)_1px,transparent_1px)] bg-[size:20px_20px] p-6 dark:border-slate-700">
+              <div className="w-[min(620px,88vw)] max-w-full">
+                <div
+                  className="rounded-2xl border border-cyan-300/70 bg-cyan-50/60 p-3 dark:border-cyan-500/35 dark:bg-cyan-950/20"
+                  style={{ padding: `${safeMargin}px` }}
+                >
+                  <div
+                    className="mx-auto border border-cyan-300/70 bg-white/95 shadow-sm dark:border-cyan-500/40 dark:bg-slate-900/85"
+                    style={{ borderRadius: `${radius}px`, padding: `${padding}px` }}
+                  >
+                    <div className="grid" style={{ gap: `${gap}px` }}>
+                      <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
+                        {isEnglish ? 'Header block' : 'Bloque cabecera'}
+                      </div>
+                      <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                        {isEnglish
+                          ? 'This block simulates card content to validate vertical rhythm.'
+                          : 'Este bloque simula contenido de una card y permite validar ritmo vertical.'}
+                      </div>
+                      <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-200">
+                        {isEnglish ? 'Footer/actions' : 'Pie/acciones'}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex items-start gap-2">
+            <textarea
+              readOnly
+              value={cssOutput}
+              className="min-h-24 w-full resize-y rounded-xl border border-slate-300 bg-slate-50 p-3 font-mono text-xs dark:border-slate-600 dark:bg-slate-900/80 dark:text-slate-100"
+            />
+            <button
+              type="button"
+              onClick={() => navigator.clipboard.writeText(cssOutput)}
+              className="inline-flex h-10 shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+            >
+              <Copy className="size-3.5" />
+              {isEnglish ? 'Copy' : 'Copiar'}
+            </button>
+          </div>
+        </section>
+      </div>
+    </section>
+  )
+}

@@ -18,6 +18,11 @@ export type ToolId =
   | 'uuid'
   | 'url-codec'
   | 'readme-generator'
+  | 'color-tools'
+  | 'box-shadow-generator'
+  | 'spacing-preview'
+  | 'svg-optimizer'
+  | 'image-to-base64'
 export type ToolStatus = 'ready' | 'planned'
 export type ToolCategory =
   | 'Datos'

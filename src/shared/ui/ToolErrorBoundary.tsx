@@ -1,4 +1,4 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react'
+import { Component, type ReactNode } from 'react'
 
 interface ToolErrorBoundaryProps {
   children: ReactNode
@@ -15,10 +15,6 @@ export class ToolErrorBoundary extends Component<ToolErrorBoundaryProps, ToolErr
 
   static override getDerivedStateFromError(): ToolErrorBoundaryState {
     return { hasError: true }
-  }
-
-  override componentDidCatch(_error: Error, _errorInfo: ErrorInfo) {
-    // Prevent blank screen when a lazy-loaded tool throws.
   }
 
   override render() {

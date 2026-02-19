@@ -51,9 +51,14 @@ export function ToolCard({
     uuid: Fingerprint,
     'url-codec': Link2,
     'encoding-suite': FileCode2,
+    'color-tools': Braces,
+    'box-shadow-generator': FileCode2,
+    'spacing-preview': FileCode2,
     'datetime-tools': Clock3,
     'id-toolkit': Fingerprint,
     'fake-data-generator': FlaskConical,
+    'svg-optimizer': FileCode2,
+    'image-to-base64': FileImage,
     'readme-generator': FileText,
   } as const
   const ToolIcon = iconByTool[tool.id] ?? FileCode2
@@ -62,10 +67,10 @@ export function ToolCard({
     <article
       role="button"
       tabIndex={0}
-      className={`group w-full cursor-pointer rounded-lg ${compact ? 'px-2 py-2' : 'px-3 py-2'} text-left transition ${
+      className={`group w-full cursor-pointer rounded-xl border ${compact ? 'px-1.5 py-1.5' : 'px-2 py-1.5'} text-left transition ${
         isActive
-          ? 'bg-slate-900/10 text-slate-900 dark:bg-white/15 dark:text-white'
-          : 'text-slate-700 hover:bg-slate-900/10 hover:text-slate-900 dark:text-indigo-100/90 dark:hover:bg-white/10 dark:hover:text-white'
+          ? 'border-cyan-300/70 bg-cyan-50 text-slate-900 shadow-[0_8px_18px_-14px_rgba(8,145,178,0.75)] dark:border-cyan-400/50 dark:bg-cyan-950/35 dark:text-white'
+          : 'border-transparent bg-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-900/70'
       }`}
       onClick={() => onSelect(tool.id)}
       onKeyDown={(event) => {
@@ -80,41 +85,30 @@ export function ToolCard({
       <div className="flex items-center justify-between gap-2">
         <div className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}>
           <span
-            className={`inline-flex size-7 shrink-0 items-center justify-center rounded-md ${
+            className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg border ${
               isActive
-                ? 'bg-slate-900/15 text-slate-800 dark:bg-white/20 dark:text-white'
-                : 'bg-slate-200 text-slate-700 group-hover:bg-slate-300 dark:bg-indigo-900/80 dark:text-indigo-100 dark:group-hover:bg-white/15 dark:group-hover:text-white'
+                ? 'border-cyan-300/70 bg-white/90 text-cyan-700 dark:border-cyan-400/60 dark:bg-cyan-500/20 dark:text-cyan-200'
+                : 'border-slate-200 bg-white text-slate-700 group-hover:border-slate-300 group-hover:bg-white dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:group-hover:border-cyan-500/60 dark:group-hover:bg-slate-800 dark:group-hover:text-cyan-200'
             }`}
           >
-            <ToolIcon className="size-4" />
+            <ToolIcon className="size-3.5" />
           </span>
           {!compact ? (
             <div className="min-w-0">
-              <h3 className="text-sm font-semibold leading-tight">{tool.name}</h3>
-              <p className="text-[11px] leading-tight text-slate-500 dark:text-indigo-100/65">
-                {tool.description} · v{tool.version}
+              <h3 className="text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
+              <p className="overflow-hidden text-[10px] leading-snug text-slate-500 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-400">
+                v{tool.version} · {tool.description}
               </p>
             </div>
           ) : <span className="sr-only">{tool.name}</span>}
         </div>
         <div className={`flex shrink-0 items-center gap-1 ${compact ? 'hidden' : ''}`}>
-          {!compact ? (
-            <span
-              className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                tool.status === 'ready'
-                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/20 dark:text-emerald-100'
-                  : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
-              }`}
-            >
-              {tool.status === 'ready' ? 'On' : 'Soon'}
-            </span>
-          ) : null}
           <button
             type="button"
-            className={`inline-flex size-7 cursor-pointer items-center justify-center rounded-md transition ${
+            className={`inline-flex size-6 cursor-pointer items-center justify-center rounded-lg transition ${
               isFavorite
-                ? 'bg-amber-100 text-amber-700 dark:bg-amber-300/20 dark:text-amber-200'
-                : 'text-slate-500 hover:bg-slate-900/10 hover:text-slate-800 dark:text-indigo-200/70 dark:hover:bg-white/10 dark:hover:text-white'
+                ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
+                : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-200'
             }`}
             onClick={(event) => {
               event.stopPropagation()
