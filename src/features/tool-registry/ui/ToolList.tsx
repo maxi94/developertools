@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.11.0',
+    date: '2026-02-19',
+    title: 'Favoritos colapsables en menu',
+    changes: [
+      'Nueva categoria Favoritos al inicio del menu lateral en desktop y mobile.',
+      'La seccion Favoritos ahora es colapsable para mantener orden en navegaciones largas.',
+      'Header corregido: idioma y switch de tema vuelven a alinearse a la derecha.',
+    ],
+  },
+  {
     version: 'v0.10.1',
     date: '2026-02-19',
     title: 'Versionado y changelog obligatorio',
@@ -479,8 +489,13 @@ function SidebarContent({
 }: SidebarContentProps) {
   const { language } = useI18n()
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
+  const favoriteTools = useMemo(
+    () => menuTools.filter((tool) => favoriteToolIdSet.has(tool.id)),
+    [menuTools, favoriteToolIdSet],
+  )
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
+  const [isFavoritesCollapsed, setIsFavoritesCollapsed] = useState(false)
 
   const groupedTools = useMemo(() => {
     const grouped = createCategoryRecord<ToolDefinition[]>(() => [])
@@ -628,6 +643,70 @@ function SidebarContent({
       ) : null}
 
       <div className="grid gap-3">
+        {favoriteTools.length > 0 ? (
+          <section className="grid gap-1.5">
+            <div
+              className={`grid items-center ${
+                isMenuCollapsed ? 'grid-cols-1' : 'grid-cols-[minmax(0,1fr)_auto]'
+              } gap-1`}
+            >
+              <button
+                type="button"
+                title={isMenuCollapsed ? (language === 'en' ? 'Favorites' : 'Favoritos') : undefined}
+                className={`min-w-0 inline-flex cursor-pointer items-center ${
+                  isMenuCollapsed ? 'justify-center px-0.5' : 'gap-1.5 px-1'
+                } rounded-md py-1 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-900 dark:text-white`}
+                onClick={() => setIsFavoritesCollapsed((current) => !current)}
+              >
+                <span className="inline-flex size-4 shrink-0 items-center justify-center rounded-sm bg-amber-100 text-amber-700 dark:bg-amber-400/20 dark:text-amber-200">
+                  <Star className="size-3.5" />
+                </span>
+                {!isMenuCollapsed ? (
+                  <span className="truncate">{language === 'en' ? 'Favorites' : 'Favoritos'}</span>
+                ) : null}
+              </button>
+              {!isMenuCollapsed ? (
+                <button
+                  type="button"
+                  className="inline-flex size-6 shrink-0 cursor-pointer self-center items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-200 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-white"
+                  onClick={() => setIsFavoritesCollapsed((current) => !current)}
+                  aria-label={
+                    isFavoritesCollapsed
+                      ? language === 'en'
+                        ? 'Expand favorites'
+                        : 'Expandir favoritos'
+                      : language === 'en'
+                        ? 'Collapse favorites'
+                        : 'Colapsar favoritos'
+                  }
+                >
+                  <ChevronDown
+                    className={`size-4 transition ${isFavoritesCollapsed ? '-rotate-90' : ''}`}
+                  />
+                </button>
+              ) : null}
+            </div>
+            {!isFavoritesCollapsed ? (
+              <nav
+                className="grid gap-1.5"
+                aria-label={language === 'en' ? 'Favorites menu' : 'Menu de favoritos'}
+              >
+                {favoriteTools.map((tool) => (
+                  <ToolCard
+                    key={tool.id}
+                    tool={tool}
+                    compact={isMenuCollapsed}
+                    isActive={tool.id === activeToolId && viewType === 'tool'}
+                    isFavorite={true}
+                    onSelect={onSelectTool}
+                    onToggleFavorite={onToggleFavorite}
+                  />
+                ))}
+              </nav>
+            ) : null}
+          </section>
+        ) : null}
+
         {groupedTools.map((group) => (
           <section key={group.category} className="grid gap-1.5">
             <div className={`grid items-center ${isMenuCollapsed ? 'grid-cols-1' : 'grid-cols-[minmax(0,1fr)_auto]'} gap-1`}>
@@ -1235,21 +1314,7 @@ export function ToolList() {
           </span>
         </button>
 
-        <div className="ml-auto hidden items-center gap-2 lg:flex">
-          {favoriteTools.slice(0, 3).map((tool) => (
-            <button
-              key={tool.id}
-              type="button"
-              className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-              onClick={() => selectTool(tool.id)}
-            >
-              <Star className="size-3" />
-              <span className="max-w-24 truncate">{tool.name}</span>
-            </button>
-          ))}
-        </div>
-
-        <label className="hidden items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+        <label className="ml-auto hidden items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
           <span className="uppercase">{isEnglish ? 'Lang' : 'Idioma'}</span>
           <select
             value={language}
@@ -1266,7 +1331,7 @@ export function ToolList() {
 
         <button
           type="button"
-          className="inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-teal-400 hover:text-teal-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
+          className="ml-auto inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-teal-400 hover:text-teal-700 md:ml-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
           onClick={toggleTheme}
         >
           {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
