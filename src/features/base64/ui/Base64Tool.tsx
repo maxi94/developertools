@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+﻿import { useMemo, useState } from 'react'
 import { ArrowLeftRight, Binary, Copy } from 'lucide-react'
 import { decodeBase64, encodeBase64 } from '@/shared/lib/base64'
 
@@ -32,7 +32,7 @@ export function Base64Tool() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
           <Binary className="size-5" />
-          Codificador Base64
+          Base64 Texto
         </h2>
         <div className="inline-flex rounded-xl border border-slate-300 p-1 dark:border-slate-600">
           <button

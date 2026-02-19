@@ -10,8 +10,22 @@ export const tools: ToolDefinition[] = [
   },
   {
     id: 'base64',
-    name: 'Codificador Base64',
+    name: 'Base64 Texto',
     description: 'Codifica y decodifica texto de forma rapida.',
+    category: 'Datos',
+    status: 'ready',
+  },
+  {
+    id: 'base64-image',
+    name: 'Base64 a imagen',
+    description: 'Convierte una o varias cadenas Base64 en imagenes.',
+    category: 'Datos',
+    status: 'ready',
+  },
+  {
+    id: 'base64-pdf',
+    name: 'Base64 a PDF',
+    description: 'Convierte una o varias cadenas Base64 en archivos PDF.',
     category: 'Datos',
     status: 'ready',
   },

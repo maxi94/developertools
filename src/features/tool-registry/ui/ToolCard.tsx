@@ -1,4 +1,14 @@
-import { Binary, Braces, FileText, Fingerprint, KeyRound, Link2, Pin, Star } from 'lucide-react'
+import {
+  Binary,
+  Braces,
+  FileImage,
+  FileText,
+  Fingerprint,
+  KeyRound,
+  Link2,
+  Pin,
+  Star,
+} from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -19,6 +29,8 @@ export function ToolCard({
   const iconByTool = {
     'json-formatter': Braces,
     base64: Binary,
+    'base64-image': FileImage,
+    'base64-pdf': FileText,
     jwt: KeyRound,
     uuid: Fingerprint,
     'url-codec': Link2,

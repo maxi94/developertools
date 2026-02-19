@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Menu, MoonStar, PanelLeft, Search, Star, Sun, X } from 'lucide-react'
+import { Base64ImageTool } from '@/features/base64-image/ui/Base64ImageTool'
+import { Base64PdfTool } from '@/features/base64-pdf/ui/Base64PdfTool'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
@@ -312,6 +314,8 @@ export function ToolList() {
 
           {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
           {activeTool?.id === 'base64' ? <Base64Tool /> : null}
+          {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
+          {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
           {activeTool?.id === 'jwt' ? <JwtTool /> : null}
           {activeTool?.id === 'uuid' ? <UuidTool /> : null}
           {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}

@@ -1,4 +1,12 @@
-export type ToolId = 'json-formatter' | 'base64' | 'jwt' | 'uuid' | 'url-codec' | 'readme-generator'
+export type ToolId =
+  | 'json-formatter'
+  | 'base64'
+  | 'base64-image'
+  | 'base64-pdf'
+  | 'jwt'
+  | 'uuid'
+  | 'url-codec'
+  | 'readme-generator'
 export type ToolStatus = 'ready' | 'planned'
 export type ToolCategory = 'Datos' | 'Tokens e identidad' | 'Utilidades web' | 'Documentacion'
 
