@@ -1,12 +1,13 @@
 import { useMemo, useState } from 'react'
 import { Copy, Eraser, Sparkles, TextCursorInput } from 'lucide-react'
 import { convertCases } from '@/shared/lib/case-converter'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 const sampleInput = 'mi_texto-ejemplo HTTPServer'
 
 export function CaseConverterTool() {
+  const { showToast } = useToast()
   const [input, setInput] = useState(sampleInput)
-  const [message, setMessage] = useState('')
   const output = useMemo(() => convertCases(input), [input])
 
   const copyValue = async (value: string) => {
@@ -14,8 +15,7 @@ export function CaseConverterTool() {
       return
     }
     await navigator.clipboard.writeText(value)
-    setMessage('Copiado al portapapeles')
-    window.setTimeout(() => setMessage(''), 1800)
+    showToast('Copiado al portapapeles', { tone: 'success' })
   }
 
   const entries = Object.entries(output)
@@ -50,12 +50,6 @@ export function CaseConverterTool() {
           Limpiar
         </button>
       </div>
-
-      {message ? (
-        <div className="mb-3 rounded-xl border border-emerald-300 bg-emerald-50 px-3 py-2 text-xs font-semibold text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300">
-          {message}
-        </div>
-      ) : null}
 
       <label className="grid gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">

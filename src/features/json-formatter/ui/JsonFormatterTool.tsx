@@ -12,6 +12,7 @@ import {
 } from 'lucide-react'
 import { parseAndFormatJson, sortJsonKeysDeep } from '@/shared/lib/json'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 const sample = `{
   "definiciones": {
@@ -128,9 +129,9 @@ function downloadTextFile(content: string, filename: string, mimeType: string) {
 }
 
 export function JsonFormatterTool() {
+  const { showToast } = useToast()
   const [source, setSource] = useState(sample)
   const [resolveRefs, setResolveRefs] = useState(true)
-  const [toast, setToast] = useState<{ tone: 'success' | 'error'; message: string } | null>(null)
   const [isOutputMinified, setIsOutputMinified] = useState(false)
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
@@ -177,8 +178,7 @@ export function JsonFormatterTool() {
   }, [deferredSource, isOutputMinified, resolveRefs])
 
   const notify = (tone: 'success' | 'error', message: string) => {
-    setToast({ tone, message })
-    window.setTimeout(() => setToast(null), 2200)
+    showToast(message, { tone })
   }
 
   const copyOutput = async () => {
@@ -311,18 +311,6 @@ export function JsonFormatterTool() {
             Validar
           </button>
         </div>
-
-        {toast ? (
-          <div
-            className={`pointer-events-none fixed right-4 top-4 z-50 rounded-xl border px-3 py-2 text-xs font-semibold shadow-lg ${
-              toast.tone === 'success'
-                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300'
-            }`}
-          >
-            {toast.message}
-          </div>
-        ) : null}
 
         {isProcessing ? (
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Procesando JSON...</p>
