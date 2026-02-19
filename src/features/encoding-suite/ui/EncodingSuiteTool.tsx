@@ -1,6 +1,7 @@
 ﻿import { useMemo, useState } from 'react'
 import { ArrowLeftRight, Binary, Copy } from 'lucide-react'
 import { decodeValue, encodeValue, type EncodingMode } from '@/shared/lib/encoding-suite'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 const modeOptions: Array<{ id: EncodingMode; label: string }> = [
   { id: 'html', label: 'HTML' },
@@ -10,6 +11,7 @@ const modeOptions: Array<{ id: EncodingMode; label: string }> = [
 ]
 
 export function EncodingSuiteTool() {
+  const { showToast } = useToast()
   const [mode, setMode] = useState<EncodingMode>('html')
   const [direction, setDirection] = useState<'encode' | 'decode'>('encode')
   const [input, setInput] = useState('')
@@ -31,6 +33,7 @@ export function EncodingSuiteTool() {
   const copyOutput = async () => {
     if (output.status === 'success') {
       await navigator.clipboard.writeText(output.value)
+      showToast('Salida copiada', { tone: 'success' })
     }
   }
 
@@ -90,6 +93,7 @@ export function EncodingSuiteTool() {
           onClick={() => {
             setInput(output.status === 'success' ? output.value : '')
             setDirection((current) => (current === 'encode' ? 'decode' : 'encode'))
+            showToast('Entrada y modo intercambiados', { tone: 'info' })
           }}
         >
           <ArrowLeftRight className="size-3.5" /> Intercambiar
@@ -121,3 +125,4 @@ export function EncodingSuiteTool() {
     </section>
   )
 }
+
