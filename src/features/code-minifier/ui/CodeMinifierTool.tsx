@@ -1,6 +1,7 @@
 import { useRef, useState, type ChangeEventHandler } from 'react'
 import { CheckCircle2, Copy, Download, Eraser, FileDown, Minimize2, Sparkles } from 'lucide-react'
 import { getDownloadFileName, transformCode, type CodeLanguage } from '@/shared/lib/code-minifier'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 const sampleByLanguage: Record<CodeLanguage, string> = {
   javascript: `function greet(name){const profile={active:true,roles:["dev","admin"]};return name?.trim()? \`Hola \${name}\` : "Hola mundo";}`,
@@ -18,33 +19,25 @@ function downloadTextFile(content: string, fileName: string, mimeType: string) {
 }
 
 export function CodeMinifierTool() {
+  const { showToast } = useToast()
   const [language, setLanguage] = useState<CodeLanguage>('javascript')
   const [source, setSource] = useState(sampleByLanguage.javascript)
   const [output, setOutput] = useState('')
   const [lastMode, setLastMode] = useState<'minify' | 'expand'>('minify')
-  const [status, setStatus] = useState<'idle' | 'success' | 'error'>('idle')
-  const [message, setMessage] = useState('')
   const fileInputRef = useRef<HTMLInputElement | null>(null)
-
-  const setToast = (nextStatus: 'success' | 'error', nextMessage: string) => {
-    setStatus(nextStatus)
-    setMessage(nextMessage)
-    window.setTimeout(() => {
-      setStatus('idle')
-      setMessage('')
-    }, 2200)
-  }
 
   const runTransform = async (mode: 'minify' | 'expand') => {
     try {
       const nextOutput = await transformCode(source, language, mode)
       setOutput(nextOutput)
       setLastMode(mode)
-      setToast('success', mode === 'minify' ? 'Contenido minificado' : 'Contenido expandido')
+      showToast(mode === 'minify' ? 'Contenido minificado' : 'Contenido expandido', {
+        tone: 'success',
+      })
     } catch (error) {
       const detail = error instanceof Error ? error.message : 'No se pudo procesar contenido.'
       setOutput(detail)
-      setToast('error', detail)
+      showToast(detail, { tone: 'error' })
     }
   }
 
@@ -68,7 +61,7 @@ export function CodeMinifierTool() {
         : null
 
     if (!inferredLanguage) {
-      setToast('error', 'Archivo no soportado. Usa .js o .css.')
+      showToast('Archivo no soportado. Usa .js o .css.', { tone: 'error' })
       event.target.value = ''
       return
     }
@@ -78,9 +71,9 @@ export function CodeMinifierTool() {
       setLanguage(inferredLanguage)
       setSource(text)
       setOutput('')
-      setToast('success', `Archivo cargado: ${file.name}`)
+      showToast(`Archivo cargado: ${file.name}`, { tone: 'success' })
     } catch {
-      setToast('error', 'No se pudo leer el archivo.')
+      showToast('No se pudo leer el archivo.', { tone: 'error' })
     } finally {
       event.target.value = ''
     }
@@ -91,7 +84,7 @@ export function CodeMinifierTool() {
       return
     }
     await navigator.clipboard.writeText(output)
-    setToast('success', 'Salida copiada')
+    showToast('Salida copiada', { tone: 'success' })
   }
 
   const downloadOutput = () => {
@@ -102,7 +95,7 @@ export function CodeMinifierTool() {
     const fileName = getDownloadFileName(language, lastMode)
     const mimeType = language === 'javascript' ? 'text/javascript;charset=utf-8' : 'text/css;charset=utf-8'
     downloadTextFile(output, fileName, mimeType)
-    setToast('success', 'Archivo descargado')
+    showToast('Archivo descargado', { tone: 'success' })
   }
 
   return (
@@ -213,18 +206,6 @@ export function CodeMinifierTool() {
           Descargar salida
         </button>
       </div>
-
-      {status !== 'idle' ? (
-        <div
-          className={`mb-3 rounded-xl border px-3 py-2 text-xs font-semibold ${
-            status === 'success'
-              ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300'
-              : 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300'
-          }`}
-        >
-          {message}
-        </div>
-      ) : null}
 
       <div className="grid gap-3 lg:grid-cols-2">
         <label className="grid gap-2">
