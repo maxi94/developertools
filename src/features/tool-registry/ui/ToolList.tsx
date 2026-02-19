@@ -210,8 +210,10 @@ export function ToolList() {
           className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? <MoonStar className="size-3.5" /> : <Sun className="size-3.5" />}
-          <span className="hidden sm:inline">Tema: {theme === 'dark' ? 'Oscuro' : 'Claro'}</span>
+          {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
+          <span className="hidden sm:inline">
+            Pasar a {theme === 'dark' ? 'Claro' : 'Oscuro'}
+          </span>
         </button>
       </header>
 
