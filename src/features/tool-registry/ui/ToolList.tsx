@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.11.3',
+    date: '2026-02-19',
+    title: 'Spacing Preview responsive',
+    changes: [
+      'Border/Spacing Preview: mejoras de responsive para mobile.',
+      'Preview con contenedor fluido y alturas/paddings adaptativos.',
+      'Version de la herramienta Border/Spacing Preview actualizada a v1.0.1.',
+    ],
+  },
+  {
     version: 'v0.11.2',
     date: '2026-02-19',
     title: 'Box Shadow responsive',
