@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v0.11.2'
+export const WEB_VERSION = 'v0.11.3'
 
 export const tools: ToolDefinition[] = [
   {
@@ -145,7 +145,7 @@ export const tools: ToolDefinition[] = [
     description: 'Previsualiza border-radius, padding y margin con CSS exportable.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'datetime-tools',

@@ -59,9 +59,9 @@ export function SpacingPreviewTool() {
         </section>
 
         <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-          <div className="rounded-xl border border-slate-300/80 bg-slate-100 p-4 dark:border-slate-700 dark:bg-slate-950/45">
-            <div className="grid min-h-[360px] place-items-center rounded-xl border border-dashed border-slate-300 bg-[linear-gradient(to_right,rgba(148,163,184,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.16)_1px,transparent_1px)] bg-[size:20px_20px] p-6 dark:border-slate-700">
-              <div className="w-[min(620px,88vw)] max-w-full">
+          <div className="rounded-xl border border-slate-300/80 bg-slate-100 p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-950/45">
+            <div className="grid min-h-[240px] place-items-center rounded-xl border border-dashed border-slate-300 bg-[linear-gradient(to_right,rgba(148,163,184,0.16)_1px,transparent_1px),linear-gradient(to_bottom,rgba(148,163,184,0.16)_1px,transparent_1px)] bg-[size:20px_20px] p-3 sm:min-h-[360px] sm:p-6 dark:border-slate-700">
+              <div className="w-full max-w-[620px]">
                 <div
                   className="rounded-2xl border border-cyan-300/70 bg-cyan-50/60 p-3 dark:border-cyan-500/35 dark:bg-cyan-950/20"
                   style={{ padding: `${safeMargin}px` }}
@@ -89,7 +89,7 @@ export function SpacingPreviewTool() {
             </div>
           </div>
 
-          <div className="flex items-start gap-2">
+          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-start">
             <textarea
               readOnly
               value={cssOutput}
@@ -98,7 +98,7 @@ export function SpacingPreviewTool() {
             <button
               type="button"
               onClick={() => navigator.clipboard.writeText(cssOutput)}
-              className="inline-flex h-10 shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+              className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <Copy className="size-3.5" />
               {isEnglish ? 'Copy' : 'Copiar'}
