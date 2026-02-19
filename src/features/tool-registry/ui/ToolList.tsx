@@ -45,7 +45,30 @@ const categoryDescriptions: Record<ToolCategory, string> = {
   Documentacion: 'Generadores y asistentes para acelerar la documentacion tecnica.',
 }
 
+const categorySlugs: Record<ToolCategory, string> = {
+  Datos: 'datos',
+  Formateadores: 'formateadores',
+  'Generadores de codigo': 'generadores-codigo',
+  'Tokens e identidad': 'tokens-identidad',
+  'Utilidades web': 'utilidades-web',
+  Documentacion: 'documentacion',
+}
+
+const slugToCategory = Object.fromEntries(
+  Object.entries(categorySlugs).map(([category, slug]) => [slug, category as ToolCategory]),
+)
+
 const releaseNotes = [
+  {
+    version: 'v0.5.0',
+    date: '2026-02-19',
+    title: 'Arquitectura por rutas',
+    changes: [
+      'Navegacion persistente por URL para Home, Categoria y Herramienta.',
+      'Cada tool ahora tiene una ruta directa compartible y guardable en favoritos del navegador.',
+      'Sincronizacion con back/forward del browser.',
+    ],
+  },
   {
     version: 'v0.4.0',
     date: '2026-02-19',
@@ -66,22 +89,68 @@ const releaseNotes = [
       'Vista previa y descarga de assets generados.',
     ],
   },
-  {
-    version: 'v0.2.0',
-    date: '2026-02-19',
-    title: 'Generador README avanzado',
-    changes: [
-      'Editor completo con presets, secciones custom y TOC automatica.',
-      'Preview progresiva con descarga de README.md.',
-      'Campos para FAQ, roadmap, badges y enlaces.',
-    ],
-  },
 ]
 
 type ViewState =
   | { type: 'home' }
   | { type: 'category'; category: ToolCategory }
   | { type: 'tool'; toolId: ToolId }
+
+function normalizePath(pathname: string): string {
+  if (!pathname || pathname === '/') {
+    return '/'
+  }
+
+  return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
+}
+
+function getCategoryPath(category: ToolCategory): string {
+  return `/categoria/${categorySlugs[category]}`
+}
+
+function getToolPath(toolId: ToolId): string {
+  return `/herramienta/${toolId}`
+}
+
+function viewToPath(view: ViewState): string {
+  if (view.type === 'home') {
+    return '/'
+  }
+
+  if (view.type === 'category') {
+    return getCategoryPath(view.category)
+  }
+
+  return getToolPath(view.toolId)
+}
+
+function parseViewFromPath(pathname: string): ViewState {
+  const normalized = normalizePath(pathname)
+  if (normalized === '/') {
+    return { type: 'home' }
+  }
+
+  const categoryMatch = normalized.match(/^\/categoria\/([^/]+)$/)
+  if (categoryMatch) {
+    const category = slugToCategory[categoryMatch[1]]
+    if (category) {
+      return { type: 'category', category }
+    }
+    return { type: 'home' }
+  }
+
+  const toolMatch = normalized.match(/^\/herramienta\/([^/]+)$/)
+  if (toolMatch) {
+    const toolId = toolMatch[1] as ToolId
+    const hasTool = tools.some((tool) => tool.id === toolId)
+    if (hasTool) {
+      return { type: 'tool', toolId }
+    }
+    return { type: 'home' }
+  }
+
+  return { type: 'home' }
+}
 
 function getInitialFavorites(): ToolId[] {
   const raw = window.localStorage.getItem(FAVORITES_KEY)
@@ -367,7 +436,7 @@ function CategoryOverview({
 
 export function ToolList() {
   const { theme, toggleTheme } = useTheme()
-  const [view, setView] = useState<ViewState>({ type: 'home' })
+  const [view, setView] = useState<ViewState>(() => parseViewFromPath(window.location.pathname))
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
@@ -378,6 +447,7 @@ export function ToolList() {
     () => (view.type === 'tool' ? (tools.find((tool) => tool.id === view.toolId) ?? null) : null),
     [view],
   )
+
   const selectedCategory = useMemo<ToolCategory | null>(() => {
     if (view.type === 'category') {
       return view.category
@@ -420,6 +490,29 @@ export function ToolList() {
   )
 
   useEffect(() => {
+    const onPopState = () => {
+      setView(parseViewFromPath(window.location.pathname))
+      setIsMobileMenuOpen(false)
+    }
+
+    window.addEventListener('popstate', onPopState)
+
+    return () => {
+      window.removeEventListener('popstate', onPopState)
+    }
+  }, [])
+
+  useEffect(() => {
+    const parsed = parseViewFromPath(window.location.pathname)
+    const canonicalPath = viewToPath(parsed)
+    const currentPath = normalizePath(window.location.pathname)
+
+    if (currentPath !== canonicalPath) {
+      window.history.replaceState({}, '', canonicalPath)
+    }
+  }, [])
+
+  useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
   }, [favoriteToolIds])
 
@@ -430,6 +523,18 @@ export function ToolList() {
     }
   }, [isMobileMenuOpen])
 
+  const navigateTo = (path: string) => {
+    const nextPath = normalizePath(path)
+    const currentPath = normalizePath(window.location.pathname)
+
+    if (nextPath !== currentPath) {
+      window.history.pushState({}, '', nextPath)
+    }
+
+    setView(parseViewFromPath(nextPath))
+    setIsMobileMenuOpen(false)
+  }
+
   const toggleFavorite = (toolId: ToolId) => {
     setFavoriteToolIds((currentFavorites) =>
       currentFavorites.includes(toolId)
@@ -439,18 +544,15 @@ export function ToolList() {
   }
 
   const goHome = () => {
-    setView({ type: 'home' })
-    setIsMobileMenuOpen(false)
+    navigateTo('/')
   }
 
   const selectCategory = (category: ToolCategory) => {
-    setView({ type: 'category', category })
-    setIsMobileMenuOpen(false)
+    navigateTo(getCategoryPath(category))
   }
 
   const selectTool = (toolId: ToolId) => {
-    setView({ type: 'tool', toolId })
-    setIsMobileMenuOpen(false)
+    navigateTo(getToolPath(toolId))
   }
 
   const applySuggestion = (toolId: ToolId) => {
