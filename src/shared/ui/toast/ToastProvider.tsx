@@ -30,12 +30,12 @@ const ToastContext = createContext<ToastContextValue | null>(null)
 
 function getToastToneClasses(tone: ToastTone): string {
   if (tone === 'success') {
-    return 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/50 dark:text-emerald-300'
+    return 'border-slate-200 border-l-emerald-500 bg-white text-slate-800 ring-1 ring-emerald-300/70 dark:border-slate-700 dark:border-l-emerald-400 dark:bg-slate-900 dark:text-slate-100 dark:ring-emerald-500/40'
   }
   if (tone === 'error') {
-    return 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/50 dark:text-rose-300'
+    return 'border-slate-200 border-l-rose-500 bg-white text-slate-800 ring-1 ring-rose-300/70 dark:border-slate-700 dark:border-l-rose-400 dark:bg-slate-900 dark:text-slate-100 dark:ring-rose-500/40'
   }
-  return 'border-sky-300 bg-sky-50 text-sky-700 dark:border-sky-500/40 dark:bg-sky-950/50 dark:text-sky-300'
+  return 'border-slate-200 border-l-sky-500 bg-white text-slate-800 ring-1 ring-sky-300/70 dark:border-slate-700 dark:border-l-sky-400 dark:bg-slate-900 dark:text-slate-100 dark:ring-sky-500/40'
 }
 
 function ToastIcon({ tone }: { tone: ToastTone }) {
@@ -83,14 +83,14 @@ export function ToastProvider({ children }: PropsWithChildren) {
         {toasts.map((toast) => (
           <article
             key={toast.id}
-            className={`pointer-events-auto grid grid-cols-[auto_1fr_auto] items-start gap-2 rounded-xl border px-3 py-2 text-xs font-semibold shadow-lg ${getToastToneClasses(toast.tone)}`}
+            className={`pointer-events-auto grid grid-cols-[auto_1fr_auto] items-start gap-2 rounded-xl border border-l-4 px-3 py-2 text-xs font-semibold shadow-2xl backdrop-blur-sm ${getToastToneClasses(toast.tone)}`}
             role="status"
           >
             <ToastIcon tone={toast.tone} />
             <p className="break-words">{toast.message}</p>
             <button
               type="button"
-              className="inline-flex size-5 items-center justify-center rounded transition hover:bg-black/10 dark:hover:bg-white/10"
+              className="inline-flex size-5 items-center justify-center rounded text-slate-500 transition hover:bg-slate-200 hover:text-slate-800 dark:text-slate-300 dark:hover:bg-slate-700 dark:hover:text-slate-100"
               onClick={() => removeToast(toast.id)}
               aria-label="Cerrar notificacion"
             >
