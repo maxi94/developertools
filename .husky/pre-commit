@@ -1,2 +1,10 @@
 #!/usr/bin/env sh
+
+branch_name="$(git rev-parse --abbrev-ref HEAD)"
+if [ "$branch_name" = "main" ] || [ "$branch_name" = "master" ]; then
+  echo "Error: commits on '$branch_name' are blocked. Create a feature branch first."
+  echo "Use: git checkout -b feat/<nombre-funcionalidad>"
+  exit 1
+fi
+
 npx lint-staged
