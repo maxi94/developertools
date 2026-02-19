@@ -99,13 +99,9 @@ export function ToolList() {
   }, [favoriteToolIds])
 
   useEffect(() => {
-    const originalOverflow = document.body.style.overflow
-    if (isMobileMenuOpen) {
-      document.body.style.overflow = 'hidden'
-    }
-
+    document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
     return () => {
-      document.body.style.overflow = originalOverflow
+      document.body.style.overflow = ''
     }
   }, [isMobileMenuOpen])
 
@@ -123,7 +119,7 @@ export function ToolList() {
   }
 
   return (
-    <section className="grid gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+    <section className="grid gap-4">
       <button
         type="button"
         className="inline-flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:hidden dark:border-slate-700/70 dark:bg-slate-900/75 dark:text-slate-100"
@@ -133,28 +129,30 @@ export function ToolList() {
         Menu
       </button>
 
-      <aside className="hidden h-fit rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
-        <h2 className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-          <PanelLeft className="size-3.5" />
-          Menu de funcionalidades
-        </h2>
-        <MenuPanel
-          activeToolId={activeToolId}
-          favoriteToolIds={favoriteToolIds}
-          onSelect={selectTool}
-          onToggleFavorite={toggleFavorite}
-        />
-      </aside>
+      <section className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
+        <aside className="hidden h-[calc(100vh-3.5rem)] overflow-y-auto rounded-2xl border border-slate-300/70 bg-white/90 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/40">
+          <h2 className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+            <PanelLeft className="size-3.5" />
+            Menu de funcionalidades
+          </h2>
+          <MenuPanel
+            activeToolId={activeToolId}
+            favoriteToolIds={favoriteToolIds}
+            onSelect={selectTool}
+            onToggleFavorite={toggleFavorite}
+          />
+        </aside>
 
-      <div>
-        {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
-        {activeTool?.id === 'base64' ? <Base64Tool /> : null}
-        {activeTool?.id === 'jwt' ? <JwtTool /> : null}
-        {activeTool?.id === 'uuid' ? <UuidTool /> : null}
-        {activeTool?.id === 'url-codec' ? (
-          <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
-        ) : null}
-      </div>
+        <div className="min-w-0">
+          {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
+          {activeTool?.id === 'base64' ? <Base64Tool /> : null}
+          {activeTool?.id === 'jwt' ? <JwtTool /> : null}
+          {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+          {activeTool?.id === 'url-codec' ? (
+            <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
+          ) : null}
+        </div>
+      </section>
 
       <div
         className={`fixed inset-0 z-40 bg-slate-950/50 transition lg:hidden ${
@@ -164,7 +162,7 @@ export function ToolList() {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[340px] border-r border-slate-300 bg-white p-4 shadow-2xl transition-transform duration-300 lg:hidden dark:border-slate-700 dark:bg-slate-950 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[340px] overflow-y-auto border-r border-slate-300 bg-white p-4 pb-8 shadow-2xl transition-transform duration-300 lg:hidden dark:border-slate-700 dark:bg-slate-950 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
