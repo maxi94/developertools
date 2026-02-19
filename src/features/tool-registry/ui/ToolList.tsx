@@ -1093,23 +1093,12 @@ export function ToolList() {
       return
     }
 
-    const translate = () => applyDomTranslations(root, language)
-    translate()
-
-    const observer = new MutationObserver(() => {
-      translate()
-    })
-
-    observer.observe(root, {
-      childList: true,
-      subtree: true,
-      characterData: true,
-      attributes: true,
-      attributeFilter: ['placeholder', 'title', 'aria-label'],
+    const frameId = window.requestAnimationFrame(() => {
+      applyDomTranslations(root, language)
     })
 
     return () => {
-      observer.disconnect()
+      window.cancelAnimationFrame(frameId)
     }
   }, [language, view.type, activeTool?.id])
 
