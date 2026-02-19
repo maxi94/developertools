@@ -1,13 +1,30 @@
-import { Binary, Braces, CheckCircle2, Clock3, Fingerprint, KeyRound, Link2 } from 'lucide-react'
+import {
+  Binary,
+  Braces,
+  CheckCircle2,
+  Clock3,
+  Fingerprint,
+  KeyRound,
+  Link2,
+  Star,
+} from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
   tool: ToolDefinition
   isActive: boolean
+  isFavorite: boolean
   onSelect: (toolId: ToolDefinition['id']) => void
+  onToggleFavorite: (toolId: ToolDefinition['id']) => void
 }
 
-export function ToolCard({ tool, isActive, onSelect }: ToolCardProps) {
+export function ToolCard({
+  tool,
+  isActive,
+  isFavorite,
+  onSelect,
+  onToggleFavorite,
+}: ToolCardProps) {
   const iconByTool = {
     'json-formatter': Braces,
     base64: Binary,
@@ -18,21 +35,37 @@ export function ToolCard({ tool, isActive, onSelect }: ToolCardProps) {
   const ToolIcon = iconByTool[tool.id]
 
   return (
-    <button
-      type="button"
+    <article
       className={`w-full rounded-2xl border p-3 text-left transition ${
         isActive
           ? 'border-blue-500 bg-blue-50 shadow-sm dark:border-sky-400 dark:bg-sky-500/10'
           : 'border-slate-300 bg-white/80 hover:-translate-y-0.5 hover:border-blue-400 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-sky-400'
       }`}
-      onClick={() => onSelect(tool.id)}
-      aria-pressed={isActive}
     >
-      <div className="mb-2 flex items-center gap-2">
-        <span className="inline-flex size-7 items-center justify-center rounded-lg bg-slate-900/5 text-slate-700 dark:bg-white/10 dark:text-slate-200">
-          <ToolIcon className="size-4" />
-        </span>
-        <h3 className="text-sm font-semibold">{tool.name}</h3>
+      <div className="mb-2 flex items-start justify-between gap-2">
+        <button
+          type="button"
+          className="flex min-w-0 flex-1 items-center gap-2 text-left"
+          onClick={() => onSelect(tool.id)}
+          aria-pressed={isActive}
+        >
+          <span className="inline-flex size-7 shrink-0 items-center justify-center rounded-lg bg-slate-900/5 text-slate-700 dark:bg-white/10 dark:text-slate-200">
+            <ToolIcon className="size-4" />
+          </span>
+          <h3 className="truncate text-sm font-semibold">{tool.name}</h3>
+        </button>
+        <button
+          type="button"
+          className={`inline-flex size-8 shrink-0 items-center justify-center rounded-lg border transition ${
+            isFavorite
+              ? 'border-amber-300 bg-amber-100 text-amber-600 dark:border-amber-500/60 dark:bg-amber-500/10 dark:text-amber-300'
+              : 'border-slate-300 text-slate-500 hover:border-amber-300 hover:text-amber-600 dark:border-slate-600 dark:text-slate-300 dark:hover:border-amber-500/60 dark:hover:text-amber-300'
+          }`}
+          onClick={() => onToggleFavorite(tool.id)}
+          aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+        >
+          <Star className={`size-4 ${isFavorite ? 'fill-current' : ''}`} />
+        </button>
       </div>
       <p className="mb-3 text-xs text-slate-600 dark:text-slate-300">{tool.description}</p>
       <span
@@ -49,6 +82,6 @@ export function ToolCard({ tool, isActive, onSelect }: ToolCardProps) {
         )}
         {tool.status === 'ready' ? 'Lista' : 'Proximamente'}
       </span>
-    </button>
+    </article>
   )
 }
