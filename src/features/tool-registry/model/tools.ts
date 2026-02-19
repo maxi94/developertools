@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v0.11.3'
+export const WEB_VERSION = 'v0.12.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -201,7 +201,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crea README.md con plantilla y vista previa.',
     category: 'Documentacion',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.1.0',
   },
 ]
 
