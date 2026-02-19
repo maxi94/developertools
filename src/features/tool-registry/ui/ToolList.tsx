@@ -11,10 +11,12 @@ export function ToolList() {
   const activeTool = useMemo(() => tools.find((tool) => tool.id === activeToolId), [activeToolId])
 
   return (
-    <section className="tool-layout">
-      <aside className="tool-sidebar">
-        <h2>Menu de funcionalidades</h2>
-        <div className="tool-list">
+    <section className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)]">
+      <aside className="h-fit rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+        <h2 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          Menu de funcionalidades
+        </h2>
+        <div className="grid gap-2">
           {tools.map((tool) => (
             <ToolCard
               key={tool.id}

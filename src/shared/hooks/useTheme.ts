@@ -17,7 +17,8 @@ export function useTheme() {
   const [theme, setTheme] = useState<Theme>(getInitialTheme)
 
   useEffect(() => {
-    document.documentElement.dataset.theme = theme
+    document.documentElement.classList.toggle('dark', theme === 'dark')
+    document.documentElement.style.colorScheme = theme
     window.localStorage.setItem(THEME_KEY, theme)
   }, [theme])
 
