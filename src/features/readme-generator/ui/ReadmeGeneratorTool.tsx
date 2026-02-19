@@ -173,7 +173,7 @@ export function ReadmeGeneratorTool() {
           </button>
         </div>
 
-        <div className="mt-4 grid max-h-[760px] gap-3 overflow-y-auto pr-1">
+        <div className="mt-4 grid max-h-none gap-3 overflow-y-auto pr-1 lg:max-h-[760px]">
           <FormSection title="Base" subtitle="Identidad y descripcion principal del proyecto.">
             <label className="grid gap-1 text-xs font-semibold text-slate-500 dark:text-slate-400">
               Nombre del proyecto
@@ -429,7 +429,7 @@ export function ReadmeGeneratorTool() {
           </div>
         </div>
 
-        <pre className="max-h-[840px] overflow-auto rounded-md border border-slate-300 bg-slate-50 p-3 text-xs leading-relaxed text-slate-800 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
+        <pre className="max-h-[60dvh] overflow-auto rounded-md border border-slate-300 bg-slate-50 p-3 text-xs leading-relaxed text-slate-800 lg:max-h-[840px] dark:border-slate-700 dark:bg-slate-950 dark:text-slate-100">
           {preview}
           {isGenerating ? <span className="animate-pulse">|</span> : null}
         </pre>

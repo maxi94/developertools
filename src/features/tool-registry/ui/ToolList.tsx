@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.11.1',
+    date: '2026-02-19',
+    title: 'Scroll mobile + responsive tools',
+    changes: [
+      'Fix de scroll en mobile dentro de la vista de herramientas.',
+      'Hardening responsive global para contenedores de tools (tablas, pre, media y bloques anchos).',
+      'Ajustes de altura en paneles extensos para mejorar uso en pantallas chicas.',
+    ],
+  },
+  {
     version: 'v0.11.0',
     date: '2026-02-19',
     title: 'Favoritos colapsables en menu',
@@ -1406,7 +1416,7 @@ export function ToolList() {
           />
         </aside>
 
-        <main className="px-3 py-3 lg:h-full lg:overflow-y-auto lg:px-6 lg:py-5">
+        <main className="min-w-0 overflow-x-clip px-3 py-3 lg:h-full lg:overflow-y-auto lg:px-6 lg:py-5">
           <section className="mb-4 rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.55)] dark:border-slate-700 dark:bg-slate-900/70">
             <div className="inline-flex flex-wrap items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-slate-500 dark:text-slate-400">
               <button
@@ -1514,7 +1524,7 @@ export function ToolList() {
           ) : null}
 
           {view.type === 'tool' && ActiveToolComponent ? (
-            <div ref={toolContentRef}>
+            <div ref={toolContentRef} className="tool-content min-w-0">
               <ToolErrorBoundary>
                 <Suspense
                   fallback={

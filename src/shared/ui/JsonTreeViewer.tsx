@@ -129,7 +129,7 @@ function JsonTreeNode({
 
   if (!isExpandable) {
     return (
-      <div className="grid grid-cols-[minmax(0,180px)_1fr] gap-2 rounded-lg px-2 py-1.5 text-xs">
+      <div className="grid grid-cols-1 gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:grid-cols-[minmax(0,180px)_1fr] sm:gap-2">
         <span className="truncate font-semibold text-slate-600 dark:text-slate-300">{label}</span>
         <code className="truncate rounded bg-slate-100 px-1.5 py-0.5 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
           {JSON.stringify(value)}
