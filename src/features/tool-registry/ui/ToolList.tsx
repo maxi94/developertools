@@ -105,6 +105,17 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.12.0',
+    date: '2026-02-19',
+    title: 'Readme Generator overhaul',
+    changes: [
+      'Generador README redisenado con flujo por pasos y UX mas clara.',
+      'Se agrega autosave, import/export de configuracion y checklist de calidad.',
+      'Nuevos modos de vista previa (Markdown y resumen) con metricas de contenido.',
+      'Version de la herramienta Generador README actualizada a v1.1.0.',
+    ],
+  },
+  {
     version: 'v0.11.3',
     date: '2026-02-19',
     title: 'Spacing Preview responsive',
