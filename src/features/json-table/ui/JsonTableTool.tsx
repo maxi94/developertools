@@ -1,8 +1,5 @@
 import { useMemo, useState } from 'react'
-import Database from 'lucide-react/dist/esm/icons/database'
-import FileSpreadsheet from 'lucide-react/dist/esm/icons/file-spreadsheet'
-import FileText from 'lucide-react/dist/esm/icons/file-text'
-import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
+import { Database, FileSpreadsheet, FileText, Sparkles } from 'lucide-react'
 
 const sampleJson = `[
   {
