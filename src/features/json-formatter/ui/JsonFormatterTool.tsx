@@ -1,16 +1,21 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import {
   CheckCircle2,
   Copy,
   Download,
   Eraser,
+  Expand,
   FileSpreadsheet,
   FileText,
   Minimize2,
   Network,
   Sparkles,
+  WrapText,
+  ListOrdered,
+  X,
 } from 'lucide-react'
 import { parseAndFormatJson, sortJsonKeysDeep } from '@/shared/lib/json'
+import { JsonCodeViewer } from '@/shared/ui/JsonCodeViewer'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
 import { useToast } from '@/shared/ui/toast/ToastProvider'
 
@@ -133,6 +138,9 @@ export function JsonFormatterTool() {
   const [source, setSource] = useState(sample)
   const [resolveRefs, setResolveRefs] = useState(true)
   const [isOutputMinified, setIsOutputMinified] = useState(false)
+  const [isOutputFullscreen, setIsOutputFullscreen] = useState(false)
+  const [wrapLines, setWrapLines] = useState(false)
+  const [showLineNumbers, setShowLineNumbers] = useState(true)
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
 
@@ -180,6 +188,21 @@ export function JsonFormatterTool() {
   const notify = (tone: 'success' | 'error', message: string) => {
     showToast(message, { tone })
   }
+
+  useEffect(() => {
+    if (!isOutputFullscreen) {
+      return
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOutputFullscreen(false)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isOutputFullscreen])
 
   const copyOutput = async () => {
     if (!output.formatted.trim()) {
@@ -366,6 +389,22 @@ export function JsonFormatterTool() {
                 </button>
                 <button
                   type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setWrapLines((value) => !value)}
+                >
+                  <WrapText className="size-3.5" />
+                  {wrapLines ? 'No wrap' : 'Wrap'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setShowLineNumbers((value) => !value)}
+                >
+                  <ListOrdered className="size-3.5" />
+                  {showLineNumbers ? 'Sin lineas' : 'Lineas'}
+                </button>
+                <button
+                  type="button"
                   className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
                   onClick={copyOutput}
                 >
@@ -379,6 +418,14 @@ export function JsonFormatterTool() {
                 >
                   <Download className="size-3.5" />
                   Descargar
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
+                  onClick={() => setIsOutputFullscreen(true)}
+                >
+                  <Expand className="size-3.5" />
+                  Expandir
                 </button>
                 <button
                   type="button"
@@ -398,14 +445,14 @@ export function JsonFormatterTool() {
                 </button>
               </div>
             </div>
-            <textarea
-              className="min-h-[320px] w-full resize-y rounded-2xl border border-slate-300 bg-slate-50 p-3 font-mono text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 data-[status=error]:border-rose-500 data-[status=error]:text-rose-600 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/30 dark:data-[status=error]:text-rose-300"
-              value={output.formatted}
-              readOnly
-              spellCheck={false}
-              aria-label="Salida JSON"
-              data-status={output.status}
-            />
+            <div className="min-h-[320px] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                wrapLines={wrapLines}
+                showLineNumbers={showLineNumbers}
+              />
+            </div>
           </label>
         </div>
         {output.status === 'error' && output.errorDetails ? (
@@ -425,6 +472,61 @@ export function JsonFormatterTool() {
           data={output.parsed}
           title={`Visualizador JSON (${resolveRefs ? 'refs resueltas' : 'refs sin resolver'})`}
         />
+      ) : null}
+
+      {isOutputFullscreen ? (
+        <div className="fixed inset-0 z-[130] bg-slate-950/70 p-3 backdrop-blur-sm md:p-6">
+          <section className="grid h-full grid-rows-[auto_1fr] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+            <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                Salida JSON ampliada
+              </p>
+              <div className="inline-flex items-center gap-1">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setWrapLines((value) => !value)}
+                >
+                  <WrapText className="size-3.5" />
+                  {wrapLines ? 'No wrap' : 'Wrap'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setShowLineNumbers((value) => !value)}
+                >
+                  <ListOrdered className="size-3.5" />
+                  {showLineNumbers ? 'Sin lineas' : 'Lineas'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+                  onClick={copyOutput}
+                >
+                  <Copy className="size-3.5" />
+                  Copiar
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
+                  onClick={() => setIsOutputFullscreen(false)}
+                >
+                  <X className="size-3.5" />
+                  Cerrar
+                </button>
+              </div>
+            </header>
+            <div className="min-h-0">
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                wrapLines={wrapLines}
+                showLineNumbers={showLineNumbers}
+                className="h-full"
+              />
+            </div>
+          </section>
+        </div>
       ) : null}
     </section>
   )
