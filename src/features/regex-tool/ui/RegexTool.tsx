@@ -1,6 +1,12 @@
 ﻿import { useMemo, useState } from 'react'
 import { Copy, FileCode2, Regex } from 'lucide-react'
-import { evaluateRegex, exportRegexSnippet, type RegexExportLanguage } from '@/shared/lib/regex'
+import {
+  buildRegexGraph,
+  evaluateRegex,
+  explainRegex,
+  exportRegexSnippet,
+  type RegexExportLanguage,
+} from '@/shared/lib/regex'
 
 const sampleInput = `usuario: matti-123
 email: matti@example.com
@@ -32,6 +38,8 @@ export function RegexTool() {
       return '// Expresion invalida para exportar.'
     }
   }, [exportLanguage, flags, pattern])
+  const explanation = useMemo(() => explainRegex(pattern), [pattern])
+  const graph = useMemo(() => buildRegexGraph(pattern), [pattern])
 
   const copyExport = async () => {
     if (exportedSnippet.trim()) {
@@ -164,6 +172,31 @@ export function RegexTool() {
           {result.value}
         </section>
       )}
+
+      <section className="grid gap-3 lg:grid-cols-2">
+        <article className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+          <h3 className="text-sm font-semibold">Explicador del patron</h3>
+          <ul className="mt-2 grid gap-1 text-xs text-slate-600 dark:text-slate-300">
+            {explanation.map((line) => (
+              <li key={line}>• {line}</li>
+            ))}
+          </ul>
+        </article>
+
+        <article className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
+          <h3 className="text-sm font-semibold">Visual graph (NFA simplificado)</h3>
+          <div className="mt-2 grid gap-1 text-xs">
+            {graph.edges.map((edge, index) => (
+              <p
+                key={`${edge.from}-${edge.to}-${index}`}
+                className="font-mono text-slate-700 dark:text-slate-200"
+              >
+                {edge.from} --[{edge.label}]--&gt; {edge.to}
+              </p>
+            ))}
+          </div>
+        </article>
+      </section>
 
       <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
         <div className="flex flex-wrap items-center justify-between gap-2">

@@ -14,11 +14,17 @@ import {
 import { Base64ImageTool } from '@/features/base64-image/ui/Base64ImageTool'
 import { Base64PdfTool } from '@/features/base64-pdf/ui/Base64PdfTool'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
+import { DateTimeTools } from '@/features/datetime-tools/ui/DateTimeTools'
+import { EncodingSuiteTool } from '@/features/encoding-suite/ui/EncodingSuiteTool'
+import { FakeDataTool } from '@/features/fake-data/ui/FakeDataTool'
+import { IdToolkitTool } from '@/features/id-toolkit/ui/IdToolkitTool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JsonModelGeneratorTool } from '@/features/json-model-generator/ui/JsonModelGeneratorTool'
+import { JwtBuilderTool } from '@/features/jwt-builder/ui/JwtBuilderTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
 import { RegexTool } from '@/features/regex-tool/ui/RegexTool'
 import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
+import { SqlMongoConverterTool } from '@/features/sql-mongo/ui/SqlMongoConverterTool'
 import { SqlFormatterTool } from '@/features/sql-formatter/ui/SqlFormatterTool'
 import { tools } from '@/features/tool-registry/model/tools'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
@@ -749,12 +755,18 @@ export function ToolList() {
               {activeTool?.id === 'base64' ? <Base64Tool /> : null}
               {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
               {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
+              {activeTool?.id === 'fake-data-generator' ? <FakeDataTool /> : null}
               {activeTool?.id === 'sql-formatter' ? <SqlFormatterTool /> : null}
+              {activeTool?.id === 'sql-mongo-converter' ? <SqlMongoConverterTool /> : null}
               {activeTool?.id === 'regex-tool' ? <RegexTool /> : null}
               {activeTool?.id === 'json-model-generator' ? <JsonModelGeneratorTool /> : null}
+              {activeTool?.id === 'jwt-builder' ? <JwtBuilderTool /> : null}
               {activeTool?.id === 'jwt' ? <JwtTool /> : null}
               {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+              {activeTool?.id === 'id-toolkit' ? <IdToolkitTool /> : null}
               {activeTool?.id === 'url-codec' ? <UrlCodecTool /> : null}
+              {activeTool?.id === 'encoding-suite' ? <EncodingSuiteTool /> : null}
+              {activeTool?.id === 'datetime-tools' ? <DateTimeTools /> : null}
               {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
             </>
           ) : null}

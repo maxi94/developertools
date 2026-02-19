@@ -18,4 +18,13 @@ describe('formatSql', () => {
 
     expect(result).toContain('TOP')
   })
+
+  it('reconoce WITH y CONVERT como keywords', () => {
+    const sql =
+      'with base as (select convert(varchar, created_at) as fecha from users) select * from base'
+    const result = formatSql(sql, 'sqlserver')
+
+    expect(result).toContain('WITH')
+    expect(result).toContain('CONVERT')
+  })
 })

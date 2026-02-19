@@ -1,5 +1,10 @@
 ﻿import { describe, expect, it } from 'vitest'
-import { evaluateRegex, exportRegexSnippet } from '@/shared/lib/regex'
+import {
+  buildRegexGraph,
+  evaluateRegex,
+  explainRegex,
+  exportRegexSnippet,
+} from '@/shared/lib/regex'
 
 describe('regex tool', () => {
   it('evalua matches y grupos', () => {
@@ -26,5 +31,14 @@ describe('regex tool', () => {
     expect(js).toContain('new RegExp')
     expect(csharp).toContain('new Regex')
     expect(csharp).toContain('RegexOptions.IgnoreCase')
+  })
+
+  it('explica patron y genera grafo', () => {
+    const explanation = explainRegex('^(?<name>\\w+)-\\d+$')
+    const graph = buildRegexGraph('ab|cd')
+
+    expect(explanation.length).toBeGreaterThan(0)
+    expect(graph.nodes.length).toBeGreaterThan(1)
+    expect(graph.edges.length).toBeGreaterThan(0)
   })
 })

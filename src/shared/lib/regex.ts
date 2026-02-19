@@ -18,6 +18,22 @@ export interface RegexEvaluationResult {
   replacedText: string
 }
 
+export interface RegexGraphNode {
+  id: string
+  label: string
+}
+
+export interface RegexGraphEdge {
+  from: string
+  to: string
+  label: string
+}
+
+export interface RegexGraph {
+  nodes: RegexGraphNode[]
+  edges: RegexGraphEdge[]
+}
+
 function ensureGlobalFlag(flags: string): string {
   return flags.includes('g') ? flags : `${flags}g`
 }
@@ -48,6 +64,79 @@ function toCSharpRegexOptions(flags: string): string {
   }
 
   return options.length > 0 ? options.join(' | ') : 'RegexOptions.None'
+}
+
+export function explainRegex(pattern: string): string[] {
+  const explanations: string[] = []
+
+  if (!pattern.trim()) {
+    return ['Patron vacio.']
+  }
+
+  if (pattern.includes('^')) {
+    explanations.push('^ : Inicio de linea/cadena.')
+  }
+  if (pattern.includes('$')) {
+    explanations.push('$ : Fin de linea/cadena.')
+  }
+  if (pattern.includes('\\d')) {
+    explanations.push('\\d : Digito (0-9).')
+  }
+  if (pattern.includes('\\w')) {
+    explanations.push('\\w : Caracter alfanumerico o _.')
+  }
+  if (pattern.includes('\\s')) {
+    explanations.push('\\s : Espacio en blanco.')
+  }
+  if (pattern.includes('.*') || pattern.includes('.+')) {
+    explanations.push('. / * / + : Comodines y cuantificadores.')
+  }
+  if (/\{\d+,?\d*\}/.test(pattern)) {
+    explanations.push('{m,n} : Repeticion con rango.')
+  }
+  if (/\(\?<[^>]+>/.test(pattern)) {
+    explanations.push('(?<name>...) : Grupo con nombre.')
+  }
+  if (/\([^?]/.test(pattern)) {
+    explanations.push('(...) : Grupo de captura.')
+  }
+  if (pattern.includes('|')) {
+    explanations.push('| : Alternativa OR.')
+  }
+  if (pattern.includes('[') && pattern.includes(']')) {
+    explanations.push('[...] : Clase de caracteres.')
+  }
+
+  return explanations.length > 0
+    ? explanations
+    : ['No se detectaron tokens conocidos en el explicador rapido.']
+}
+
+export function buildRegexGraph(pattern: string): RegexGraph {
+  const nodes: RegexGraphNode[] = [{ id: 'start', label: 'START' }]
+  const edges: RegexGraphEdge[] = []
+
+  let previous = 'start'
+  const tokens =
+    pattern.match(/\(\?<[^>]+>[^)]*\)|\([^)]*\)|\[[^\]]+\]|\\.|\{\d+,?\d*\}|\*|\+|\?|\||\.|\w+/g) ??
+    []
+
+  tokens.forEach((token, index) => {
+    const nodeId = `n${index}`
+    nodes.push({ id: nodeId, label: token })
+    edges.push({ from: previous, to: nodeId, label: 'consume' })
+
+    if (token === '|' && index > 0) {
+      edges.push({ from: previous, to: nodeId, label: 'alt' })
+    }
+
+    previous = nodeId
+  })
+
+  nodes.push({ id: 'end', label: 'END' })
+  edges.push({ from: previous, to: 'end', label: 'accept' })
+
+  return { nodes, edges }
 }
 
 export function evaluateRegex(

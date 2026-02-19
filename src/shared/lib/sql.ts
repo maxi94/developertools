@@ -1,6 +1,7 @@
 ﻿export type SqlDialect = 'sqlserver' | 'postgresql' | 'mysql' | 'sqlite' | 'oracle'
 
 const CLAUSE_KEYWORDS = [
+  'WITH',
   'SELECT',
   'FROM',
   'WHERE',
@@ -23,10 +24,16 @@ const CLAUSE_KEYWORDS = [
   'ON',
   'UNION',
   'UNION ALL',
+  'CONVERT',
+  'CASE',
+  'WHEN',
+  'THEN',
+  'ELSE',
+  'END',
 ] as const
 
 const DIALECT_KEYWORDS: Record<SqlDialect, string[]> = {
-  sqlserver: ['TOP', 'NVARCHAR', 'GETDATE', 'GO'],
+  sqlserver: ['TOP', 'NVARCHAR', 'GETDATE', 'GO', 'TRY_CONVERT', 'DATEADD', 'DATEDIFF', 'ISNULL'],
   postgresql: ['RETURNING', 'ILIKE', 'SERIAL', 'JSONB'],
   mysql: ['AUTO_INCREMENT', 'ENGINE', 'SHOW', 'DESCRIBE'],
   sqlite: ['AUTOINCREMENT', 'PRAGMA', 'WITHOUT ROWID'],
