@@ -53,6 +53,7 @@ import { ToolErrorBoundary } from '@/shared/ui/ToolErrorBoundary'
 const FAVORITES_KEY = 'developer-tools-favorites'
 const FAVORITES_STORAGE_VERSION = 1
 const RELEASE_SEEN_KEY = 'developer-tools-release-seen'
+const APP_BASE_PATH = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL.replace(/\/$/, '')
 
 const categoryMeta: Record<
   ToolCategory,
@@ -295,6 +296,32 @@ function normalizePath(pathname: string): string {
   return pathname.endsWith('/') ? pathname.slice(0, -1) : pathname
 }
 
+function stripBasePath(pathname: string): string {
+  if (!APP_BASE_PATH) {
+    return pathname
+  }
+
+  if (!pathname.startsWith(APP_BASE_PATH)) {
+    return pathname
+  }
+
+  const stripped = pathname.slice(APP_BASE_PATH.length)
+  return stripped || '/'
+}
+
+function toAppAbsolutePath(pathname: string): string {
+  const normalized = normalizePath(pathname)
+  if (!APP_BASE_PATH) {
+    return normalized
+  }
+
+  if (normalized === '/') {
+    return `${APP_BASE_PATH}/`
+  }
+
+  return `${APP_BASE_PATH}${normalized}`
+}
+
 function getToolRouteSegment(language: AppLanguage): string {
   return language === 'en' ? 'tool' : 'herramienta'
 }
@@ -320,7 +347,7 @@ function viewToPath(view: ViewState, language: AppLanguage): string {
 }
 
 function parseViewFromPath(pathname: string): ViewState {
-  const normalized = normalizePath(pathname)
+  const normalized = normalizePath(stripBasePath(pathname))
   if (normalized === '/') {
     return { type: 'home' }
   }
@@ -1047,10 +1074,11 @@ export function ToolList() {
 
   useEffect(() => {
     const parsed = parseViewFromPath(window.location.pathname)
-    const canonicalPath = viewToPath(parsed, language)
+    const canonicalPath = toAppAbsolutePath(viewToPath(parsed, language))
+    const normalizedCanonicalPath = normalizePath(canonicalPath)
     const currentPath = normalizePath(window.location.pathname)
 
-    if (currentPath !== canonicalPath) {
+    if (currentPath !== normalizedCanonicalPath) {
       window.history.replaceState({}, '', canonicalPath)
     }
   }, [language])
@@ -1116,7 +1144,7 @@ export function ToolList() {
   }
 
   const navigateTo = (path: string) => {
-    const nextPath = normalizePath(path)
+    const nextPath = toAppAbsolutePath(path)
     const currentPath = normalizePath(window.location.pathname)
 
     if (nextPath !== currentPath) {
@@ -1190,7 +1218,7 @@ export function ToolList() {
           aria-label="Ir a inicio"
         >
           <img
-            src="/logo.svg"
+            src={`${import.meta.env.BASE_URL}logo.svg`}
             alt="Logo Developer Tools"
             className="size-8 shrink-0 rounded-xl ring-1 ring-slate-300/80 dark:ring-slate-600/70"
           />
