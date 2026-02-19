@@ -8,7 +8,7 @@ import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
 import { UuidTool } from '@/features/uuid/ui/UuidTool'
 import { useTheme } from '@/shared/hooks/useTheme'
-import type { ToolId } from '@/shared/types/tool'
+import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
 
 const FAVORITES_KEY = 'developer-tools-favorites'
 
@@ -34,7 +34,7 @@ function getInitialFavorites(): ToolId[] {
 interface SidebarContentProps {
   activeToolId: ToolId
   favoriteToolIds: ToolId[]
-  menuTools: typeof tools
+  menuTools: ToolDefinition[]
   searchTerm: string
   onSelect: (toolId: ToolId) => void
   onToggleFavorite: (toolId: ToolId) => void
@@ -48,7 +48,14 @@ function SidebarContent({
   onSelect,
   onToggleFavorite,
 }: SidebarContentProps) {
-  const favoriteTools = menuTools.filter((tool) => favoriteToolIds.includes(tool.id))
+  const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
+  const categoryOrder: ToolCategory[] = ['Datos', 'Tokens e identidad', 'Utilidades web']
+  const groupedTools = categoryOrder
+    .map((category) => ({
+      category,
+      tools: menuTools.filter((tool) => tool.category === category),
+    }))
+    .filter((group) => group.tools.length > 0)
 
   return (
     <>
@@ -79,18 +86,27 @@ function SidebarContent({
         )}
       </div>
 
-      <nav className="grid gap-2" aria-label="Menu de funcionalidades">
-        {menuTools.map((tool) => (
-          <ToolCard
-            key={tool.id}
-            tool={tool}
-            isActive={tool.id === activeToolId}
-            isFavorite={favoriteToolIds.includes(tool.id)}
-            onSelect={onSelect}
-            onToggleFavorite={onToggleFavorite}
-          />
+      <div className="grid gap-3">
+        {groupedTools.map((group) => (
+          <section key={group.category} className="grid gap-1.5">
+            <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-200/70">
+              {group.category}
+            </p>
+            <nav className="grid gap-1.5" aria-label={`Menu ${group.category}`}>
+              {group.tools.map((tool) => (
+                <ToolCard
+                  key={tool.id}
+                  tool={tool}
+                  isActive={tool.id === activeToolId}
+                  isFavorite={favoriteToolIds.includes(tool.id)}
+                  onSelect={onSelect}
+                  onToggleFavorite={onToggleFavorite}
+                />
+              ))}
+            </nav>
+          </section>
         ))}
-      </nav>
+      </div>
       {menuTools.length === 0 ? (
         <p className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs text-indigo-100/80">
           No se encontraron herramientas para: <strong>{searchTerm}</strong>
@@ -119,6 +135,7 @@ export function ToolList() {
       return target.includes(normalizedSearch)
     })
   }, [normalizedSearch])
+  const toolNameSuggestions = useMemo(() => tools.map((tool) => tool.name), [])
 
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
@@ -168,18 +185,33 @@ export function ToolList() {
           <input
             className="w-full bg-transparent outline-none placeholder:text-slate-400"
             placeholder="Buscar herramienta..."
+            list="tool-suggestions"
             value={searchTerm}
-            onChange={(event) => setSearchTerm(event.target.value)}
+            onChange={(event) => {
+              const nextValue = event.target.value
+              setSearchTerm(nextValue)
+              const exactMatch = tools.find(
+                (tool) => tool.name.toLowerCase() === nextValue.trim().toLowerCase(),
+              )
+              if (exactMatch) {
+                setActiveToolId(exactMatch.id)
+              }
+            }}
             spellCheck={false}
           />
         </label>
+        <datalist id="tool-suggestions">
+          {toolNameSuggestions.map((name) => (
+            <option key={name} value={name} />
+          ))}
+        </datalist>
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
           onClick={toggleTheme}
         >
-          {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
-          <span className="hidden sm:inline">{theme === 'dark' ? 'Claro' : 'Oscuro'}</span>
+          {theme === 'dark' ? <MoonStar className="size-3.5" /> : <Sun className="size-3.5" />}
+          <span className="hidden sm:inline">Tema: {theme === 'dark' ? 'Oscuro' : 'Claro'}</span>
         </button>
       </header>
 
