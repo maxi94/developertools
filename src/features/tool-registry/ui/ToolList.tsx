@@ -29,6 +29,8 @@ import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
 const FAVORITES_KEY = 'developer-tools-favorites'
 const categoryOrder: ToolCategory[] = [
   'Datos',
+  'Formateadores',
+  'Generadores de codigo',
   'Tokens e identidad',
   'Utilidades web',
   'Documentacion',
@@ -36,6 +38,8 @@ const categoryOrder: ToolCategory[] = [
 
 const categoryDescriptions: Record<ToolCategory, string> = {
   Datos: 'Utilidades para transformar y visualizar informacion de forma local.',
+  Formateadores: 'Herramientas para dar formato legible a contenidos tecnicos.',
+  'Generadores de codigo': 'Utilidades para crear clases, plantillas y codigo base.',
   'Tokens e identidad': 'Herramientas para generacion y analisis de identificadores y tokens.',
   'Utilidades web': 'Helpers para codificacion, escaping y tareas habituales de desarrollo web.',
   Documentacion: 'Generadores y asistentes para acelerar la documentacion tecnica.',

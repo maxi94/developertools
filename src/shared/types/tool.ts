@@ -10,7 +10,13 @@ export type ToolId =
   | 'url-codec'
   | 'readme-generator'
 export type ToolStatus = 'ready' | 'planned'
-export type ToolCategory = 'Datos' | 'Tokens e identidad' | 'Utilidades web' | 'Documentacion'
+export type ToolCategory =
+  | 'Datos'
+  | 'Formateadores'
+  | 'Generadores de codigo'
+  | 'Tokens e identidad'
+  | 'Utilidades web'
+  | 'Documentacion'
 
 export interface ToolDefinition {
   id: ToolId

@@ -5,7 +5,7 @@ export const tools: ToolDefinition[] = [
     id: 'json-formatter',
     name: 'Formateador JSON',
     description: 'Formatea y valida JSON localmente en tu navegador.',
-    category: 'Datos',
+    category: 'Formateadores',
     status: 'ready',
   },
   {
@@ -33,14 +33,14 @@ export const tools: ToolDefinition[] = [
     id: 'sql-formatter',
     name: 'Formateador SQL',
     description: 'Formatea consultas SQL con soporte multi dialecto.',
-    category: 'Datos',
+    category: 'Formateadores',
     status: 'ready',
   },
   {
     id: 'json-model-generator',
     name: 'JSON a clases',
     description: 'Genera clases desde JSON en C#, TypeScript y Java.',
-    category: 'Datos',
+    category: 'Generadores de codigo',
     status: 'ready',
   },
   {
