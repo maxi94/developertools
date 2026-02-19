@@ -1,4 +1,4 @@
-import { MoonStar, Sun, Wrench } from 'lucide-react'
+import { MoonStar, Sun } from 'lucide-react'
 import { AppProviders } from '@/app/providers/AppProviders'
 import { ToolList } from '@/features/tool-registry/ui/ToolList'
 import { useTheme } from '@/shared/hooks/useTheme'
@@ -12,10 +12,12 @@ export function App() {
         <div className="mx-auto flex w-full max-w-6xl flex-col gap-4">
           <header className="rounded-3xl border border-slate-300/70 bg-white/80 p-5 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
             <div className="mb-2 flex items-center justify-between gap-3">
-              <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-sky-300">
-                <Wrench className="size-3.5" />
-                Developer Tools
-              </p>
+              <div className="inline-flex items-center gap-2">
+                <img src="/logo.svg" alt="Logo Developer Tools" className="size-7 rounded-lg" />
+                <p className="text-xs font-semibold uppercase tracking-[0.18em] text-blue-700 dark:text-sky-300">
+                  Developer Tools
+                </p>
+              </div>
               <button
                 type="button"
                 className="inline-flex items-center gap-2 rounded-full border border-slate-300 bg-white/80 px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:-translate-y-0.5 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
