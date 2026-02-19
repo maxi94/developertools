@@ -62,7 +62,6 @@ export function ToolCard({
     'fake-data-generator': FlaskConical,
     'svg-optimizer': FileCode2,
     'image-to-base64': FileImage,
-    'readme-generator': FileText,
   } as const
   const ToolIcon = iconByTool[tool.id] ?? FileCode2
 

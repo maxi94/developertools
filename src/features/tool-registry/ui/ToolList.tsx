@@ -105,6 +105,47 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.0.0',
+    date: '2026-02-19',
+    title: 'Se elimina generador README',
+    changes: [
+      'La herramienta Generador README se quita del producto.',
+      'Se remueven acceso en menu/rutas y referencias asociadas.',
+      'Release mayor por cambio incompatible en el set de herramientas disponible.',
+    ],
+  },
+  {
+    version: 'v0.12.0',
+    date: '2026-02-19',
+    title: 'Readme Generator overhaul',
+    changes: [
+      'Generador README redisenado con flujo por pasos y UX mas clara.',
+      'Se agrega autosave, import/export de configuracion y checklist de calidad.',
+      'Nuevos modos de vista previa (Markdown y resumen) con metricas de contenido.',
+      'Version de la herramienta Generador README actualizada a v1.1.0.',
+    ],
+  },
+  {
+    version: 'v0.11.3',
+    date: '2026-02-19',
+    title: 'Spacing Preview responsive',
+    changes: [
+      'Border/Spacing Preview: mejoras de responsive para mobile.',
+      'Preview con contenedor fluido y alturas/paddings adaptativos.',
+      'Version de la herramienta Border/Spacing Preview actualizada a v1.0.1.',
+    ],
+  },
+  {
+    version: 'v0.11.2',
+    date: '2026-02-19',
+    title: 'Box Shadow responsive',
+    changes: [
+      'Box Shadow Generator: preview y layout ajustados para mobile.',
+      'Se eliminan anchos rigidos y se optimiza la accion de copiar en pantallas chicas.',
+      'Version de la herramienta Box Shadow Generator actualizada a v1.0.1.',
+    ],
+  },
+  {
     version: 'v0.11.1',
     date: '2026-02-19',
     title: 'Scroll mobile + responsive tools',
@@ -315,10 +356,6 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
   'image-to-base64': lazyNamedTool(
     () => import('@/features/image-to-base64/ui/ImageToBase64Tool'),
     'ImageToBase64Tool',
-  ),
-  'readme-generator': lazyNamedTool(
-    () => import('@/features/readme-generator/ui/ReadmeGeneratorTool'),
-    'ReadmeGeneratorTool',
   ),
 }
 

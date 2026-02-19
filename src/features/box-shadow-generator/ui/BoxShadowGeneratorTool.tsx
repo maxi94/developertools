@@ -110,11 +110,11 @@ export function BoxShadowGeneratorTool() {
         </section>
 
         <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
-          <div className="rounded-xl border border-slate-300/80 bg-slate-100 p-4 dark:border-slate-700 dark:bg-slate-950/45">
-            <div className="grid min-h-[360px] place-items-center rounded-xl border border-dashed border-slate-300 bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.18),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(148,163,184,0.15),transparent_42%)] p-12 dark:border-slate-700">
+          <div className="rounded-xl border border-slate-300/80 bg-slate-100 p-3 sm:p-4 dark:border-slate-700 dark:bg-slate-950/45">
+            <div className="grid min-h-[240px] place-items-center rounded-xl border border-dashed border-slate-300 bg-[radial-gradient(circle_at_20%_20%,rgba(148,163,184,0.18),transparent_40%),radial-gradient(circle_at_80%_80%,rgba(148,163,184,0.15),transparent_42%)] p-4 sm:min-h-[360px] sm:p-12 dark:border-slate-700">
               <div className="flex w-full justify-center overflow-visible">
                 <div
-                  className="grid h-44 w-[min(420px,80vw)] max-w-full place-items-center border border-white/70 bg-white text-sm font-semibold text-slate-700 transition-all dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+                  className="grid h-36 w-full max-w-[420px] place-items-center border border-white/70 bg-white px-2 text-center text-sm font-semibold text-slate-700 transition-all sm:h-44 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                   style={{ boxShadow: shadowValue, borderRadius: `${radius}px` }}
                 >
                   {isEnglish ? 'Shadow Preview' : 'Vista previa sombra'}
@@ -123,7 +123,7 @@ export function BoxShadowGeneratorTool() {
             </div>
           </div>
 
-          <div className="flex items-start gap-2">
+          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:items-start">
             <textarea
               readOnly
               value={cssOutput}
@@ -132,7 +132,7 @@ export function BoxShadowGeneratorTool() {
             <button
               type="button"
               onClick={() => navigator.clipboard.writeText(cssOutput)}
-              className="inline-flex h-10 shrink-0 items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+              className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <Copy className="size-3.5" />
               {isEnglish ? 'Copy' : 'Copiar'}

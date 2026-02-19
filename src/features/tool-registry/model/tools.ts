@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v0.11.1'
+export const WEB_VERSION = 'v1.0.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -137,7 +137,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera sombras CSS con preview y salida lista para copiar.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'spacing-preview',
@@ -145,7 +145,7 @@ export const tools: ToolDefinition[] = [
     description: 'Previsualiza border-radius, padding y margin con CSS exportable.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'datetime-tools',
@@ -192,14 +192,6 @@ export const tools: ToolDefinition[] = [
     name: 'Case Converter',
     description: 'Convierte texto entre camelCase, snake_case, kebab-case y mas.',
     category: 'Formateadores',
-    status: 'ready',
-    version: '1.0.0',
-  },
-  {
-    id: 'readme-generator',
-    name: 'Generador README',
-    description: 'Crea README.md con plantilla y vista previa.',
-    category: 'Documentacion',
     status: 'ready',
     version: '1.0.0',
   },
