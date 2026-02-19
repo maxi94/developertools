@@ -1,8 +1,10 @@
 ﻿import { useMemo, useState } from 'react'
 import { ArrowLeftRight, Copy, Link2 } from 'lucide-react'
 import { decodeUrl, encodeUrl } from '@/shared/lib/url'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 export function UrlCodecTool() {
+  const { showToast } = useToast()
   const [input, setInput] = useState('')
   const [mode, setMode] = useState<'encode' | 'decode'>('encode')
 
@@ -24,6 +26,7 @@ export function UrlCodecTool() {
   const copyOutput = async () => {
     if (output.status === 'success' && output.value) {
       await navigator.clipboard.writeText(output.value)
+      showToast('Salida copiada', { tone: 'success' })
     }
   }
 
@@ -63,6 +66,7 @@ export function UrlCodecTool() {
           onClick={() => {
             setInput(output.status === 'success' ? output.value : '')
             setMode((current) => (current === 'encode' ? 'decode' : 'encode'))
+            showToast('Entrada y modo intercambiados', { tone: 'info' })
           }}
         >
           <ArrowLeftRight className="size-3.5" />
@@ -106,3 +110,4 @@ export function UrlCodecTool() {
     </section>
   )
 }
+
