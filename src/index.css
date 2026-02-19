@@ -1,0 +1,100 @@
+@import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
+
+@layer base {
+  :root {
+    --font-body: 'IBM Plex Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+    --font-display: 'Fraunces', 'Iowan Old Style', 'Times New Roman', serif;
+    --surface-0: #f5f8ff;
+    --surface-1: #ffffff;
+    --surface-2: #edf3ff;
+    --text-1: #122033;
+    --text-2: #4b5b72;
+    --line-soft: rgba(46, 79, 120, 0.14);
+    --accent-1: #0f766e;
+    --accent-2: #145aa4;
+  }
+
+  .dark {
+    --surface-0: #090f1e;
+    --surface-1: #0f172a;
+    --surface-2: #17223b;
+    --text-1: #e5ecff;
+    --text-2: #9caecc;
+    --line-soft: rgba(140, 170, 214, 0.2);
+    --accent-1: #2dd4bf;
+    --accent-2: #7dd3fc;
+  }
+
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+
+  body {
+    margin: 0;
+    font-family: var(--font-body);
+    color: var(--text-1);
+    background:
+      radial-gradient(circle at 12% 8%, rgb(56 189 248 / 0.2), transparent 34%),
+      radial-gradient(circle at 88% 3%, rgb(16 185 129 / 0.12), transparent 28%),
+      linear-gradient(160deg, var(--surface-0) 0%, var(--surface-2) 100%);
+    text-rendering: optimizeLegibility;
+  }
+
+  h1,
+  h2,
+  h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
+  }
+
+  button,
+  [role='button'],
+  a[href] {
+    cursor: pointer;
+  }
+
+  ::selection {
+    color: white;
+    background: rgb(20 90 164 / 0.8);
+  }
+
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(148 163 184 / 0.75) transparent;
+  }
+
+  *::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+  }
+
+  *::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  *::-webkit-scrollbar-thumb {
+    border: 2px solid transparent;
+    border-radius: 9999px;
+    background-clip: padding-box;
+    background-color: rgb(148 163 184 / 0.75);
+  }
+
+  *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(100 116 139 / 0.9);
+  }
+
+  .dark * {
+    scrollbar-color: rgb(71 85 105 / 0.9) transparent;
+  }
+
+  .dark *::-webkit-scrollbar-thumb {
+    background-color: rgb(71 85 105 / 0.9);
+  }
+
+  .dark *::-webkit-scrollbar-thumb:hover {
+    background-color: rgb(100 116 139 / 0.95);
+  }
+}
