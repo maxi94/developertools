@@ -3,6 +3,7 @@ import { Menu, MoonStar, PanelLeft, Search, Star, Sun, X } from 'lucide-react'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
+import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
 import { tools } from '@/features/tool-registry/model/tools'
 import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
@@ -50,7 +51,8 @@ function SidebarContent({
 }: SidebarContentProps) {
   const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
   const categoryOrder: ToolCategory[] = ['Datos', 'Tokens e identidad', 'Utilidades web']
-  const groupedTools = categoryOrder
+  const extendedCategoryOrder: ToolCategory[] = [...categoryOrder, 'Documentacion']
+  const groupedTools = extendedCategoryOrder
     .map((category) => ({
       category,
       tools: menuTools.filter((tool) => tool.category === category),
@@ -122,6 +124,8 @@ export function ToolList() {
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
+  const [isSearchFocused, setIsSearchFocused] = useState(false)
+  const [highlightedIndex, setHighlightedIndex] = useState(0)
 
   const activeTool = useMemo(() => tools.find((tool) => tool.id === activeToolId), [activeToolId])
   const normalizedSearch = searchTerm.trim().toLowerCase()
@@ -135,7 +139,12 @@ export function ToolList() {
       return target.includes(normalizedSearch)
     })
   }, [normalizedSearch])
-  const toolNameSuggestions = useMemo(() => tools.map((tool) => tool.name), [])
+  const suggestions = useMemo(() => {
+    if (!normalizedSearch) {
+      return tools.slice(0, 5)
+    }
+    return tools.filter((tool) => tool.name.toLowerCase().includes(normalizedSearch)).slice(0, 6)
+  }, [normalizedSearch])
 
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
@@ -161,6 +170,16 @@ export function ToolList() {
     setIsMobileMenuOpen(false)
   }
 
+  const applySuggestion = (toolId: ToolId) => {
+    const selectedTool = tools.find((tool) => tool.id === toolId)
+    if (!selectedTool) {
+      return
+    }
+    setSearchTerm(selectedTool.name)
+    setActiveToolId(selectedTool.id)
+    setIsSearchFocused(false)
+  }
+
   return (
     <section className="w-full overflow-hidden bg-white/80 shadow-2xl shadow-slate-900/10 backdrop-blur dark:bg-slate-950/85 dark:shadow-black/40">
       <header className="flex items-center gap-3 border-b border-slate-300/70 bg-slate-50/85 px-3 py-2 dark:border-slate-800 dark:bg-slate-900/80 sm:px-4">
@@ -180,40 +199,85 @@ export function ToolList() {
           </p>
         </div>
 
-        <label className="ml-auto hidden w-full max-w-sm items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400 md:inline-flex">
-          <Search className="size-4" />
-          <input
-            className="w-full bg-transparent outline-none placeholder:text-slate-400"
-            placeholder="Buscar herramienta..."
-            list="tool-suggestions"
-            value={searchTerm}
-            onChange={(event) => {
-              const nextValue = event.target.value
-              setSearchTerm(nextValue)
-              const exactMatch = tools.find(
-                (tool) => tool.name.toLowerCase() === nextValue.trim().toLowerCase(),
-              )
-              if (exactMatch) {
-                setActiveToolId(exactMatch.id)
-              }
-            }}
-            spellCheck={false}
-          />
-        </label>
-        <datalist id="tool-suggestions">
-          {toolNameSuggestions.map((name) => (
-            <option key={name} value={name} />
-          ))}
-        </datalist>
+        <div className="relative ml-auto hidden w-full max-w-sm md:block">
+          <label className="inline-flex w-full items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-sm text-slate-500 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-400">
+            <Search className="size-4" />
+            <input
+              className="w-full bg-transparent outline-none placeholder:text-slate-400"
+              placeholder="Buscar herramienta..."
+              value={searchTerm}
+              onChange={(event) => {
+                const nextValue = event.target.value
+                setSearchTerm(nextValue)
+                setHighlightedIndex(0)
+                const exactMatch = tools.find(
+                  (tool) => tool.name.toLowerCase() === nextValue.trim().toLowerCase(),
+                )
+                if (exactMatch) {
+                  setActiveToolId(exactMatch.id)
+                }
+              }}
+              onFocus={() => setIsSearchFocused(true)}
+              onBlur={() => {
+                window.setTimeout(() => setIsSearchFocused(false), 120)
+              }}
+              onKeyDown={(event) => {
+                if (!suggestions.length) {
+                  return
+                }
+
+                if (event.key === 'ArrowDown') {
+                  event.preventDefault()
+                  setHighlightedIndex((current) => (current + 1) % suggestions.length)
+                }
+
+                if (event.key === 'ArrowUp') {
+                  event.preventDefault()
+                  setHighlightedIndex((current) =>
+                    current === 0 ? suggestions.length - 1 : current - 1,
+                  )
+                }
+
+                if (event.key === 'Enter') {
+                  event.preventDefault()
+                  applySuggestion(suggestions[highlightedIndex].id)
+                }
+
+                if (event.key === 'Escape') {
+                  setIsSearchFocused(false)
+                }
+              }}
+              spellCheck={false}
+            />
+          </label>
+          {isSearchFocused && suggestions.length > 0 ? (
+            <div className="absolute left-0 right-0 top-[calc(100%+6px)] z-30 overflow-hidden rounded-md border border-slate-300 bg-white shadow-lg dark:border-slate-700 dark:bg-slate-950">
+              {suggestions.map((tool, index) => (
+                <button
+                  key={tool.id}
+                  type="button"
+                  className={`block w-full px-3 py-2 text-left text-sm ${
+                    index === highlightedIndex
+                      ? 'bg-blue-50 text-blue-700 dark:bg-sky-500/15 dark:text-sky-300'
+                      : 'text-slate-700 hover:bg-slate-100 dark:text-slate-200 dark:hover:bg-slate-900'
+                  }`}
+                  onMouseEnter={() => setHighlightedIndex(index)}
+                  onClick={() => applySuggestion(tool.id)}
+                >
+                  <p className="font-semibold">{tool.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{tool.description}</p>
+                </button>
+              ))}
+            </div>
+          ) : null}
+        </div>
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
           onClick={toggleTheme}
         >
           {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
-          <span className="hidden sm:inline">
-            Pasar a {theme === 'dark' ? 'Claro' : 'Oscuro'}
-          </span>
+          <span className="hidden sm:inline">Pasar a {theme === 'dark' ? 'Claro' : 'Oscuro'}</span>
         </button>
       </header>
 
@@ -250,6 +314,7 @@ export function ToolList() {
           {activeTool?.id === 'base64' ? <Base64Tool /> : null}
           {activeTool?.id === 'jwt' ? <JwtTool /> : null}
           {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+          {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
           {activeTool?.id === 'url-codec' ? (
             <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
           ) : null}

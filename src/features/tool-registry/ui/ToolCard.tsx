@@ -1,4 +1,4 @@
-import { Binary, Braces, Fingerprint, KeyRound, Link2, Pin, Star } from 'lucide-react'
+import { Binary, Braces, FileText, Fingerprint, KeyRound, Link2, Pin, Star } from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -22,6 +22,7 @@ export function ToolCard({
     jwt: KeyRound,
     uuid: Fingerprint,
     'url-codec': Link2,
+    'readme-generator': FileText,
   } as const
   const ToolIcon = iconByTool[tool.id]
 

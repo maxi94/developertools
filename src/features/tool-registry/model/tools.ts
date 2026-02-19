@@ -36,4 +36,11 @@ export const tools: ToolDefinition[] = [
     category: 'Utilidades web',
     status: 'planned',
   },
+  {
+    id: 'readme-generator',
+    name: 'Generador README',
+    description: 'Crea README.md con plantilla y vista previa.',
+    category: 'Documentacion',
+    status: 'ready',
+  },
 ]
