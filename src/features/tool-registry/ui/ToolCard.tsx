@@ -23,6 +23,7 @@ interface ToolCardProps {
   tool: ToolDefinition
   isActive: boolean
   isFavorite: boolean
+  compact?: boolean
   onSelect: (toolId: ToolDefinition['id']) => void
   onToggleFavorite: (toolId: ToolDefinition['id']) => void
 }
@@ -31,6 +32,7 @@ export function ToolCard({
   tool,
   isActive,
   isFavorite,
+  compact = false,
   onSelect,
   onToggleFavorite,
 }: ToolCardProps) {
@@ -59,7 +61,7 @@ export function ToolCard({
     <article
       role="button"
       tabIndex={0}
-      className={`group w-full rounded-lg px-3 py-2 text-left transition ${
+      className={`group w-full cursor-pointer rounded-lg ${compact ? 'px-2 py-2' : 'px-3 py-2'} text-left transition ${
         isActive
           ? 'bg-slate-900/10 text-slate-900 dark:bg-white/15 dark:text-white'
           : 'text-slate-700 hover:bg-slate-900/10 hover:text-slate-900 dark:text-indigo-100/90 dark:hover:bg-white/10 dark:hover:text-white'
@@ -72,10 +74,10 @@ export function ToolCard({
         }
       }}
       aria-pressed={isActive}
-      title={tool.name}
+      title={`${tool.name} (v${tool.version})`}
     >
       <div className="flex items-center justify-between gap-2">
-        <div className="flex min-w-0 flex-1 items-center gap-2 text-left">
+        <div className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}>
           <span
             className={`inline-flex size-7 shrink-0 items-center justify-center rounded-md ${
               isActive
@@ -85,26 +87,30 @@ export function ToolCard({
           >
             <ToolIcon className="size-4" />
           </span>
-          <div className="min-w-0">
-            <h3 className="text-sm font-semibold leading-tight">{tool.name}</h3>
-            <p className="text-[11px] leading-tight text-slate-500 dark:text-indigo-100/65">
-              {tool.description}
-            </p>
-          </div>
+          {!compact ? (
+            <div className="min-w-0">
+              <h3 className="text-sm font-semibold leading-tight">{tool.name}</h3>
+              <p className="text-[11px] leading-tight text-slate-500 dark:text-indigo-100/65">
+                {tool.description} · v{tool.version}
+              </p>
+            </div>
+          ) : <span className="sr-only">{tool.name}</span>}
         </div>
-        <div className="flex shrink-0 items-center gap-1">
-          <span
-            className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-              tool.status === 'ready'
-                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/20 dark:text-emerald-100'
-                : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
-            }`}
-          >
-            {tool.status === 'ready' ? 'On' : 'Soon'}
-          </span>
+        <div className={`flex shrink-0 items-center gap-1 ${compact ? 'hidden' : ''}`}>
+          {!compact ? (
+            <span
+              className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
+                tool.status === 'ready'
+                  ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/20 dark:text-emerald-100'
+                  : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
+              }`}
+            >
+              {tool.status === 'ready' ? 'On' : 'Soon'}
+            </span>
+          ) : null}
           <button
             type="button"
-            className={`inline-flex size-7 items-center justify-center rounded-md transition ${
+            className={`inline-flex size-7 cursor-pointer items-center justify-center rounded-md transition ${
               isFavorite
                 ? 'bg-amber-100 text-amber-700 dark:bg-amber-300/20 dark:text-amber-200'
                 : 'text-slate-500 hover:bg-slate-900/10 hover:text-slate-800 dark:text-indigo-200/70 dark:hover:bg-white/10 dark:hover:text-white'

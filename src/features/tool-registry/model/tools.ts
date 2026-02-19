@@ -1,5 +1,7 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
+export const WEB_VERSION = 'v0.6.0'
+
 export const tools: ToolDefinition[] = [
   {
     id: 'json-formatter',
@@ -7,6 +9,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea y valida JSON localmente en tu navegador.',
     category: 'Formateadores',
     status: 'ready',
+    version: '1.4.0',
   },
   {
     id: 'base64',
@@ -14,6 +17,7 @@ export const tools: ToolDefinition[] = [
     description: 'Codifica y decodifica texto de forma rapida.',
     category: 'Datos',
     status: 'ready',
+    version: '1.1.0',
   },
   {
     id: 'base64-image',
@@ -21,6 +25,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte una o varias cadenas Base64 en imagenes.',
     category: 'Datos',
     status: 'ready',
+    version: '1.2.0',
   },
   {
     id: 'base64-pdf',
@@ -28,6 +33,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte una o varias cadenas Base64 en archivos PDF.',
     category: 'Datos',
     status: 'ready',
+    version: '1.2.0',
   },
   {
     id: 'sql-formatter',
@@ -35,6 +41,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea consultas SQL con soporte multi dialecto.',
     category: 'Formateadores',
     status: 'ready',
+    version: '1.3.0',
   },
   {
     id: 'regex-tool',
@@ -42,6 +49,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crear, probar, debuggear y exportar regex.',
     category: 'Formateadores',
     status: 'ready',
+    version: '1.5.0',
   },
   {
     id: 'sql-mongo-converter',
@@ -49,6 +57,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte SELECT SQL simples a queries MongoDB.',
     category: 'Formateadores',
     status: 'ready',
+    version: '1.2.0',
   },
   {
     id: 'json-model-generator',
@@ -56,6 +65,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera clases desde JSON en C#, TypeScript y Java.',
     category: 'Generadores de codigo',
     status: 'ready',
+    version: '1.1.0',
   },
   {
     id: 'jwt-builder',
@@ -63,6 +73,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crea tokens JWT y firma HS256 localmente.',
     category: 'Tokens e identidad',
     status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'jwt',
@@ -70,6 +81,7 @@ export const tools: ToolDefinition[] = [
     description: 'Decodifica header y payload para inspeccion.',
     category: 'Tokens e identidad',
     status: 'ready',
+    version: '1.1.0',
   },
   {
     id: 'uuid',
@@ -77,6 +89,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera UUID v4 y valida su formato.',
     category: 'Tokens e identidad',
     status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'url-codec',
@@ -84,6 +97,7 @@ export const tools: ToolDefinition[] = [
     description: 'Escapa y desescapa contenido para URLs.',
     category: 'Utilidades web',
     status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'encoding-suite',
@@ -91,6 +105,7 @@ export const tools: ToolDefinition[] = [
     description: 'HTML, Unicode, Hex y URL-safe Base64.',
     category: 'Utilidades web',
     status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'datetime-tools',
@@ -98,6 +113,7 @@ export const tools: ToolDefinition[] = [
     description: 'Timezone convert, Unix timestamp e ISO formatter.',
     category: 'Utilidades web',
     status: 'ready',
+    version: '1.1.0',
   },
   {
     id: 'id-toolkit',
@@ -105,6 +121,7 @@ export const tools: ToolDefinition[] = [
     description: 'Generador, validador y export batch de IDs.',
     category: 'Tokens e identidad',
     status: 'ready',
+    version: '1.1.0',
   },
   {
     id: 'fake-data-generator',
@@ -112,6 +129,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera JSON fake con nombres, emails, UUID y fechas.',
     category: 'Datos',
     status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'readme-generator',
@@ -119,5 +137,6 @@ export const tools: ToolDefinition[] = [
     description: 'Crea README.md con plantilla y vista previa.',
     category: 'Documentacion',
     status: 'ready',
+    version: '1.0.0',
   },
 ]

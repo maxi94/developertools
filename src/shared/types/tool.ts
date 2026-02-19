@@ -31,4 +31,5 @@ export interface ToolDefinition {
   description: string
   category: ToolCategory
   status: ToolStatus
+  version: string
 }

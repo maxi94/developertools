@@ -106,35 +106,240 @@ export function explainRegex(pattern: string): string[] {
   if (pattern.includes('[') && pattern.includes(']')) {
     explanations.push('[...] : Clase de caracteres.')
   }
+  if (/\(\?:/.test(pattern)) {
+    explanations.push('(?:...) : Grupo no capturante.')
+  }
+  if (/\(\?=/.test(pattern)) {
+    explanations.push('(?=...) : Lookahead positivo.')
+  }
+  if (/\(\?!/.test(pattern)) {
+    explanations.push('(?!...) : Lookahead negativo.')
+  }
+  if (/\\b/.test(pattern)) {
+    explanations.push('\\b : Limite de palabra.')
+  }
+  if (/[*+?]\?/.test(pattern)) {
+    explanations.push('*?, +?, ?? : Cuantificador lazy (minimo).')
+  }
 
   return explanations.length > 0
     ? explanations
     : ['No se detectaron tokens conocidos en el explicador rapido.']
 }
 
+function splitTopLevelAlternation(pattern: string): string[] {
+  const branches: string[] = []
+  let current = ''
+  let depth = 0
+  let inClass = false
+  let escaped = false
+
+  for (let i = 0; i < pattern.length; i += 1) {
+    const char = pattern[i]
+
+    if (escaped) {
+      current += char
+      escaped = false
+      continue
+    }
+
+    if (char === '\\') {
+      current += char
+      escaped = true
+      continue
+    }
+
+    if (char === '[' && !inClass) {
+      inClass = true
+      current += char
+      continue
+    }
+
+    if (char === ']' && inClass) {
+      inClass = false
+      current += char
+      continue
+    }
+
+    if (!inClass) {
+      if (char === '(') {
+        depth += 1
+      } else if (char === ')' && depth > 0) {
+        depth -= 1
+      } else if (char === '|' && depth === 0) {
+        branches.push(current)
+        current = ''
+        continue
+      }
+    }
+
+    current += char
+  }
+
+  branches.push(current)
+  return branches
+}
+
+function extractQuantifier(pattern: string, startIndex: number): { quantifier: string; length: number } {
+  const char = pattern[startIndex]
+  if (char === '*' || char === '+' || char === '?') {
+    return { quantifier: char, length: 1 }
+  }
+
+  if (char !== '{') {
+    return { quantifier: '', length: 0 }
+  }
+
+  const endIndex = pattern.indexOf('}', startIndex)
+  if (endIndex === -1) {
+    return { quantifier: '', length: 0 }
+  }
+
+  return {
+    quantifier: pattern.slice(startIndex, endIndex + 1),
+    length: endIndex - startIndex + 1,
+  }
+}
+
+function tokenizeSequence(pattern: string): string[] {
+  const tokens: string[] = []
+  let i = 0
+
+  while (i < pattern.length) {
+    let token = ''
+    const char = pattern[i]
+
+    if (char === '\\') {
+      token = pattern.slice(i, i + 2)
+      i += Math.min(2, pattern.length - i)
+    } else if (char === '[') {
+      let end = i + 1
+      let escaped = false
+      while (end < pattern.length) {
+        const nextChar = pattern[end]
+        if (!escaped && nextChar === ']') {
+          end += 1
+          break
+        }
+        escaped = !escaped && nextChar === '\\'
+        if (nextChar !== '\\') {
+          escaped = false
+        }
+        end += 1
+      }
+      token = pattern.slice(i, end)
+      i = end
+    } else if (char === '(') {
+      let end = i + 1
+      let depth = 1
+      let inClass = false
+      let escaped = false
+
+      while (end < pattern.length && depth > 0) {
+        const nextChar = pattern[end]
+        if (escaped) {
+          escaped = false
+        } else if (nextChar === '\\') {
+          escaped = true
+        } else if (nextChar === '[' && !inClass) {
+          inClass = true
+        } else if (nextChar === ']' && inClass) {
+          inClass = false
+        } else if (!inClass && nextChar === '(') {
+          depth += 1
+        } else if (!inClass && nextChar === ')') {
+          depth -= 1
+        }
+        end += 1
+      }
+
+      token = pattern.slice(i, end)
+      i = end
+    } else {
+      token = char
+      i += 1
+    }
+
+    const { quantifier, length } = extractQuantifier(pattern, i)
+    if (quantifier) {
+      token = `${token}${quantifier}`
+      i += length
+    }
+
+    if (token.trim()) {
+      tokens.push(token)
+    }
+  }
+
+  return tokens
+}
+
+function isOptionalToken(token: string): boolean {
+  if (token.endsWith('*') || token.endsWith('?')) {
+    return true
+  }
+
+  const quantifierMatch = token.match(/\{(\d+),(\d*)\}$/)
+  if (!quantifierMatch) {
+    return false
+  }
+
+  return Number(quantifierMatch[1]) === 0
+}
+
+function hasRepetition(token: string): boolean {
+  return token.endsWith('*') || token.endsWith('+') || /\{\d+,?\d*\}$/.test(token)
+}
+
 export function buildRegexGraph(pattern: string): RegexGraph {
   const nodes: RegexGraphNode[] = [{ id: 'start', label: 'START' }]
   const edges: RegexGraphEdge[] = []
+  const branches = splitTopLevelAlternation(pattern)
+  let nodeIndex = 0
 
-  let previous = 'start'
-  const tokens =
-    pattern.match(/\(\?<[^>]+>[^)]*\)|\([^)]*\)|\[[^\]]+\]|\\.|\{\d+,?\d*\}|\*|\+|\?|\||\.|\w+/g) ??
-    []
+  for (let branchIndex = 0; branchIndex < branches.length; branchIndex += 1) {
+    const branch = branches[branchIndex]
+    const tokens = tokenizeSequence(branch)
+    let previousNodeId = 'start'
+    let previousNodeBeforeCurrent = 'start'
 
-  tokens.forEach((token, index) => {
-    const nodeId = `n${index}`
-    nodes.push({ id: nodeId, label: token })
-    edges.push({ from: previous, to: nodeId, label: 'consume' })
-
-    if (token === '|' && index > 0) {
-      edges.push({ from: previous, to: nodeId, label: 'alt' })
+    if (tokens.length === 0) {
+      edges.push({ from: 'start', to: 'end', label: 'epsilon' })
+      continue
     }
 
-    previous = nodeId
-  })
+    for (let tokenIndex = 0; tokenIndex < tokens.length; tokenIndex += 1) {
+      const token = tokens[tokenIndex]
+      const nodeId = `n${nodeIndex}`
+      nodeIndex += 1
+
+      nodes.push({ id: nodeId, label: token })
+
+      const isFirstNodeInBranch = tokenIndex === 0
+      const edgeLabel = isFirstNodeInBranch && branches.length > 1 ? `alt ${branchIndex + 1}` : 'consume'
+      edges.push({ from: previousNodeId, to: nodeId, label: edgeLabel })
+
+      if (hasRepetition(token)) {
+        const quantifierMatch = token.match(/(\*|\+|\{\d+,?\d*\})$/)
+        edges.push({ from: nodeId, to: nodeId, label: quantifierMatch?.[1] ?? 'repeat' })
+      }
+
+      if (isOptionalToken(token)) {
+        edges.push({ from: previousNodeBeforeCurrent, to: nodeId, label: 'epsilon?' })
+      }
+
+      previousNodeBeforeCurrent = previousNodeId
+      previousNodeId = nodeId
+    }
+
+    edges.push({
+      from: previousNodeId,
+      to: 'end',
+      label: branches.length > 1 ? `accept ${branchIndex + 1}` : 'accept',
+    })
+  }
 
   nodes.push({ id: 'end', label: 'END' })
-  edges.push({ from: previous, to: 'end', label: 'accept' })
 
   return { nodes, edges }
 }

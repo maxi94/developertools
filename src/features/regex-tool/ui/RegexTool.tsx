@@ -40,6 +40,18 @@ export function RegexTool() {
   }, [exportLanguage, flags, pattern])
   const explanation = useMemo(() => explainRegex(pattern), [pattern])
   const graph = useMemo(() => buildRegexGraph(pattern), [pattern])
+  const graphLayout = useMemo(() => {
+    const horizontalGap = 150
+    const positions = Object.fromEntries(
+      graph.nodes.map((node, index) => [node.id, { x: 80 + index * horizontalGap, y: 96 }]),
+    )
+
+    return {
+      width: Math.max(760, graph.nodes.length * horizontalGap + 40),
+      height: 220,
+      positions,
+    }
+  }, [graph])
 
   const copyExport = async () => {
     if (exportedSnippet.trim()) {
@@ -184,7 +196,110 @@ export function RegexTool() {
         </article>
 
         <article className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
-          <h3 className="text-sm font-semibold">Visual graph (NFA simplificado)</h3>
+          <h3 className="text-sm font-semibold">Diagrama de estados (aproximado)</h3>
+          <p className="mt-1 text-xs text-slate-500 dark:text-slate-400">
+            Vista orientativa del flujo de evaluacion de la regex, con ramas y repeticiones.
+          </p>
+          <div className="mt-2 overflow-x-auto rounded-xl border border-slate-300/70 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950/60">
+            <svg
+              width={graphLayout.width}
+              height={graphLayout.height}
+              viewBox={`0 0 ${graphLayout.width} ${graphLayout.height}`}
+              role="img"
+              aria-label="Diagrama de estados de expresion regular"
+            >
+              <defs>
+                <marker
+                  id="regex-arrow"
+                  viewBox="0 0 10 10"
+                  refX="9"
+                  refY="5"
+                  markerWidth="6"
+                  markerHeight="6"
+                  orient="auto-start-reverse"
+                >
+                  <path d="M 0 0 L 10 5 L 0 10 z" fill="currentColor" />
+                </marker>
+              </defs>
+
+              {graph.edges.map((edge, index) => {
+                const from = graphLayout.positions[edge.from]
+                const to = graphLayout.positions[edge.to]
+                if (!from || !to) {
+                  return null
+                }
+
+                if (edge.from === edge.to) {
+                  const loopTop = from.y - 40
+                  return (
+                    <g key={`${edge.from}-${edge.to}-${edge.label}-${index}`} className="text-slate-500 dark:text-slate-300">
+                      <path
+                        d={`M ${from.x + 24} ${from.y} C ${from.x + 48} ${from.y}, ${from.x + 48} ${loopTop}, ${from.x} ${loopTop} C ${from.x - 36} ${loopTop}, ${from.x - 36} ${from.y}, ${from.x - 4} ${from.y}`}
+                        fill="none"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        markerEnd="url(#regex-arrow)"
+                      />
+                      <text x={from.x + 4} y={loopTop - 8} className="fill-current text-[10px] font-medium">
+                        {edge.label}
+                      </text>
+                    </g>
+                  )
+                }
+
+                const isAlt = edge.label.startsWith('alt ')
+                const controlY = isAlt ? Math.min(from.y, to.y) - 42 : from.y
+                const midX = (from.x + to.x) / 2
+                return (
+                  <g key={`${edge.from}-${edge.to}-${edge.label}-${index}`} className="text-slate-500 dark:text-slate-300">
+                    <path
+                      d={`M ${from.x + 28} ${from.y} Q ${midX} ${controlY} ${to.x - 28} ${to.y}`}
+                      fill="none"
+                      stroke="currentColor"
+                      strokeWidth="1.5"
+                      markerEnd="url(#regex-arrow)"
+                    />
+                    <text x={midX - 16} y={controlY - 6} className="fill-current text-[10px] font-medium">
+                      {edge.label}
+                    </text>
+                  </g>
+                )
+              })}
+
+              {graph.nodes.map((node) => {
+                const position = graphLayout.positions[node.id]
+                if (!position) {
+                  return null
+                }
+                const isTerminal = node.id === 'start' || node.id === 'end'
+                return (
+                  <g key={node.id}>
+                    <rect
+                      x={position.x - 28}
+                      y={position.y - 18}
+                      width={56}
+                      height={36}
+                      rx={10}
+                      className={
+                        isTerminal
+                          ? 'fill-cyan-100 stroke-cyan-400 dark:fill-cyan-900/50 dark:stroke-cyan-500'
+                          : 'fill-white stroke-slate-400 dark:fill-slate-900 dark:stroke-slate-600'
+                      }
+                      strokeWidth={1.5}
+                    />
+                    <text
+                      x={position.x}
+                      y={position.y + 4}
+                      textAnchor="middle"
+                      className={`font-mono text-[10px] ${isTerminal ? 'fill-cyan-800 dark:fill-cyan-200' : 'fill-slate-700 dark:fill-slate-200'}`}
+                    >
+                      {node.label}
+                    </text>
+                  </g>
+                )
+              })}
+            </svg>
+          </div>
           <div className="mt-2 grid gap-1 text-xs">
             {graph.edges.map((edge, index) => (
               <p
