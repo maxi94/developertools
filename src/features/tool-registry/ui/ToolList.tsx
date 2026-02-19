@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.11.2',
+    date: '2026-02-19',
+    title: 'Box Shadow responsive',
+    changes: [
+      'Box Shadow Generator: preview y layout ajustados para mobile.',
+      'Se eliminan anchos rigidos y se optimiza la accion de copiar en pantallas chicas.',
+      'Version de la herramienta Box Shadow Generator actualizada a v1.0.1.',
+    ],
+  },
+  {
     version: 'v0.11.1',
     date: '2026-02-19',
     title: 'Scroll mobile + responsive tools',
