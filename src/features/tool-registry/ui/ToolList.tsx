@@ -1,5 +1,16 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Menu, MoonStar, PanelLeft, Search, Star, Sun, X } from 'lucide-react'
+﻿import { useEffect, useMemo, useState } from 'react'
+import {
+  ChevronRight,
+  House,
+  Menu,
+  MoonStar,
+  PanelLeft,
+  Search,
+  Sparkles,
+  Star,
+  Sun,
+  X,
+} from 'lucide-react'
 import { Base64ImageTool } from '@/features/base64-image/ui/Base64ImageTool'
 import { Base64PdfTool } from '@/features/base64-pdf/ui/Base64PdfTool'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
@@ -14,6 +25,57 @@ import { useTheme } from '@/shared/hooks/useTheme'
 import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
 
 const FAVORITES_KEY = 'developer-tools-favorites'
+const categoryOrder: ToolCategory[] = [
+  'Datos',
+  'Tokens e identidad',
+  'Utilidades web',
+  'Documentacion',
+]
+
+const categoryDescriptions: Record<ToolCategory, string> = {
+  Datos: 'Utilidades para transformar y visualizar informacion de forma local.',
+  'Tokens e identidad': 'Herramientas para generacion y analisis de identificadores y tokens.',
+  'Utilidades web': 'Helpers para codificacion, escaping y tareas habituales de desarrollo web.',
+  Documentacion: 'Generadores y asistentes para acelerar la documentacion tecnica.',
+}
+
+const releaseNotes = [
+  {
+    version: 'v0.4.0',
+    date: '2026-02-19',
+    title: 'Navegacion por Home/Categoria/Herramienta',
+    changes: [
+      'Nueva pagina de inicio con historial de mejoras.',
+      'Nueva pagina por categoria con descripcion y accesos rapidos.',
+      'Breadcrumb clickable para volver a Home o Categoria.',
+    ],
+  },
+  {
+    version: 'v0.3.0',
+    date: '2026-02-19',
+    title: 'Expansion de Base64',
+    changes: [
+      'Nuevas tools separadas: Base64 a Imagen y Base64 a PDF.',
+      'Soporte para entrada unica y arrays JSON.',
+      'Vista previa y descarga de assets generados.',
+    ],
+  },
+  {
+    version: 'v0.2.0',
+    date: '2026-02-19',
+    title: 'Generador README avanzado',
+    changes: [
+      'Editor completo con presets, secciones custom y TOC automatica.',
+      'Preview progresiva con descarga de README.md.',
+      'Campos para FAQ, roadmap, badges y enlaces.',
+    ],
+  },
+]
+
+type ViewState =
+  | { type: 'home' }
+  | { type: 'category'; category: ToolCategory }
+  | { type: 'tool'; toolId: ToolId }
 
 function getInitialFavorites(): ToolId[] {
   const raw = window.localStorage.getItem(FAVORITES_KEY)
@@ -35,26 +97,32 @@ function getInitialFavorites(): ToolId[] {
 }
 
 interface SidebarContentProps {
-  activeToolId: ToolId
   favoriteToolIds: ToolId[]
   menuTools: ToolDefinition[]
   searchTerm: string
-  onSelect: (toolId: ToolId) => void
+  selectedCategory: ToolCategory | null
+  activeToolId: ToolId | null
+  viewType: ViewState['type']
+  onGoHome: () => void
+  onSelectCategory: (category: ToolCategory) => void
+  onSelectTool: (toolId: ToolId) => void
   onToggleFavorite: (toolId: ToolId) => void
 }
 
 function SidebarContent({
-  activeToolId,
   favoriteToolIds,
   menuTools,
   searchTerm,
-  onSelect,
+  selectedCategory,
+  activeToolId,
+  viewType,
+  onGoHome,
+  onSelectCategory,
+  onSelectTool,
   onToggleFavorite,
 }: SidebarContentProps) {
   const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
-  const categoryOrder: ToolCategory[] = ['Datos', 'Tokens e identidad', 'Utilidades web']
-  const extendedCategoryOrder: ToolCategory[] = [...categoryOrder, 'Documentacion']
-  const groupedTools = extendedCategoryOrder
+  const groupedTools = categoryOrder
     .map((category) => ({
       category,
       tools: menuTools.filter((tool) => tool.category === category),
@@ -63,6 +131,19 @@ function SidebarContent({
 
   return (
     <>
+      <button
+        type="button"
+        onClick={onGoHome}
+        className={`mb-3 inline-flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.14em] transition ${
+          viewType === 'home'
+            ? 'border-white/30 bg-white/20 text-white'
+            : 'border-white/10 bg-white/5 text-indigo-100/80 hover:bg-white/10 hover:text-white'
+        }`}
+      >
+        <House className="size-4" />
+        Inicio
+      </button>
+
       <div className="mb-4 rounded-lg border border-white/10 bg-white/5 p-3">
         <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-200/80">
           <Star className="size-3.5" />
@@ -75,11 +156,11 @@ function SidebarContent({
                 key={tool.id}
                 type="button"
                 className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
-                  tool.id === activeToolId
+                  tool.id === activeToolId && viewType === 'tool'
                     ? 'border-white/25 bg-white/20 text-white'
                     : 'border-white/10 bg-transparent text-indigo-100/80 hover:border-white/20 hover:bg-white/10 hover:text-white'
                 }`}
-                onClick={() => onSelect(tool.id)}
+                onClick={() => onSelectTool(tool.id)}
               >
                 {tool.name}
               </button>
@@ -93,17 +174,25 @@ function SidebarContent({
       <div className="grid gap-3">
         {groupedTools.map((group) => (
           <section key={group.category} className="grid gap-1.5">
-            <p className="px-1 text-[10px] font-semibold uppercase tracking-[0.14em] text-indigo-200/70">
+            <button
+              type="button"
+              className={`rounded-md px-1 py-1 text-left text-[10px] font-semibold uppercase tracking-[0.14em] ${
+                selectedCategory === group.category
+                  ? 'text-white'
+                  : 'text-indigo-200/70 hover:text-indigo-100'
+              }`}
+              onClick={() => onSelectCategory(group.category)}
+            >
               {group.category}
-            </p>
+            </button>
             <nav className="grid gap-1.5" aria-label={`Menu ${group.category}`}>
               {group.tools.map((tool) => (
                 <ToolCard
                   key={tool.id}
                   tool={tool}
-                  isActive={tool.id === activeToolId}
+                  isActive={tool.id === activeToolId && viewType === 'tool'}
                   isFavorite={favoriteToolIds.includes(tool.id)}
-                  onSelect={onSelect}
+                  onSelect={onSelectTool}
                   onToggleFavorite={onToggleFavorite}
                 />
               ))}
@@ -111,6 +200,7 @@ function SidebarContent({
           </section>
         ))}
       </div>
+
       {menuTools.length === 0 ? (
         <p className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs text-indigo-100/80">
           No se encontraron herramientas para: <strong>{searchTerm}</strong>
@@ -120,16 +210,178 @@ function SidebarContent({
   )
 }
 
+interface HomeOverviewProps {
+  favorites: ToolDefinition[]
+  onSelectCategory: (category: ToolCategory) => void
+  onSelectTool: (toolId: ToolId) => void
+}
+
+function HomeOverview({ favorites, onSelectCategory, onSelectTool }: HomeOverviewProps) {
+  return (
+    <section className="grid gap-4">
+      <section className="rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
+        <h2 className="inline-flex items-center gap-2 text-lg font-semibold">
+          <Sparkles className="size-4" />
+          Mejoras desde tu ultima visita
+        </h2>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {releaseNotes.map((release) => (
+            <article
+              key={release.version}
+              className="rounded-lg border border-slate-200 bg-slate-50 p-3 dark:border-slate-700 dark:bg-slate-950/60"
+            >
+              <p className="text-xs font-semibold uppercase tracking-wide text-indigo-600 dark:text-indigo-300">
+                {release.version} - {release.date}
+              </p>
+              <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
+                {release.title}
+              </h3>
+              <ul className="mt-2 grid gap-1 text-xs text-slate-600 dark:text-slate-300">
+                {release.changes.map((change) => (
+                  <li key={change}>• {change}</li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
+        <h2 className="text-lg font-semibold">Categorias</h2>
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+          {categoryOrder.map((category) => (
+            <button
+              key={category}
+              type="button"
+              onClick={() => onSelectCategory(category)}
+              className="rounded-lg border border-slate-200 bg-slate-50 p-3 text-left transition hover:border-blue-400 hover:bg-blue-50 dark:border-slate-700 dark:bg-slate-950/60 dark:hover:border-sky-500 dark:hover:bg-sky-950/40"
+            >
+              <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{category}</p>
+              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                {categoryDescriptions[category]}
+              </p>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      <section className="rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
+        <h2 className="text-lg font-semibold">Favoritos</h2>
+        {favorites.length > 0 ? (
+          <div className="mt-3 flex flex-wrap gap-2">
+            {favorites.map((tool) => (
+              <button
+                key={tool.id}
+                type="button"
+                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-500 dark:hover:text-sky-300"
+                onClick={() => onSelectTool(tool.id)}
+              >
+                {tool.name}
+              </button>
+            ))}
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
+            Todavia no tenes favoritos fijados.
+          </p>
+        )}
+      </section>
+    </section>
+  )
+}
+
+interface CategoryOverviewProps {
+  category: ToolCategory
+  toolsByCategory: ToolDefinition[]
+  favoriteToolIds: ToolId[]
+  onSelectTool: (toolId: ToolId) => void
+  onToggleFavorite: (toolId: ToolId) => void
+}
+
+function CategoryOverview({
+  category,
+  toolsByCategory,
+  favoriteToolIds,
+  onSelectTool,
+  onToggleFavorite,
+}: CategoryOverviewProps) {
+  return (
+    <section className="grid gap-4">
+      <section className="rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
+        <h2 className="text-lg font-semibold">{category}</h2>
+        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+          {categoryDescriptions[category]}
+        </p>
+      </section>
+
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        {toolsByCategory.map((tool) => (
+          <article
+            key={tool.id}
+            className="rounded-xl border border-slate-300/70 bg-white p-3 dark:border-slate-700 dark:bg-slate-900/85"
+          >
+            <div className="flex items-start justify-between gap-2">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+                  {tool.name}
+                </h3>
+                <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
+                  {tool.description}
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={() => onToggleFavorite(tool.id)}
+                className={`rounded-md border px-2 py-1 text-[11px] font-semibold ${
+                  favoriteToolIds.includes(tool.id)
+                    ? 'border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
+                    : 'border-slate-300 text-slate-600 dark:border-slate-700 dark:text-slate-300'
+                }`}
+              >
+                {favoriteToolIds.includes(tool.id) ? 'Favorito' : 'Fijar'}
+              </button>
+            </div>
+
+            <button
+              type="button"
+              className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-blue-700 hover:underline dark:text-sky-300"
+              onClick={() => onSelectTool(tool.id)}
+            >
+              Abrir herramienta
+              <ChevronRight className="size-3.5" />
+            </button>
+          </article>
+        ))}
+      </section>
+    </section>
+  )
+}
+
 export function ToolList() {
   const { theme, toggleTheme } = useTheme()
-  const [activeToolId, setActiveToolId] = useState<ToolId>('json-formatter')
+  const [view, setView] = useState<ViewState>({ type: 'home' })
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [searchTerm, setSearchTerm] = useState('')
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [highlightedIndex, setHighlightedIndex] = useState(0)
 
-  const activeTool = useMemo(() => tools.find((tool) => tool.id === activeToolId), [activeToolId])
+  const activeTool = useMemo(
+    () => (view.type === 'tool' ? (tools.find((tool) => tool.id === view.toolId) ?? null) : null),
+    [view],
+  )
+  const selectedCategory = useMemo<ToolCategory | null>(() => {
+    if (view.type === 'category') {
+      return view.category
+    }
+
+    if (view.type === 'tool' && activeTool) {
+      return activeTool.category
+    }
+
+    return null
+  }, [view, activeTool])
+
   const normalizedSearch = searchTerm.trim().toLowerCase()
   const filteredTools = useMemo(() => {
     if (!normalizedSearch) {
@@ -141,12 +393,23 @@ export function ToolList() {
       return target.includes(normalizedSearch)
     })
   }, [normalizedSearch])
+
   const suggestions = useMemo(() => {
     if (!normalizedSearch) {
-      return tools.slice(0, 5)
+      return tools.slice(0, 6)
     }
     return tools.filter((tool) => tool.name.toLowerCase().includes(normalizedSearch)).slice(0, 6)
   }, [normalizedSearch])
+
+  const favoriteTools = useMemo(
+    () => tools.filter((tool) => favoriteToolIds.includes(tool.id)),
+    [favoriteToolIds],
+  )
+
+  const toolsForSelectedCategory = useMemo(
+    () => (selectedCategory ? tools.filter((tool) => tool.category === selectedCategory) : []),
+    [selectedCategory],
+  )
 
   useEffect(() => {
     window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
@@ -167,8 +430,18 @@ export function ToolList() {
     )
   }
 
+  const goHome = () => {
+    setView({ type: 'home' })
+    setIsMobileMenuOpen(false)
+  }
+
+  const selectCategory = (category: ToolCategory) => {
+    setView({ type: 'category', category })
+    setIsMobileMenuOpen(false)
+  }
+
   const selectTool = (toolId: ToolId) => {
-    setActiveToolId(toolId)
+    setView({ type: 'tool', toolId })
     setIsMobileMenuOpen(false)
   }
 
@@ -178,7 +451,7 @@ export function ToolList() {
       return
     }
     setSearchTerm(selectedTool.name)
-    setActiveToolId(selectedTool.id)
+    selectTool(selectedTool.id)
     setIsSearchFocused(false)
   }
 
@@ -216,7 +489,7 @@ export function ToolList() {
                   (tool) => tool.name.toLowerCase() === nextValue.trim().toLowerCase(),
                 )
                 if (exactMatch) {
-                  setActiveToolId(exactMatch.id)
+                  selectTool(exactMatch.id)
                 }
               }}
               onFocus={() => setIsSearchFocused(true)}
@@ -273,6 +546,7 @@ export function ToolList() {
             </div>
           ) : null}
         </div>
+
         <button
           type="button"
           className="inline-flex items-center gap-2 rounded-md border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
@@ -290,37 +564,87 @@ export function ToolList() {
             Menu
           </p>
           <SidebarContent
-            activeToolId={activeToolId}
             favoriteToolIds={favoriteToolIds}
             menuTools={filteredTools}
             searchTerm={searchTerm}
-            onSelect={selectTool}
+            selectedCategory={selectedCategory}
+            activeToolId={activeTool?.id ?? null}
+            viewType={view.type}
+            onGoHome={goHome}
+            onSelectCategory={selectCategory}
+            onSelectTool={selectTool}
             onToggleFavorite={toggleFavorite}
           />
         </aside>
 
         <main className="overflow-y-auto bg-slate-100/80 px-3 py-3 dark:bg-slate-950/55 sm:px-4 sm:py-4">
           <section className="mb-4 rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-              Home / Dashboard
-            </p>
+            <div className="inline-flex flex-wrap items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+              <button
+                type="button"
+                className="hover:text-blue-700 dark:hover:text-sky-300"
+                onClick={goHome}
+              >
+                Home
+              </button>
+              {selectedCategory ? (
+                <>
+                  <span>/</span>
+                  <button
+                    type="button"
+                    className="hover:text-blue-700 dark:hover:text-sky-300"
+                    onClick={() => selectCategory(selectedCategory)}
+                  >
+                    {selectedCategory}
+                  </button>
+                </>
+              ) : null}
+            </div>
+
             <h1 className="mt-1 text-2xl font-bold text-slate-900 dark:text-slate-100 md:text-3xl">
-              {activeTool?.name ?? 'Dashboard'}
+              {view.type === 'home' ? 'Inicio' : (activeTool?.name ?? selectedCategory)}
             </h1>
             <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-              {activeTool?.description ?? 'Selecciona una herramienta desde el menu lateral.'}
+              {view.type === 'home'
+                ? 'Resumen de estado, mejoras recientes y acceso por categorias.'
+                : (activeTool?.description ??
+                  (selectedCategory
+                    ? categoryDescriptions[selectedCategory]
+                    : 'Selecciona una herramienta desde el menu lateral.'))}
             </p>
           </section>
 
-          {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
-          {activeTool?.id === 'base64' ? <Base64Tool /> : null}
-          {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
-          {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
-          {activeTool?.id === 'jwt' ? <JwtTool /> : null}
-          {activeTool?.id === 'uuid' ? <UuidTool /> : null}
-          {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
-          {activeTool?.id === 'url-codec' ? (
-            <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
+          {view.type === 'home' ? (
+            <HomeOverview
+              favorites={favoriteTools}
+              onSelectCategory={selectCategory}
+              onSelectTool={selectTool}
+            />
+          ) : null}
+
+          {view.type === 'category' && selectedCategory ? (
+            <CategoryOverview
+              category={selectedCategory}
+              toolsByCategory={toolsForSelectedCategory}
+              favoriteToolIds={favoriteToolIds}
+              onSelectTool={selectTool}
+              onToggleFavorite={toggleFavorite}
+            />
+          ) : null}
+
+          {view.type === 'tool' ? (
+            <>
+              {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
+              {activeTool?.id === 'base64' ? <Base64Tool /> : null}
+              {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
+              {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
+              {activeTool?.id === 'jwt' ? <JwtTool /> : null}
+              {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+              {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
+              {activeTool?.id === 'url-codec' ? (
+                <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
+              ) : null}
+            </>
           ) : null}
         </main>
       </div>
@@ -353,11 +677,15 @@ export function ToolList() {
         </div>
 
         <SidebarContent
-          activeToolId={activeToolId}
           favoriteToolIds={favoriteToolIds}
           menuTools={filteredTools}
           searchTerm={searchTerm}
-          onSelect={selectTool}
+          selectedCategory={selectedCategory}
+          activeToolId={activeTool?.id ?? null}
+          viewType={view.type}
+          onGoHome={goHome}
+          onSelectCategory={selectCategory}
+          onSelectTool={selectTool}
           onToggleFavorite={toggleFavorite}
         />
       </aside>
