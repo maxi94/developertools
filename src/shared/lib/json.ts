@@ -9,6 +9,11 @@ const REF_KEYS = ['$ref', 'ref'] as const
 const REF_KEY_SET = new Set<string>(REF_KEYS)
 const ID_KEY = '$id'
 
+interface IdTarget {
+  value: unknown
+  path: string
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
 }
@@ -45,12 +50,20 @@ function resolvePointer(root: unknown, pointer: string): unknown {
   }, root)
 }
 
-function collectIdTargets(root: unknown): Map<string, unknown> {
-  const targets = new Map<string, unknown>()
+function collectIdTargets(root: unknown): Map<string, IdTarget> {
+  const targets = new Map<string, IdTarget>()
 
-  const visit = (value: unknown) => {
+  const setTarget = (id: string, target: IdTarget) => {
+    const existing = targets.get(id)
+    if (existing && existing.value !== target.value) {
+      throw new Error(`$id duplicado "${id}" en ${existing.path} y ${target.path}`)
+    }
+    targets.set(id, target)
+  }
+
+  const visit = (value: unknown, path: string) => {
     if (Array.isArray(value)) {
-      value.forEach(visit)
+      value.forEach((item, index) => visit(item, `${path}[${index}]`))
       return
     }
 
@@ -60,25 +73,27 @@ function collectIdTargets(root: unknown): Map<string, unknown> {
 
     const id = value[ID_KEY]
     if (typeof id === 'string' && id.trim().length > 0) {
-      targets.set(id, value)
+      const target: IdTarget = { value, path }
+      setTarget(id, target)
       if (!id.startsWith('#')) {
-        targets.set(`#${id}`, value)
+        setTarget(`#${id}`, target)
       }
     }
 
-    for (const child of Object.values(value)) {
-      visit(child)
+    for (const [key, child] of Object.entries(value)) {
+      const childPath = path === 'root' ? `root.${key}` : `${path}.${key}`
+      visit(child, childPath)
     }
   }
 
-  visit(root)
+  visit(root, 'root')
 
   return targets
 }
 
 function resolveReferenceTarget(
   root: unknown,
-  idTargets: Map<string, unknown>,
+  idTargets: Map<string, IdTarget>,
   reference: string,
 ): unknown {
   if (reference === '#' || reference.startsWith('#/')) {
@@ -87,7 +102,7 @@ function resolveReferenceTarget(
 
   const targetById = idTargets.get(reference) ?? idTargets.get(reference.replace(/^#/, ''))
   if (targetById !== undefined) {
-    return targetById
+    return targetById.value
   }
 
   throw new Error(`Referencia no encontrada: ${reference}`)
@@ -96,11 +111,12 @@ function resolveReferenceTarget(
 function resolveRefs(
   value: unknown,
   root: unknown,
-  idTargets: Map<string, unknown>,
+  idTargets: Map<string, IdTarget>,
   stack: Set<string>,
+  path: string,
 ): JsonValue {
   if (Array.isArray(value)) {
-    return value.map((item) => resolveRefs(item, root, idTargets, stack)) as JsonValue
+    return value.map((item, index) => resolveRefs(item, root, idTargets, stack, `${path}[${index}]`)) as JsonValue
   }
 
   if (!isRecord(value)) {
@@ -111,19 +127,25 @@ function resolveRefs(
   if (!refKey) {
     const output: Record<string, JsonValue> = {}
     for (const [key, child] of Object.entries(value)) {
-      output[key] = resolveRefs(child, root, idTargets, stack)
+      output[key] = resolveRefs(
+        child,
+        root,
+        idTargets,
+        stack,
+        path === 'root' ? `root.${key}` : `${path}.${key}`,
+      )
     }
     return output
   }
 
   const pointer = value[refKey] as string
   if (stack.has(pointer)) {
-    throw new Error(`Referencia circular detectada: ${pointer}`)
+    throw new Error(`Referencia circular detectada en ${path}: ${pointer}`)
   }
 
   stack.add(pointer)
   const target = resolveReferenceTarget(root, idTargets, pointer)
-  const resolvedTarget = resolveRefs(target, root, idTargets, stack)
+  const resolvedTarget = resolveRefs(target, root, idTargets, stack, `${path} -> ${pointer}`)
   stack.delete(pointer)
 
   const inlineEntries = Object.entries(value).filter(([key]) => !REF_KEY_SET.has(key))
@@ -137,17 +159,40 @@ function resolveRefs(
 
   const inlineObject: Record<string, JsonValue> = {}
   for (const [key, child] of inlineEntries) {
-    inlineObject[key] = resolveRefs(child, root, idTargets, stack)
+    inlineObject[key] = resolveRefs(
+      child,
+      root,
+      idTargets,
+      stack,
+      path === 'root' ? `root.${key}` : `${path}.${key}`,
+    )
   }
 
   return { ...resolvedTarget, ...inlineObject }
+}
+
+export function sortJsonKeysDeep(value: unknown): JsonValue {
+  if (Array.isArray(value)) {
+    return value.map((item) => sortJsonKeysDeep(item)) as JsonValue
+  }
+
+  if (!isRecord(value)) {
+    return value as JsonValue
+  }
+
+  const output: Record<string, JsonValue> = {}
+  const keys = Object.keys(value).toSorted((a, b) => a.localeCompare(b))
+  for (const key of keys) {
+    output[key] = sortJsonKeysDeep(value[key])
+  }
+  return output
 }
 
 export function parseAndFormatJson(rawValue: string, options?: FormatJsonOptions): JsonValue {
   const parsedValue = JSON.parse(rawValue)
   const idTargets = collectIdTargets(parsedValue)
   return options?.resolveRefs
-    ? resolveRefs(parsedValue, parsedValue, idTargets, new Set())
+    ? resolveRefs(parsedValue, parsedValue, idTargets, new Set(), 'root')
     : (parsedValue as JsonValue)
 }
 

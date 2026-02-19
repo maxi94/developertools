@@ -6,12 +6,26 @@ export interface MongoQueryParts {
   projection: string
   sort: string
   limit: number | null
+  distinctField: string | null
+}
+
+function toMongoField(fieldRaw: string): string {
+  return fieldRaw.trim().replaceAll('`', '').replaceAll('[', '').replaceAll(']', '')
 }
 
 function toMongoLiteral(value: string): string {
   const trimmed = value.trim()
+  if (/^null$/i.test(trimmed)) {
+    return 'null'
+  }
+
   if (/^'.*'$/.test(trimmed)) {
-    return `"${trimmed.slice(1, -1)}"`
+    const raw = trimmed.slice(1, -1)
+    if (/^\d{4}-\d{2}-\d{2}(?:[ T]\d{2}:\d{2}:\d{2}(?:\.\d{1,3})?(?:Z)?)?$/.test(raw)) {
+      const normalized = raw.includes(' ') ? raw.replace(' ', 'T') : raw
+      return `ISODate("${normalized}")`
+    }
+    return `"${raw}"`
   }
 
   if (/^(true|false)$/i.test(trimmed)) {
@@ -25,35 +39,91 @@ function toMongoLiteral(value: string): string {
   return `"${trimmed.replace(/"/g, '\\"')}"`
 }
 
+function parseInValues(valuesRaw: string): string {
+  return valuesRaw
+    .split(',')
+    .map((value) => toMongoLiteral(value.trim()))
+    .join(', ')
+}
+
 function parseCondition(condition: string): string {
-  const inMatch = condition.match(/^(\w+)\s+IN\s+\((.+)\)$/i)
+  const trimmed = condition.trim()
+
+  const notInMatch = trimmed.match(/^(\w+)\s+NOT\s+IN\s+\((.+)\)$/i)
+  if (notInMatch) {
+    const [, fieldRaw, valuesRaw] = notInMatch
+    const field = toMongoField(fieldRaw)
+    const values = parseInValues(valuesRaw)
+    return `${field}: { $nin: [${values}] }`
+  }
+
+  const inMatch = trimmed.match(/^(\w+)\s+IN\s+\((.+)\)$/i)
   if (inMatch) {
-    const [, field, valuesRaw] = inMatch
-    const values = valuesRaw
-      .split(',')
-      .map((value) => toMongoLiteral(value.trim()))
-      .join(', ')
+    const [, fieldRaw, valuesRaw] = inMatch
+    const field = toMongoField(fieldRaw)
+    const values = parseInValues(valuesRaw)
     return `${field}: { $in: [${values}] }`
   }
 
-  const likeMatch = condition.match(/^(\w+)\s+LIKE\s+'(.+)'$/i)
+  const notLikeMatch = trimmed.match(/^(\w+)\s+NOT\s+LIKE\s+'(.+)'$/i)
+  if (notLikeMatch) {
+    const [, fieldRaw, value] = notLikeMatch
+    const field = toMongoField(fieldRaw)
+    const regex = value.replace(/%/g, '.*').replace(/_/g, '.')
+    return `${field}: { $not: { $regex: "${regex}", $options: "i" } }`
+  }
+
+  const likeMatch = trimmed.match(/^(\w+)\s+LIKE\s+'(.+)'$/i)
   if (likeMatch) {
-    const [, field, value] = likeMatch
+    const [, fieldRaw, value] = likeMatch
+    const field = toMongoField(fieldRaw)
     const regex = value.replace(/%/g, '.*').replace(/_/g, '.')
     return `${field}: { $regex: "${regex}", $options: "i" }`
   }
 
-  const betweenMatch = condition.match(/^(\w+)\s+BETWEEN\s+(.+)\s+AND\s+(.+)$/i)
+  const betweenMatch = trimmed.match(/^(\w+)\s+BETWEEN\s+(.+)\s+AND\s+(.+)$/i)
   if (betweenMatch) {
-    const [, field, min, max] = betweenMatch
+    const [, fieldRaw, min, max] = betweenMatch
+    const field = toMongoField(fieldRaw)
     return `${field}: { $gte: ${toMongoLiteral(min)}, $lte: ${toMongoLiteral(max)} }`
   }
 
-  const comparatorMatch = condition.match(/^(\w+)\s*(=|!=|<>|>=|<=|>|<)\s*(.+)$/i)
-  if (comparatorMatch) {
-    const [, field, operator, value] = comparatorMatch
-    const literal = toMongoLiteral(value)
+  const isNullMatch = trimmed.match(/^(\w+)\s+IS\s+NULL$/i)
+  if (isNullMatch) {
+    const [, fieldRaw] = isNullMatch
+    const field = toMongoField(fieldRaw)
+    return `${field}: null`
+  }
 
+  const isNotNullMatch = trimmed.match(/^(\w+)\s+IS\s+NOT\s+NULL$/i)
+  if (isNotNullMatch) {
+    const [, fieldRaw] = isNotNullMatch
+    const field = toMongoField(fieldRaw)
+    return `${field}: { $ne: null }`
+  }
+
+  const notComparatorMatch = trimmed.match(/^NOT\s+(\w+)\s*(=|!=|<>|>=|<=|>|<)\s*(.+)$/i)
+  if (notComparatorMatch) {
+    const [, fieldRaw, operator, value] = notComparatorMatch
+    const field = toMongoField(fieldRaw)
+    const literal = toMongoLiteral(value)
+    const map: Record<string, string> = {
+      '=': `{ $ne: ${literal} }`,
+      '!=': literal,
+      '<>': literal,
+      '>': `{ $not: { $gt: ${literal} } }`,
+      '>=': `{ $not: { $gte: ${literal} } }`,
+      '<': `{ $not: { $lt: ${literal} } }`,
+      '<=': `{ $not: { $lte: ${literal} } }`,
+    }
+    return `${field}: ${map[operator]}`
+  }
+
+  const comparatorMatch = trimmed.match(/^(\w+)\s*(=|!=|<>|>=|<=|>|<)\s*(.+)$/i)
+  if (comparatorMatch) {
+    const [, fieldRaw, operator, value] = comparatorMatch
+    const field = toMongoField(fieldRaw)
+    const literal = toMongoLiteral(value)
     const map: Record<string, string> = {
       '=': literal,
       '!=': `{ $ne: ${literal} }`,
@@ -63,7 +133,6 @@ function parseCondition(condition: string): string {
       '<': `{ $lt: ${literal} }`,
       '<=': `{ $lte: ${literal} }`,
     }
-
     return `${field}: ${map[operator]}`
   }
 
@@ -75,13 +144,28 @@ function parseSqlWhere(whereClause: string): string {
     return '{}'
   }
 
-  const conditions = whereClause
-    .split(/\s+AND\s+/i)
-    .map((condition) => condition.trim())
+  const protectedWhere = whereClause.replace(
+    /BETWEEN\s+(.+?)\s+AND\s+(.+?)(?=\s+(?:AND|OR)\s+|$)/gi,
+    (_match, min, max) => `BETWEEN ${min} @@BETWEEN_AND@@ ${max}`,
+  )
+
+  const tokens = protectedWhere
+    .split(/\s+(AND|OR)\s+/i)
+    .map((token) => token.replace('@@BETWEEN_AND@@', 'AND').trim())
     .filter(Boolean)
+  const conditions = tokens.filter((_, index) => index % 2 === 0)
+  const connectors = tokens.filter((_, index) => index % 2 === 1).map((token) => token.toUpperCase())
 
   const mapped = conditions.map(parseCondition)
-  return `{ ${mapped.join(', ')} }`
+  if (connectors.length === 0 || connectors.every((token) => token === 'AND')) {
+    return `{ ${mapped.join(', ')} }`
+  }
+
+  if (connectors.every((token) => token === 'OR')) {
+    return `{ $or: [${mapped.map((entry) => `{ ${entry} }`).join(', ')}] }`
+  }
+
+  throw new Error('SQL con mezcla de AND/OR no soportado aun. Usa grupos simples.')
 }
 
 function parseSqlToParts(sql: string): MongoQueryParts {
@@ -96,15 +180,17 @@ function parseSqlToParts(sql: string): MongoQueryParts {
 
   const [, fieldsRaw, table, whereRaw = '', orderRaw = '', limitRaw = ''] = selectMatch
   const fields = fieldsRaw.trim()
+  const distinctMatch = fields.match(/^DISTINCT\s+(.+)$/i)
+  const distinctField = distinctMatch ? toMongoField(distinctMatch[1].trim()) : null
 
   const projection =
-    fields === '*'
+    fields === '*' || distinctField
       ? '{}'
       : `{ ${fields
           .split(',')
           .map((field) => field.trim())
           .filter(Boolean)
-          .map((field) => `${field}: 1`)
+          .map((field) => `${toMongoField(field)}: 1`)
           .join(', ')} }`
 
   const filter = parseSqlWhere(whereRaw)
@@ -115,21 +201,52 @@ function parseSqlToParts(sql: string): MongoQueryParts {
         .map((part) => {
           const [field, dir] = part.split(/\s+/)
           const direction = dir?.toUpperCase() === 'DESC' ? -1 : 1
-          return `${field}: ${direction}`
+          return `${toMongoField(field)}: ${direction}`
         })
         .join(', ')} }`
     : '{}'
 
   return {
-    collection: table,
+    collection: toMongoField(table),
     filter,
     projection,
     sort,
     limit: limitRaw ? Number.parseInt(limitRaw, 10) : null,
+    distinctField,
   }
 }
 
 export function formatMongoQuery(parts: MongoQueryParts, mode: MongoOutputMode): string {
+  if (parts.distinctField) {
+    if (mode === 'compass') {
+      return [
+        `Collection: ${parts.collection}`,
+        'Operation: distinct',
+        `Field: ${parts.distinctField}`,
+        `Filter: ${parts.filter}`,
+      ].join('\n')
+    }
+
+    if (mode === 'powershell') {
+      return [
+        `$filter = '${parts.filter}'`,
+        `$result = db.${parts.collection}.Distinct('${parts.distinctField}', $filter)`,
+      ].join('\n')
+    }
+
+    if (mode === 'csharp') {
+      return [
+        'using MongoDB.Bson;',
+        'using MongoDB.Driver;',
+        '',
+        `var filter = BsonDocument.Parse(@"${parts.filter.replace(/"/g, '""')}");`,
+        `var result = await collection.Distinct<BsonValue>("${parts.distinctField}", filter).ToListAsync();`,
+      ].join('\n')
+    }
+
+    return `db.${parts.collection}.distinct("${parts.distinctField}", ${parts.filter})`
+  }
+
   const sortSection = parts.sort !== '{}' ? `.sort(${parts.sort})` : ''
   const limitSection = parts.limit ? `.limit(${parts.limit})` : ''
 
@@ -164,7 +281,7 @@ export function formatMongoQuery(parts: MongoQueryParts, mode: MongoOutputMode):
       `var filter = BsonDocument.Parse(@"${parts.filter.replace(/"/g, '""')}");`,
       `var projection = BsonDocument.Parse(@"${parts.projection.replace(/"/g, '""')}");`,
       `var sort = BsonDocument.Parse(@"${parts.sort.replace(/"/g, '""')}");`,
-      `var find = collection.Find(filter).Project<BsonDocument>(projection);`,
+      'var find = collection.Find(filter).Project<BsonDocument>(projection);',
       parts.sort !== '{}' ? 'find = find.Sort(sort);' : '',
       parts.limit ? `find = find.Limit(${parts.limit});` : '',
       'var result = await find.ToListAsync();',

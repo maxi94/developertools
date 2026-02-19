@@ -1,4 +1,4 @@
-﻿import { useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Copy, FileCode2, Sparkles } from 'lucide-react'
 import { generateModelFromJson, type ModelLanguage } from '@/shared/lib/json-model'
 
@@ -8,14 +8,30 @@ const sampleJson = `{
   "active": true,
   "tags": ["dev", "tools"],
   "profile": {
-    "country": "AR"
-  }
+    "country": "AR",
+    "address": {
+      "city": "Cordoba",
+      "zip": 5000
+    }
+  },
+  "projects": [
+    {
+      "name": "Developer Tools",
+      "stars": 12,
+      "links": {
+        "repo": "https://example.com/repo"
+      }
+    }
+  ]
 }`
 
 const languageOptions: Array<{ value: ModelLanguage; label: string }> = [
   { value: 'csharp', label: 'C#' },
   { value: 'typescript', label: 'TypeScript' },
   { value: 'java', label: 'Java' },
+  { value: 'python', label: 'Python (dataclass)' },
+  { value: 'kotlin', label: 'Kotlin' },
+  { value: 'go', label: 'Go' },
 ]
 
 export function JsonModelGeneratorTool() {

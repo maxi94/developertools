@@ -1,5 +1,6 @@
 export type ToolId =
   | 'json-formatter'
+  | 'json-table'
   | 'base64'
   | 'base64-image'
   | 'base64-pdf'
@@ -8,6 +9,7 @@ export type ToolId =
   | 'jwt-builder'
   | 'encoding-suite'
   | 'datetime-tools'
+  | 'code-minifier'
   | 'sql-mongo-converter'
   | 'id-toolkit'
   | 'fake-data-generator'

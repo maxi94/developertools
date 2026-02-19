@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v0.6.0'
+export const WEB_VERSION = 'v0.10.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -9,7 +9,15 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea y valida JSON localmente en tu navegador.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.4.0',
+    version: '1.5.0',
+  },
+  {
+    id: 'json-table',
+    name: 'JSON a tabla',
+    description: 'Convierte JSON (incluyendo objetos anidados) a tabla y exporta CSV/Excel.',
+    category: 'Datos',
+    status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'base64',
@@ -44,6 +52,14 @@ export const tools: ToolDefinition[] = [
     version: '1.3.0',
   },
   {
+    id: 'code-minifier',
+    name: 'Minify/Expand JS-CSS',
+    description: 'Minifica y expande JavaScript o CSS desde texto o archivo.',
+    category: 'Formateadores',
+    status: 'ready',
+    version: '1.0.0',
+  },
+  {
     id: 'regex-tool',
     name: 'Expresiones regulares',
     description: 'Crear, probar, debuggear y exportar regex.',
@@ -62,10 +78,10 @@ export const tools: ToolDefinition[] = [
   {
     id: 'json-model-generator',
     name: 'JSON a clases',
-    description: 'Genera clases desde JSON en C#, TypeScript y Java.',
+    description: 'Genera clases desde JSON en C#, TypeScript, Java, Python, Kotlin y Go.',
     category: 'Generadores de codigo',
     status: 'ready',
-    version: '1.1.0',
+    version: '1.2.0',
   },
   {
     id: 'jwt-builder',
@@ -140,3 +156,4 @@ export const tools: ToolDefinition[] = [
     version: '1.0.0',
   },
 ]
+

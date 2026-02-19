@@ -1,22 +1,21 @@
-import {
-  Binary,
-  Braces,
-  Database,
-  DatabaseZap,
-  FileCode2,
-  FileImage,
-  FlaskConical,
-  FileJson2,
-  FileText,
-  Fingerprint,
-  KeySquare,
-  KeyRound,
-  Link2,
-  Clock3,
-  Pin,
-  ScanSearch,
-  Star,
-} from 'lucide-react'
+﻿import Binary from 'lucide-react/dist/esm/icons/binary'
+import Braces from 'lucide-react/dist/esm/icons/braces'
+import Clock3 from 'lucide-react/dist/esm/icons/clock-3'
+import Database from 'lucide-react/dist/esm/icons/database'
+import DatabaseZap from 'lucide-react/dist/esm/icons/database-zap'
+import FileCode2 from 'lucide-react/dist/esm/icons/file-code-2'
+import FileImage from 'lucide-react/dist/esm/icons/file-image'
+import FileJson2 from 'lucide-react/dist/esm/icons/file-json-2'
+import FileText from 'lucide-react/dist/esm/icons/file-text'
+import Fingerprint from 'lucide-react/dist/esm/icons/fingerprint-pattern'
+import FlaskConical from 'lucide-react/dist/esm/icons/flask-conical'
+import KeyRound from 'lucide-react/dist/esm/icons/key-round'
+import KeySquare from 'lucide-react/dist/esm/icons/key-square'
+import Link2 from 'lucide-react/dist/esm/icons/link-2'
+import Pin from 'lucide-react/dist/esm/icons/pin'
+import ScanSearch from 'lucide-react/dist/esm/icons/scan-search'
+import Scissors from 'lucide-react/dist/esm/icons/scissors'
+import Star from 'lucide-react/dist/esm/icons/star'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -38,10 +37,12 @@ export function ToolCard({
 }: ToolCardProps) {
   const iconByTool = {
     'json-formatter': Braces,
+    'json-table': FileJson2,
     base64: Binary,
     'base64-image': FileImage,
     'base64-pdf': FileText,
     'sql-formatter': Database,
+    'code-minifier': Scissors,
     'sql-mongo-converter': DatabaseZap,
     'regex-tool': ScanSearch,
     'json-model-generator': FileJson2,
@@ -55,7 +56,7 @@ export function ToolCard({
     'fake-data-generator': FlaskConical,
     'readme-generator': FileText,
   } as const
-  const ToolIcon = iconByTool[tool.id]
+  const ToolIcon = iconByTool[tool.id] ?? FileCode2
 
   return (
     <article
@@ -128,3 +129,4 @@ export function ToolCard({
     </article>
   )
 }
+

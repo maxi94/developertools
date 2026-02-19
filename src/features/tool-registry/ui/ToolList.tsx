@@ -1,50 +1,42 @@
-﻿import { useEffect, useMemo, useRef, useState } from 'react'
-import {
-  BookOpenText,
-  Braces,
-  ChevronDown,
-  ChevronRight,
-  ChevronsLeft,
-  ChevronsRight,
-  Code2,
-  Database,
-  Fingerprint,
-  Globe2,
-  House,
-  Menu,
-  MoonStar,
-  PanelLeft,
-  Pin,
-  PinOff,
-  Search,
-  Sparkles,
-  Star,
-  Sun,
-  X,
-} from 'lucide-react'
-import { Base64ImageTool } from '@/features/base64-image/ui/Base64ImageTool'
-import { Base64PdfTool } from '@/features/base64-pdf/ui/Base64PdfTool'
-import { Base64Tool } from '@/features/base64/ui/Base64Tool'
-import { DateTimeTools } from '@/features/datetime-tools/ui/DateTimeTools'
-import { EncodingSuiteTool } from '@/features/encoding-suite/ui/EncodingSuiteTool'
-import { FakeDataTool } from '@/features/fake-data/ui/FakeDataTool'
-import { IdToolkitTool } from '@/features/id-toolkit/ui/IdToolkitTool'
-import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
-import { JsonModelGeneratorTool } from '@/features/json-model-generator/ui/JsonModelGeneratorTool'
-import { JwtBuilderTool } from '@/features/jwt-builder/ui/JwtBuilderTool'
-import { JwtTool } from '@/features/jwt/ui/JwtTool'
-import { RegexTool } from '@/features/regex-tool/ui/RegexTool'
-import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
-import { SqlMongoConverterTool } from '@/features/sql-mongo/ui/SqlMongoConverterTool'
-import { SqlFormatterTool } from '@/features/sql-formatter/ui/SqlFormatterTool'
+﻿import {
+  lazy,
+  Suspense,
+  useDeferredValue,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+  type ComponentType,
+  type LazyExoticComponent,
+} from 'react'
+import BookOpenText from 'lucide-react/dist/esm/icons/book-open-text'
+import Braces from 'lucide-react/dist/esm/icons/braces'
+import ChevronDown from 'lucide-react/dist/esm/icons/chevron-down'
+import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right'
+import ChevronsLeft from 'lucide-react/dist/esm/icons/chevrons-left'
+import ChevronsRight from 'lucide-react/dist/esm/icons/chevrons-right'
+import Code2 from 'lucide-react/dist/esm/icons/code-2'
+import Database from 'lucide-react/dist/esm/icons/database'
+import Fingerprint from 'lucide-react/dist/esm/icons/fingerprint-pattern'
+import Globe2 from 'lucide-react/dist/esm/icons/globe-2'
+import House from 'lucide-react/dist/esm/icons/house'
+import Menu from 'lucide-react/dist/esm/icons/menu'
+import MoonStar from 'lucide-react/dist/esm/icons/moon-star'
+import PanelLeft from 'lucide-react/dist/esm/icons/panel-left'
+import Pin from 'lucide-react/dist/esm/icons/pin'
+import PinOff from 'lucide-react/dist/esm/icons/pin-off'
+import Search from 'lucide-react/dist/esm/icons/search'
+import Sparkles from 'lucide-react/dist/esm/icons/sparkles'
+import Star from 'lucide-react/dist/esm/icons/star'
+import Sun from 'lucide-react/dist/esm/icons/sun'
+import X from 'lucide-react/dist/esm/icons/x'
 import { WEB_VERSION, tools } from '@/features/tool-registry/model/tools'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
-import { UrlCodecTool } from '@/features/url-codec/ui/UrlCodecTool'
-import { UuidTool } from '@/features/uuid/ui/UuidTool'
 import { useTheme } from '@/shared/hooks/useTheme'
 import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
 
 const FAVORITES_KEY = 'developer-tools-favorites'
+const FAVORITES_STORAGE_VERSION = 1
 const categoryOrder: ToolCategory[] = [
   'Datos',
   'Formateadores',
@@ -126,6 +118,39 @@ const slugToCategory = Object.fromEntries(
 
 const releaseNotes = [
   {
+    version: 'v0.10.0',
+    date: '2026-02-19',
+    title: 'Minify/Expand JS-CSS',
+    changes: [
+      'Nueva herramienta para minificar y expandir JavaScript y CSS.',
+      'Soporte para pegar contenido o cargar archivos .js/.mjs/.cjs/.css.',
+      'Acciones de copiar y descargar salida procesada.',
+    ],
+  },
+  {
+    version: 'v0.9.0',
+    date: '2026-02-19',
+    title: 'JSON table export + SQL-Mongo examples',
+    changes: [
+      'Nueva herramienta JSON a tabla con soporte de objetos/arrays anidados.',
+      'Preview tabular y exportacion a CSV y Excel (.xls).',
+      'SQL a MongoDB: nuevos ejemplos (fechas, rangos, not, in, distinct, comparadores).',
+      'UI de ejemplos en SQL a Mongo mejorada para que no sea invasiva.',
+    ],
+  },
+  {
+    version: 'v0.8.0',
+    date: '2026-02-19',
+    title: 'JSON classes + graph navigation + exports',
+    changes: [
+      'JSON Formatter: exportar CSV y Excel desde salida JSON estructurada.',
+      'Toast de alertas sin texto fijo en medio y acciones separadas por textarea.',
+      'Vista grafo mejorada: zoom, pan por arrastre, click para navegar, centrar nodo y pantalla completa.',
+      'JSON a clases: soporte robusto para objetos anidados y nuevos lenguajes (Python, Kotlin, Go).',
+      'Versiones actualizadas para web y herramientas JSON.',
+    ],
+  },
+  {
     version: 'v0.6.0',
     date: '2026-02-19',
     title: 'Rediseno UI, rutas directas y versionado',
@@ -176,6 +201,104 @@ type ViewState =
   | { type: 'home' }
   | { type: 'category'; category: ToolCategory }
   | { type: 'tool'; toolId: ToolId }
+
+const toolById = new Map<ToolId, ToolDefinition>(tools.map((tool) => [tool.id, tool]))
+
+const toolsByCategory = categoryOrder.reduce<Record<ToolCategory, ToolDefinition[]>>(
+  (acc, category) => {
+    acc[category] = []
+    return acc
+  },
+  {
+    Datos: [],
+    Formateadores: [],
+    'Generadores de codigo': [],
+    'Tokens e identidad': [],
+    'Utilidades web': [],
+    Documentacion: [],
+  },
+)
+
+for (const tool of tools) {
+  toolsByCategory[tool.category].push(tool)
+}
+
+function lazyNamedTool<T extends object, K extends keyof T>(
+  loader: () => Promise<T>,
+  key: K,
+): LazyExoticComponent<ComponentType> {
+  return lazy(async () => {
+    const module = await loader()
+    return { default: module[key] as ComponentType }
+  })
+}
+
+const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentType>>> = {
+  'json-formatter': lazyNamedTool(
+    () => import('@/features/json-formatter/ui/JsonFormatterTool'),
+    'JsonFormatterTool',
+  ),
+  'json-table': lazyNamedTool(
+    () => import('@/features/json-table/ui/JsonTableTool'),
+    'JsonTableTool',
+  ),
+  base64: lazyNamedTool(() => import('@/features/base64/ui/Base64Tool'), 'Base64Tool'),
+  'base64-image': lazyNamedTool(
+    () => import('@/features/base64-image/ui/Base64ImageTool'),
+    'Base64ImageTool',
+  ),
+  'base64-pdf': lazyNamedTool(
+    () => import('@/features/base64-pdf/ui/Base64PdfTool'),
+    'Base64PdfTool',
+  ),
+  'fake-data-generator': lazyNamedTool(
+    () => import('@/features/fake-data/ui/FakeDataTool'),
+    'FakeDataTool',
+  ),
+  'sql-formatter': lazyNamedTool(
+    () => import('@/features/sql-formatter/ui/SqlFormatterTool'),
+    'SqlFormatterTool',
+  ),
+  'code-minifier': lazyNamedTool(
+    () => import('@/features/code-minifier/ui/CodeMinifierTool'),
+    'CodeMinifierTool',
+  ),
+  'sql-mongo-converter': lazyNamedTool(
+    () => import('@/features/sql-mongo/ui/SqlMongoConverterTool'),
+    'SqlMongoConverterTool',
+  ),
+  'regex-tool': lazyNamedTool(() => import('@/features/regex-tool/ui/RegexTool'), 'RegexTool'),
+  'json-model-generator': lazyNamedTool(
+    () => import('@/features/json-model-generator/ui/JsonModelGeneratorTool'),
+    'JsonModelGeneratorTool',
+  ),
+  'jwt-builder': lazyNamedTool(
+    () => import('@/features/jwt-builder/ui/JwtBuilderTool'),
+    'JwtBuilderTool',
+  ),
+  jwt: lazyNamedTool(() => import('@/features/jwt/ui/JwtTool'), 'JwtTool'),
+  uuid: lazyNamedTool(() => import('@/features/uuid/ui/UuidTool'), 'UuidTool'),
+  'id-toolkit': lazyNamedTool(
+    () => import('@/features/id-toolkit/ui/IdToolkitTool'),
+    'IdToolkitTool',
+  ),
+  'url-codec': lazyNamedTool(
+    () => import('@/features/url-codec/ui/UrlCodecTool'),
+    'UrlCodecTool',
+  ),
+  'encoding-suite': lazyNamedTool(
+    () => import('@/features/encoding-suite/ui/EncodingSuiteTool'),
+    'EncodingSuiteTool',
+  ),
+  'datetime-tools': lazyNamedTool(
+    () => import('@/features/datetime-tools/ui/DateTimeTools'),
+    'DateTimeTools',
+  ),
+  'readme-generator': lazyNamedTool(
+    () => import('@/features/readme-generator/ui/ReadmeGeneratorTool'),
+    'ReadmeGeneratorTool',
+  ),
+}
 
 function normalizePath(pathname: string): string {
   if (!pathname || pathname === '/') {
@@ -232,8 +355,7 @@ function parseViewFromPath(pathname: string): ViewState {
   const toolMatch = normalized.match(/^\/herramienta\/([^/]+)$/)
   if (toolMatch) {
     const toolId = toolMatch[1] as ToolId
-    const hasTool = tools.some((tool) => tool.id === toolId)
-    if (hasTool) {
+    if (toolById.has(toolId)) {
       return { type: 'tool', toolId }
     }
     return { type: 'home' }
@@ -250,12 +372,25 @@ function getInitialFavorites(): ToolId[] {
 
   try {
     const parsed = JSON.parse(raw)
-    if (!Array.isArray(parsed)) {
+    const validToolIds = new Set<ToolId>(tools.map((tool) => tool.id))
+
+    // Backward compatibility: legacy format was an array of ids.
+    if (Array.isArray(parsed)) {
+      return parsed.filter((toolId): toolId is ToolId => validToolIds.has(toolId as ToolId))
+    }
+
+    if (
+      typeof parsed !== 'object' ||
+      parsed === null ||
+      !('version' in parsed) ||
+      !('ids' in parsed) ||
+      parsed.version !== FAVORITES_STORAGE_VERSION ||
+      !Array.isArray(parsed.ids)
+    ) {
       return []
     }
 
-    const validToolIds = new Set<ToolId>(tools.map((tool) => tool.id))
-    return parsed.filter((toolId): toolId is ToolId => validToolIds.has(toolId as ToolId))
+    return parsed.ids.filter((toolId): toolId is ToolId => validToolIds.has(toolId as ToolId))
   } catch {
     return []
   }
@@ -294,13 +429,30 @@ function SidebarContent({
   onToggleCategory,
   onExpandCategory,
 }: SidebarContentProps) {
-  const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
-  const groupedTools = categoryOrder
-    .map((category) => ({
-      category,
-      tools: menuTools.filter((tool) => tool.category === category),
-    }))
-    .filter((group) => group.tools.length > 0)
+  const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
+  const favoriteTools = useMemo(
+    () => favoriteToolIds.map((toolId) => toolById.get(toolId)).filter(Boolean) as ToolDefinition[],
+    [favoriteToolIds],
+  )
+
+  const groupedTools = useMemo(() => {
+    const grouped: Record<ToolCategory, ToolDefinition[]> = {
+      Datos: [],
+      Formateadores: [],
+      'Generadores de codigo': [],
+      'Tokens e identidad': [],
+      'Utilidades web': [],
+      Documentacion: [],
+    }
+
+    for (const tool of menuTools) {
+      grouped[tool.category].push(tool)
+    }
+
+    return categoryOrder
+      .map((category) => ({ category, tools: grouped[category] }))
+      .filter((group) => group.tools.length > 0)
+  }, [menuTools])
 
   return (
     <>
@@ -402,7 +554,7 @@ function SidebarContent({
                     tool={tool}
                     compact={isMenuCollapsed}
                     isActive={tool.id === activeToolId && viewType === 'tool'}
-                    isFavorite={favoriteToolIds.includes(tool.id)}
+                    isFavorite={favoriteToolIdSet.has(tool.id)}
                     onSelect={onSelectTool}
                     onToggleFavorite={onToggleFavorite}
                   />
@@ -446,7 +598,7 @@ function HomeOverview({ favorites, latest, onSelectCategory, onSelectTool }: Hom
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-200">Publicado el {latest.date}</p>
         <ul className="mt-4 grid gap-1.5 text-sm text-slate-700 dark:text-slate-100/95">
           {latest.changes.map((change) => (
-            <li key={change}>• {change}</li>
+            <li key={change}>â€¢ {change}</li>
           ))}
         </ul>
         <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -475,7 +627,7 @@ function HomeOverview({ favorites, latest, onSelectCategory, onSelectTool }: Hom
             Web {WEB_VERSION}
           </span>
         </div>
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:640px]">
           {releaseNotes.map((release, index) => (
             <article
               key={release.version}
@@ -493,7 +645,7 @@ function HomeOverview({ favorites, latest, onSelectCategory, onSelectTool }: Hom
               </h3>
               <ul className="mt-2 grid gap-1 text-xs text-slate-600 dark:text-slate-300">
                 {release.changes.map((change) => (
-                  <li key={change}>• {change}</li>
+                  <li key={change}>â€¢ {change}</li>
                 ))}
               </ul>
             </article>
@@ -503,7 +655,7 @@ function HomeOverview({ favorites, latest, onSelectCategory, onSelectTool }: Hom
 
       <section className="rounded-xl border border-slate-300/70 bg-white p-4 dark:border-slate-700 dark:bg-slate-900/85">
         <h2 className="text-lg font-semibold">Categorias</h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4 [content-visibility:auto] [contain-intrinsic-size:520px]">
           {categoryOrder.map((category) => (
             <button
               key={category}
@@ -570,9 +722,11 @@ function CategoryOverview({
   onSelectTool,
   onToggleFavorite,
 }: CategoryOverviewProps) {
-  const favoriteCountInCategory = toolsByCategory.filter((tool) =>
-    favoriteToolIds.includes(tool.id),
-  ).length
+  const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
+  const favoriteCountInCategory = useMemo(
+    () => toolsByCategory.filter((tool) => favoriteToolIdSet.has(tool.id)).length,
+    [favoriteToolIdSet, toolsByCategory],
+  )
 
   return (
     <section className="grid gap-4">
@@ -620,7 +774,7 @@ function CategoryOverview({
         </p>
       </section>
 
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:740px]">
         {toolsByCategory.map((tool, index) => (
           <article
             key={tool.id}
@@ -660,12 +814,12 @@ function CategoryOverview({
                   type="button"
                   onClick={() => onToggleFavorite(tool.id)}
                   className={`cursor-pointer rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
-                    favoriteToolIds.includes(tool.id)
+                    favoriteToolIdSet.has(tool.id)
                       ? 'border-amber-300/60 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
                       : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
                   }`}
                 >
-                  {favoriteToolIds.includes(tool.id) ? 'Favorito' : 'Fijar'}
+                  {favoriteToolIdSet.has(tool.id) ? 'Favorito' : 'Fijar'}
                 </button>
 
                 <button
@@ -698,10 +852,11 @@ export function ToolList() {
   const mainRef = useRef<HTMLElement>(null)
 
   const activeTool = useMemo(
-    () => (view.type === 'tool' ? (tools.find((tool) => tool.id === view.toolId) ?? null) : null),
+    () => (view.type === 'tool' ? (toolById.get(view.toolId) ?? null) : null),
     [view],
   )
-  const isActiveToolFavorite = !!activeTool && favoriteToolIds.includes(activeTool.id)
+  const favoriteSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
+  const isActiveToolFavorite = !!activeTool && favoriteSet.has(activeTool.id)
 
   const selectedCategory = useMemo<ToolCategory | null>(() => {
     if (view.type === 'category') {
@@ -715,53 +870,73 @@ export function ToolList() {
     return null
   }, [view, activeTool])
 
-  const normalizedSearch = searchTerm.trim().toLowerCase()
-  const filteredTools = useMemo(() => {
+  const deferredSearchTerm = useDeferredValue(searchTerm)
+  const normalizedSearch = deferredSearchTerm.trim().toLowerCase()
+  const searchData = useMemo(() => {
     if (!normalizedSearch) {
-      return tools
+      return { filteredTools: tools, suggestions: tools }
     }
 
-    return tools.filter((tool) => {
-      const target = `${tool.name} ${tool.description}`.toLowerCase()
-      return target.includes(normalizedSearch)
-    })
-  }, [normalizedSearch])
+    const filteredTools: ToolDefinition[] = []
+    const suggestions: ToolDefinition[] = []
 
-  const suggestions = useMemo(() => {
-    if (!normalizedSearch) {
-      return tools
+    for (const tool of tools) {
+      const filterTarget = `${tool.name} ${tool.description}`.toLowerCase()
+      if (filterTarget.includes(normalizedSearch)) {
+        filteredTools.push(tool)
+      }
+
+      const suggestionTarget = `${tool.name} ${tool.description} ${tool.category}`.toLowerCase()
+      if (suggestionTarget.includes(normalizedSearch)) {
+        suggestions.push(tool)
+      }
     }
 
-    return tools.filter((tool) => {
-      const target = `${tool.name} ${tool.description} ${tool.category}`.toLowerCase()
-      return target.includes(normalizedSearch)
-    })
+    return { filteredTools, suggestions }
   }, [normalizedSearch])
+  const filteredTools = searchData.filteredTools
 
-  const groupedSuggestions = useMemo(
-    () =>
-      categoryOrder
-        .map((category) => ({
-          category,
-          tools: suggestions.filter((tool) => tool.category === category),
-        }))
-        .filter((group) => group.tools.length > 0),
-    [suggestions],
-  )
+  const groupedSuggestions = useMemo(() => {
+    const grouped: Record<ToolCategory, ToolDefinition[]> = {
+      Datos: [],
+      Formateadores: [],
+      'Generadores de codigo': [],
+      'Tokens e identidad': [],
+      'Utilidades web': [],
+      Documentacion: [],
+    }
+
+    for (const tool of searchData.suggestions) {
+      grouped[tool.category].push(tool)
+    }
+
+    return categoryOrder
+      .map((category) => ({ category, tools: grouped[category] }))
+      .filter((group) => group.tools.length > 0)
+  }, [searchData.suggestions])
 
   const flatSuggestions = useMemo(
     () => groupedSuggestions.flatMap((group) => group.tools),
     [groupedSuggestions],
   )
 
+  const suggestionIndexById = useMemo(
+    () => new Map(flatSuggestions.map((tool, index) => [tool.id, index])),
+    [flatSuggestions],
+  )
+
   const favoriteTools = useMemo(
-    () => tools.filter((tool) => favoriteToolIds.includes(tool.id)),
+    () => favoriteToolIds.map((toolId) => toolById.get(toolId)).filter(Boolean) as ToolDefinition[],
     [favoriteToolIds],
   )
 
   const toolsForSelectedCategory = useMemo(
-    () => (selectedCategory ? tools.filter((tool) => tool.category === selectedCategory) : []),
+    () => (selectedCategory ? toolsByCategory[selectedCategory] : []),
     [selectedCategory],
+  )
+  const ActiveToolComponent = useMemo(
+    () => (activeTool ? toolComponentById[activeTool.id] ?? null : null),
+    [activeTool],
   )
 
   useEffect(() => {
@@ -788,7 +963,13 @@ export function ToolList() {
   }, [])
 
   useEffect(() => {
-    window.localStorage.setItem(FAVORITES_KEY, JSON.stringify(favoriteToolIds))
+    window.localStorage.setItem(
+      FAVORITES_KEY,
+      JSON.stringify({
+        version: FAVORITES_STORAGE_VERSION,
+        ids: favoriteToolIds,
+      }),
+    )
   }, [favoriteToolIds])
 
   useEffect(() => {
@@ -860,7 +1041,7 @@ export function ToolList() {
   }
 
   const applySuggestion = (toolId: ToolId) => {
-    const selectedTool = tools.find((tool) => tool.id === toolId)
+    const selectedTool = toolById.get(toolId)
     if (!selectedTool) {
       return
     }
@@ -962,7 +1143,7 @@ export function ToolList() {
                   </p>
                   <div className="mt-1 grid gap-1">
                     {group.tools.map((tool) => {
-                      const index = flatSuggestions.findIndex((entry) => entry.id === tool.id)
+                      const index = suggestionIndexById.get(tool.id) ?? 0
                       return (
                         <button
                           key={tool.id}
@@ -1146,26 +1327,16 @@ export function ToolList() {
             />
           ) : null}
 
-          {view.type === 'tool' ? (
-            <>
-              {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
-              {activeTool?.id === 'base64' ? <Base64Tool /> : null}
-              {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
-              {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
-              {activeTool?.id === 'fake-data-generator' ? <FakeDataTool /> : null}
-              {activeTool?.id === 'sql-formatter' ? <SqlFormatterTool /> : null}
-              {activeTool?.id === 'sql-mongo-converter' ? <SqlMongoConverterTool /> : null}
-              {activeTool?.id === 'regex-tool' ? <RegexTool /> : null}
-              {activeTool?.id === 'json-model-generator' ? <JsonModelGeneratorTool /> : null}
-              {activeTool?.id === 'jwt-builder' ? <JwtBuilderTool /> : null}
-              {activeTool?.id === 'jwt' ? <JwtTool /> : null}
-              {activeTool?.id === 'uuid' ? <UuidTool /> : null}
-              {activeTool?.id === 'id-toolkit' ? <IdToolkitTool /> : null}
-              {activeTool?.id === 'url-codec' ? <UrlCodecTool /> : null}
-              {activeTool?.id === 'encoding-suite' ? <EncodingSuiteTool /> : null}
-              {activeTool?.id === 'datetime-tools' ? <DateTimeTools /> : null}
-              {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
-            </>
+          {view.type === 'tool' && ActiveToolComponent ? (
+            <Suspense
+              fallback={
+                <section className="rounded-2xl border border-slate-300/70 bg-white/90 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/85 dark:text-slate-300">
+                  Cargando herramienta...
+                </section>
+              }
+            >
+              <ActiveToolComponent />
+            </Suspense>
           ) : null}
         </main>
       </div>
@@ -1217,3 +1388,7 @@ export function ToolList() {
     </section>
   )
 }
+
+
+
+

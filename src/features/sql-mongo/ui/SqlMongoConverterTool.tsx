@@ -7,22 +7,67 @@ import {
   type MongoQueryParts,
 } from '@/shared/lib/sql-mongo'
 
-const sqlTemplates = [
+const sqlExampleGroups = [
   {
-    name: 'Filtro basico',
-    value:
-      "SELECT id, name FROM users WHERE active = 1 AND name LIKE 'mat%' ORDER BY id DESC LIMIT 20",
+    group: 'Basicos',
+    examples: [
+      {
+        name: 'Filtro basico',
+        value:
+          "SELECT id, name FROM users WHERE active = 1 AND name LIKE 'mat%' ORDER BY id DESC LIMIT 20",
+      },
+      {
+        name: 'Comparadores',
+        value: 'SELECT id, email FROM users WHERE score >= 80 AND attempts < 3',
+      },
+    ],
   },
   {
-    name: 'IN + orden',
-    value:
-      'SELECT id, total FROM orders WHERE status IN (1, 2, 3) ORDER BY created_at DESC LIMIT 10',
+    group: 'Fechas y rangos',
+    examples: [
+      {
+        name: 'Fecha exacta',
+        value: "SELECT id, created_at FROM orders WHERE created_at = '2026-02-10'",
+      },
+      {
+        name: 'Rango por BETWEEN',
+        value:
+          "SELECT id, total FROM orders WHERE created_at BETWEEN '2026-02-01' AND '2026-02-29'",
+      },
+    ],
   },
   {
-    name: 'Comparadores',
-    value: 'SELECT id, email FROM users WHERE score >= 80 AND attempts < 3',
+    group: 'Operadores',
+    examples: [
+      {
+        name: 'IN + !=',
+        value:
+          "SELECT id, total FROM orders WHERE status IN (1, 2, 3) AND country != 'US' ORDER BY created_at DESC LIMIT 10",
+      },
+      {
+        name: '<> y NOT LIKE',
+        value: "SELECT id, email FROM users WHERE role <> 'admin' AND email NOT LIKE '%test%'",
+      },
+      {
+        name: 'NOT IN',
+        value: "SELECT id, sku FROM products WHERE category NOT IN ('deprecated', 'legacy')",
+      },
+    ],
   },
-]
+  {
+    group: 'Consultas especiales',
+    examples: [
+      {
+        name: 'DISTINCT',
+        value: "SELECT DISTINCT status FROM orders WHERE created_at >= '2026-01-01'",
+      },
+      {
+        name: 'OR simple',
+        value: "SELECT id, name FROM users WHERE plan = 'pro' OR plan = 'enterprise'",
+      },
+    ],
+  },
+] as const
 
 const outputModes: Array<{ value: MongoOutputMode; label: string }> = [
   { value: 'mongosh', label: 'mongosh' },
@@ -36,7 +81,9 @@ type BuilderMode = 'sql' | 'compass-filter'
 export function SqlMongoConverterTool() {
   const [builderMode, setBuilderMode] = useState<BuilderMode>('sql')
   const [mode, setMode] = useState<MongoOutputMode>('compass')
-  const [source, setSource] = useState(sqlTemplates[0].value)
+  const firstExample = sqlExampleGroups[0].examples[0]
+  const [source, setSource] = useState(firstExample.value)
+  const [selectedExample, setSelectedExample] = useState(firstExample.name)
 
   const [collection, setCollection] = useState('users')
   const [filter, setFilter] = useState('{ "active": true }')
@@ -110,19 +157,45 @@ export function SqlMongoConverterTool() {
 
       {builderMode === 'sql' ? (
         <>
-          <div className="mt-3 flex flex-wrap gap-2">
-            {sqlTemplates.map((template) => (
-              <button
-                key={template.name}
-                type="button"
-                className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
-                onClick={() => setSource(template.value)}
-              >
+          <details className="mt-3 rounded-xl border border-slate-300/70 bg-white/70 p-2.5 dark:border-slate-700 dark:bg-slate-900/50">
+            <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+              <span className="inline-flex items-center gap-1.5">
                 <Sparkles className="size-3.5" />
-                {template.name}
+                Ejemplos SQL (rapidos)
+              </span>
+            </summary>
+            <div className="mt-2 grid gap-2 md:grid-cols-[minmax(0,1fr)_auto]">
+              <select
+                className="rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-xs font-semibold text-slate-700 outline-none dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100"
+                value={selectedExample}
+                onChange={(event) => setSelectedExample(event.target.value)}
+              >
+                {sqlExampleGroups.map((group) => (
+                  <optgroup key={group.group} label={group.group}>
+                    {group.examples.map((example) => (
+                      <option key={example.name} value={example.name}>
+                        {example.name}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <button
+                type="button"
+                className="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+                onClick={() => {
+                  const selected = sqlExampleGroups
+                    .flatMap((group) => group.examples)
+                    .find((example) => example.name === selectedExample)
+                  if (selected) {
+                    setSource(selected.value)
+                  }
+                }}
+              >
+                Aplicar ejemplo
               </button>
-            ))}
-          </div>
+            </div>
+          </details>
 
           <div className="mt-3 grid gap-3 lg:grid-cols-2">
             <textarea
