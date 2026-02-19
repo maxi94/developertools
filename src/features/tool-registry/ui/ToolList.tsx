@@ -1093,34 +1093,12 @@ export function ToolList() {
       return
     }
 
-    const translate = () => applyDomTranslations(root, language)
-    let frameId: number | null = null
-    translate()
-
-    const scheduleTranslate = () => {
-      if (frameId !== null) {
-        return
-      }
-      frameId = window.requestAnimationFrame(() => {
-        frameId = null
-        translate()
-      })
-    }
-
-    const observer = new MutationObserver(() => {
-      scheduleTranslate()
-    })
-
-    observer.observe(root, {
-      childList: true,
-      subtree: true,
+    const frameId = window.requestAnimationFrame(() => {
+      applyDomTranslations(root, language)
     })
 
     return () => {
-      if (frameId !== null) {
-        window.cancelAnimationFrame(frameId)
-      }
-      observer.disconnect()
+      window.cancelAnimationFrame(frameId)
     }
   }, [language, view.type, activeTool?.id])
 
