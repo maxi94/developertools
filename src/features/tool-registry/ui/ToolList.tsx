@@ -41,12 +41,12 @@ function MenuPanel({ activeToolId, favoriteToolIds, onSelect, onToggleFavorite }
   const favoriteTools = tools.filter((tool) => favoriteToolIds.includes(tool.id))
 
   return (
-    <>
-      <div className="mb-4 rounded-xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/50">
-        <h2 className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+    <div className="grid gap-4">
+      <section className="rounded-xl border border-slate-200/90 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/40">
+        <h3 className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
           <Star className="size-3.5" />
           Favoritos
-        </h2>
+        </h3>
         {favoriteTools.length > 0 ? (
           <div className="flex flex-wrap gap-1.5">
             {favoriteTools.map((tool) => (
@@ -66,10 +66,10 @@ function MenuPanel({ activeToolId, favoriteToolIds, onSelect, onToggleFavorite }
           </div>
         ) : (
           <p className="text-xs text-slate-500 dark:text-slate-400">
-            Marca una herramienta con estrella.
+            Marca herramientas con estrella para tener acceso rapido.
           </p>
         )}
-      </div>
+      </section>
 
       <nav className="grid gap-2" aria-label="Menu de funcionalidades">
         {tools.map((tool) => (
@@ -83,7 +83,7 @@ function MenuPanel({ activeToolId, favoriteToolIds, onSelect, onToggleFavorite }
           />
         ))}
       </nav>
-    </>
+    </div>
   )
 }
 
@@ -119,29 +119,45 @@ export function ToolList() {
   }
 
   return (
-    <section className="grid gap-4">
+    <section className="mx-auto grid w-full max-w-7xl gap-4 lg:grid-cols-[280px_minmax(0,1fr)] lg:items-start">
       <button
         type="button"
-        className="inline-flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/80 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:hidden dark:border-slate-700/70 dark:bg-slate-900/75 dark:text-slate-100"
+        className="inline-flex items-center gap-2 rounded-xl border border-slate-300/70 bg-white/85 px-3 py-2 text-sm font-semibold text-slate-700 shadow-sm lg:hidden dark:border-slate-700/70 dark:bg-slate-900/85 dark:text-slate-100"
         onClick={() => setIsMobileMenuOpen(true)}
       >
         <Menu className="size-4" />
         Menu
       </button>
 
-      <section className="grid gap-4 lg:grid-cols-[300px_minmax(0,1fr)] lg:items-start">
-        <aside className="hidden h-[calc(100vh-3.5rem)] overflow-y-auto rounded-2xl border border-slate-300/70 bg-white/90 p-4 shadow-lg shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/40">
-          <h2 className="mb-3 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-            <PanelLeft className="size-3.5" />
-            Menu de funcionalidades
-          </h2>
-          <MenuPanel
-            activeToolId={activeToolId}
-            favoriteToolIds={favoriteToolIds}
-            onSelect={selectTool}
-            onToggleFavorite={toggleFavorite}
-          />
-        </aside>
+      <aside className="hidden max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-300/70 bg-white/90 p-4 shadow-xl shadow-slate-900/10 backdrop-blur lg:sticky lg:top-4 lg:block dark:border-slate-700/70 dark:bg-slate-900/85 dark:shadow-black/40">
+        <h2 className="mb-4 inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
+          <PanelLeft className="size-3.5" />
+          Menu
+        </h2>
+        <MenuPanel
+          activeToolId={activeToolId}
+          favoriteToolIds={favoriteToolIds}
+          onSelect={selectTool}
+          onToggleFavorite={toggleFavorite}
+        />
+      </aside>
+
+      <section className="grid gap-4">
+        <header className="rounded-2xl border border-slate-300/70 bg-white/85 p-4 shadow-xl shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/80 dark:shadow-black/40">
+          <div className="mb-2 inline-flex items-center gap-2">
+            <img src="/logo.svg" alt="Logo Developer Tools" className="size-8 rounded-lg" />
+            <p className="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700 dark:text-sky-300">
+              Developer Tools
+            </p>
+          </div>
+          <h1 className="text-2xl font-bold leading-tight text-slate-900 dark:text-slate-100 md:text-3xl">
+            {activeTool?.name ?? 'Utilidades para desarrolladores'}
+          </h1>
+          <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+            {activeTool?.description ??
+              'Convierte, valida y transforma datos sin salir del navegador.'}
+          </p>
+        </header>
 
         <div className="min-w-0">
           {activeTool?.id === 'json-formatter' ? <JsonFormatterTool /> : null}
@@ -155,21 +171,21 @@ export function ToolList() {
       </section>
 
       <div
-        className={`fixed inset-0 z-40 bg-slate-950/50 transition lg:hidden ${
+        className={`fixed inset-0 z-40 bg-slate-950/55 transition lg:hidden ${
           isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[85vw] max-w-[340px] overflow-y-auto border-r border-slate-300 bg-white p-4 pb-8 shadow-2xl transition-transform duration-300 lg:hidden dark:border-slate-700 dark:bg-slate-950 ${
+        className={`fixed inset-y-0 left-0 z-50 w-[88vw] max-w-[360px] overflow-y-auto border-r border-slate-300 bg-white p-4 pb-8 shadow-2xl transition-transform duration-300 lg:hidden dark:border-slate-700 dark:bg-slate-950 ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <div className="mb-3 flex items-center justify-between">
+        <div className="mb-4 flex items-center justify-between">
           <h2 className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
             <PanelLeft className="size-3.5" />
-            Menu de funcionalidades
+            Menu
           </h2>
           <button
             type="button"
