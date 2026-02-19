@@ -445,7 +445,7 @@ export function JsonFormatterTool() {
                 </button>
               </div>
             </div>
-            <div className="min-h-[320px] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+            <div className="h-[320px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
               <JsonCodeViewer
                 value={output.formatted}
                 status={output.status}
