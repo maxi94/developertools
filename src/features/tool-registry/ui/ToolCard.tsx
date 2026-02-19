@@ -45,6 +45,7 @@ export function ToolCard({
     'base64-pdf': FileText,
     'sql-formatter': Database,
     'code-minifier': Scissors,
+    'case-converter': FileCode2,
     'sql-mongo-converter': DatabaseZap,
     'regex-tool': ScanSearch,
     'json-model-generator': FileJson2,

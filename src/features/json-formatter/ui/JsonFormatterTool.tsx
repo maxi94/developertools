@@ -1,17 +1,23 @@
-import { useDeferredValue, useMemo, useState } from 'react'
+import { useDeferredValue, useEffect, useMemo, useState } from 'react'
 import {
   CheckCircle2,
   Copy,
   Download,
   Eraser,
+  Expand,
   FileSpreadsheet,
   FileText,
   Minimize2,
   Network,
   Sparkles,
+  WrapText,
+  ListOrdered,
+  X,
 } from 'lucide-react'
 import { parseAndFormatJson, sortJsonKeysDeep } from '@/shared/lib/json'
+import { JsonCodeViewer } from '@/shared/ui/JsonCodeViewer'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
+import { useToast } from '@/shared/ui/toast/ToastProvider'
 
 const sample = `{
   "definiciones": {
@@ -127,11 +133,20 @@ function downloadTextFile(content: string, filename: string, mimeType: string) {
   URL.revokeObjectURL(url)
 }
 
+const toolbarButtonClass =
+  'inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300'
+
+const toolbarGroupClass =
+  'flex flex-wrap items-center gap-1.5 rounded-xl border border-slate-200/80 bg-slate-50/70 p-1.5 dark:border-slate-700 dark:bg-slate-900/50'
+
 export function JsonFormatterTool() {
+  const { showToast } = useToast()
   const [source, setSource] = useState(sample)
   const [resolveRefs, setResolveRefs] = useState(true)
-  const [toast, setToast] = useState<{ tone: 'success' | 'error'; message: string } | null>(null)
   const [isOutputMinified, setIsOutputMinified] = useState(false)
+  const [isOutputFullscreen, setIsOutputFullscreen] = useState(false)
+  const [wrapLines, setWrapLines] = useState(false)
+  const [showLineNumbers, setShowLineNumbers] = useState(true)
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
 
@@ -177,9 +192,23 @@ export function JsonFormatterTool() {
   }, [deferredSource, isOutputMinified, resolveRefs])
 
   const notify = (tone: 'success' | 'error', message: string) => {
-    setToast({ tone, message })
-    window.setTimeout(() => setToast(null), 2200)
+    showToast(message, { tone })
   }
+
+  useEffect(() => {
+    if (!isOutputFullscreen) {
+      return
+    }
+
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsOutputFullscreen(false)
+      }
+    }
+
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [isOutputFullscreen])
 
   const copyOutput = async () => {
     if (!output.formatted.trim()) {
@@ -276,7 +305,7 @@ export function JsonFormatterTool() {
         <div className="mb-4 flex flex-wrap items-center gap-2">
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+            className={toolbarButtonClass}
             onClick={() => setSource(sample)}
           >
             <Sparkles className="size-3.5" />
@@ -284,7 +313,7 @@ export function JsonFormatterTool() {
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-rose-400 hover:text-rose-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-rose-400 dark:hover:text-rose-300"
+            className={toolbarButtonClass}
             onClick={() => setSource('')}
           >
             <Eraser className="size-3.5" />
@@ -292,7 +321,7 @@ export function JsonFormatterTool() {
           </button>
           <button
             type="button"
-            className={`inline-flex items-center gap-2 rounded-xl border px-3 py-2 text-xs font-semibold transition ${
+            className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
               resolveRefs
                 ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
                 : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
@@ -300,11 +329,14 @@ export function JsonFormatterTool() {
             onClick={() => setResolveRefs((state) => !state)}
           >
             <Network className="size-3.5" />
-            Resolver referencias (ref/$ref/$id): {resolveRefs ? 'Activo' : 'Inactivo'}
+            Refs
+            <span className="rounded bg-black/10 px-1.5 py-0.5 text-[10px] dark:bg-white/15">
+              {resolveRefs ? 'ON' : 'OFF'}
+            </span>
           </button>
           <button
             type="button"
-            className="inline-flex items-center gap-2 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
+            className={toolbarButtonClass}
             onClick={validateSource}
           >
             <CheckCircle2 className="size-3.5" />
@@ -312,32 +344,20 @@ export function JsonFormatterTool() {
           </button>
         </div>
 
-        {toast ? (
-          <div
-            className={`pointer-events-none fixed right-4 top-4 z-50 rounded-xl border px-3 py-2 text-xs font-semibold shadow-lg ${
-              toast.tone === 'success'
-                ? 'border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-500/40 dark:bg-emerald-950/40 dark:text-emerald-300'
-                : 'border-rose-300 bg-rose-50 text-rose-700 dark:border-rose-500/40 dark:bg-rose-950/40 dark:text-rose-300'
-            }`}
-          >
-            {toast.message}
-          </div>
-        ) : null}
-
         {isProcessing ? (
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">Procesando JSON...</p>
         ) : null}
 
         <div className="grid gap-3 lg:grid-cols-2">
           <label className="grid gap-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="grid min-h-[116px] content-start gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Entrada
               </span>
-              <div className="flex flex-wrap gap-1.5">
+              <div className={toolbarGroupClass}>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  className={toolbarButtonClass}
                   onClick={sortSourceKeys}
                 >
                   <Sparkles className="size-3.5" />
@@ -345,7 +365,7 @@ export function JsonFormatterTool() {
                 </button>
                 <button
                   type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-violet-400 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-400 dark:hover:text-violet-300"
+                  className={toolbarButtonClass}
                   onClick={minifySource}
                 >
                   <Minimize2 className="size-3.5" />
@@ -363,61 +383,95 @@ export function JsonFormatterTool() {
           </label>
 
           <label className="grid gap-2">
-            <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="grid min-h-[116px] content-start gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 Salida
               </span>
-              <div className="flex flex-wrap gap-1.5">
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-violet-400 hover:text-violet-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-violet-400 dark:hover:text-violet-300"
-                  onClick={() => setIsOutputMinified((value) => !value)}
-                >
-                  <Minimize2 className="size-3.5" />
-                  {isOutputMinified ? 'Expandir' : 'Minificar'}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
-                  onClick={copyOutput}
-                >
-                  <Copy className="size-3.5" />
-                  Copiar
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-                  onClick={downloadOutput}
-                >
-                  <Download className="size-3.5" />
-                  Descargar
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
-                  onClick={exportCsv}
-                >
-                  <FileText className="size-3.5" />
-                  CSV
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
-                  onClick={exportExcel}
-                >
-                  <FileSpreadsheet className="size-3.5" />
-                  Excel
-                </button>
+              <div className="grid gap-1.5">
+                <div className={toolbarGroupClass}>
+                  <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Vista
+                  </span>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setIsOutputMinified((value) => !value)}
+                  >
+                    <Minimize2 className="size-3.5" />
+                    {isOutputMinified ? 'Expandir' : 'Minificar'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setWrapLines((value) => !value)}
+                  >
+                    <WrapText className="size-3.5" />
+                    {wrapLines ? 'No wrap' : 'Wrap'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setShowLineNumbers((value) => !value)}
+                  >
+                    <ListOrdered className="size-3.5" />
+                    {showLineNumbers ? 'Sin lineas' : 'Lineas'}
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={() => setIsOutputFullscreen(true)}
+                  >
+                    <Expand className="size-3.5" />
+                    Expandir
+                  </button>
+                </div>
+                <div className={toolbarGroupClass}>
+                  <span className="px-1 text-[10px] font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                    Datos
+                  </span>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={copyOutput}
+                  >
+                    <Copy className="size-3.5" />
+                    Copiar
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={downloadOutput}
+                  >
+                    <Download className="size-3.5" />
+                    Descargar
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={exportCsv}
+                  >
+                    <FileText className="size-3.5" />
+                    CSV
+                  </button>
+                  <button
+                    type="button"
+                    className={toolbarButtonClass}
+                    onClick={exportExcel}
+                  >
+                    <FileSpreadsheet className="size-3.5" />
+                    Excel
+                  </button>
+                </div>
               </div>
             </div>
-            <textarea
-              className="min-h-[320px] w-full resize-y rounded-2xl border border-slate-300 bg-slate-50 p-3 font-mono text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 data-[status=error]:border-rose-500 data-[status=error]:text-rose-600 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/30 dark:data-[status=error]:text-rose-300"
-              value={output.formatted}
-              readOnly
-              spellCheck={false}
-              aria-label="Salida JSON"
-              data-status={output.status}
-            />
+            <div className="h-[320px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                wrapLines={wrapLines}
+                showLineNumbers={showLineNumbers}
+              />
+            </div>
           </label>
         </div>
         {output.status === 'error' && output.errorDetails ? (
@@ -437,6 +491,61 @@ export function JsonFormatterTool() {
           data={output.parsed}
           title={`Visualizador JSON (${resolveRefs ? 'refs resueltas' : 'refs sin resolver'})`}
         />
+      ) : null}
+
+      {isOutputFullscreen ? (
+        <div className="fixed inset-0 z-[130] bg-slate-950/70 p-3 backdrop-blur-sm md:p-6">
+          <section className="grid h-full grid-rows-[auto_1fr] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
+            <header className="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
+              <p className="text-sm font-semibold text-slate-800 dark:text-slate-100">
+                Salida JSON ampliada
+              </p>
+              <div className="inline-flex items-center gap-1">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setWrapLines((value) => !value)}
+                >
+                  <WrapText className="size-3.5" />
+                  {wrapLines ? 'No wrap' : 'Wrap'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-indigo-400 hover:text-indigo-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-indigo-400 dark:hover:text-indigo-300"
+                  onClick={() => setShowLineNumbers((value) => !value)}
+                >
+                  <ListOrdered className="size-3.5" />
+                  {showLineNumbers ? 'Sin lineas' : 'Lineas'}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+                  onClick={copyOutput}
+                >
+                  <Copy className="size-3.5" />
+                  Copiar
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
+                  onClick={() => setIsOutputFullscreen(false)}
+                >
+                  <X className="size-3.5" />
+                  Cerrar
+                </button>
+              </div>
+            </header>
+            <div className="min-h-0">
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                wrapLines={wrapLines}
+                showLineNumbers={showLineNumbers}
+                className="h-full"
+              />
+            </div>
+          </section>
+        </div>
       ) : null}
     </section>
   )

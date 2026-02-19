@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v0.10.0'
+export const WEB_VERSION = 'v0.11.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -183,6 +183,14 @@ export const tools: ToolDefinition[] = [
     id: 'svg-optimizer',
     name: 'SVG Optimizer/Preview',
     description: 'Minifica SVG, previsualiza y exporta el resultado.',
+    category: 'Formateadores',
+    status: 'ready',
+    version: '1.0.0',
+  },
+  {
+    id: 'case-converter',
+    name: 'Case Converter',
+    description: 'Convierte texto entre camelCase, snake_case, kebab-case y mas.',
     category: 'Formateadores',
     status: 'ready',
     version: '1.0.0',
