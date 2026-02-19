@@ -92,7 +92,7 @@ export function Base64PdfTool() {
               <iframe
                 src={item.url}
                 title={item.filename}
-                className="h-[360px] w-full rounded-md border-0"
+                className="h-[52vh] min-h-[260px] w-full rounded-md border-0 sm:h-[360px]"
               />
               <a
                 href={item.url}

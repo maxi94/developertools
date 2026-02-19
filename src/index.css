@@ -98,3 +98,33 @@
     background-color: rgb(100 116 139 / 0.95);
   }
 }
+
+@layer components {
+  .tool-content {
+    min-width: 0;
+    overflow-x: clip;
+  }
+
+  .tool-content img,
+  .tool-content svg,
+  .tool-content canvas,
+  .tool-content video,
+  .tool-content iframe {
+    max-width: 100%;
+    height: auto;
+  }
+
+  .tool-content pre,
+  .tool-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tool-content textarea,
+  .tool-content input,
+  .tool-content select {
+    max-width: 100%;
+  }
+}
