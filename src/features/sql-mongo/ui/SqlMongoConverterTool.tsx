@@ -7,7 +7,17 @@ import {
   type MongoQueryParts,
 } from '@/shared/lib/sql-mongo'
 
-const sqlExampleGroups = [
+interface SqlExample {
+  name: string
+  value: string
+}
+
+interface SqlExampleGroup {
+  group: string
+  examples: SqlExample[]
+}
+
+const sqlExampleGroups: SqlExampleGroup[] = [
   {
     group: 'Basicos',
     examples: [
@@ -67,7 +77,7 @@ const sqlExampleGroups = [
       },
     ],
   },
-] as const
+]
 
 const outputModes: Array<{ value: MongoOutputMode; label: string }> = [
   { value: 'mongosh', label: 'mongosh' },
@@ -82,8 +92,8 @@ export function SqlMongoConverterTool() {
   const [builderMode, setBuilderMode] = useState<BuilderMode>('sql')
   const [mode, setMode] = useState<MongoOutputMode>('compass')
   const firstExample = sqlExampleGroups[0].examples[0]
-  const [source, setSource] = useState(firstExample.value)
-  const [selectedExample, setSelectedExample] = useState(firstExample.name)
+  const [source, setSource] = useState<string>(firstExample.value)
+  const [selectedExample, setSelectedExample] = useState<string>(firstExample.name)
 
   const [collection, setCollection] = useState('users')
   const [filter, setFilter] = useState('{ "active": true }')
@@ -103,6 +113,7 @@ export function SqlMongoConverterTool() {
         projection: projection.trim() || '{}',
         sort: sort.trim() || '{}',
         limit: limit.trim() ? Number.parseInt(limit.trim(), 10) : null,
+        distinctField: null,
       }
 
       return { status: 'success' as const, value: formatMongoQuery(parts, mode) }

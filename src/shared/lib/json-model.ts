@@ -129,7 +129,7 @@ function getTypeSignature(node: TypeNode): string {
     case 'objectRef':
       return `object:${node.name}`
     case 'union':
-      return `union:${node.options.map(getTypeSignature).toSorted().join('|')}`
+      return `union:${node.options.map(getTypeSignature).sort().join('|')}`
     default:
       return 'primitive:unknown'
   }

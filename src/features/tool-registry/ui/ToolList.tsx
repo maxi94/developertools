@@ -8,6 +8,7 @@
   useState,
   type ComponentType,
   type LazyExoticComponent,
+  type ReactNode,
 } from 'react'
 import {
   BookOpenText,
@@ -55,7 +56,7 @@ const RELEASE_SEEN_KEY = 'developer-tools-release-seen'
 
 const categoryMeta: Record<
   ToolCategory,
-  { icon: JSX.Element; badgeClass: string; cardClass: string }
+  { icon: ReactNode; badgeClass: string; cardClass: string }
 > = {
   Datos: {
     icon: <Database className="size-3.5" />,
@@ -375,7 +376,7 @@ function getInitialFavorites(): ToolId[] {
 
     // Backward compatibility: legacy format was an array of ids.
     if (Array.isArray(parsed)) {
-      return parsed.filter((toolId): toolId is ToolId => validToolIds.has(toolId as ToolId))
+      return parsed.filter((toolId: unknown): toolId is ToolId => validToolIds.has(toolId as ToolId))
     }
 
     if (
@@ -389,7 +390,7 @@ function getInitialFavorites(): ToolId[] {
       return []
     }
 
-    return parsed.ids.filter((toolId): toolId is ToolId => validToolIds.has(toolId as ToolId))
+    return parsed.ids.filter((toolId: unknown): toolId is ToolId => validToolIds.has(toolId as ToolId))
   } catch {
     return []
   }
