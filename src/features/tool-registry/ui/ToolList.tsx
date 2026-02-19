@@ -20,8 +20,8 @@ import { JwtTool } from '@/features/jwt/ui/JwtTool'
 import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
 import { SqlFormatterTool } from '@/features/sql-formatter/ui/SqlFormatterTool'
 import { tools } from '@/features/tool-registry/model/tools'
-import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
+import { UrlCodecTool } from '@/features/url-codec/ui/UrlCodecTool'
 import { UuidTool } from '@/features/uuid/ui/UuidTool'
 import { useTheme } from '@/shared/hooks/useTheme'
 import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
@@ -752,10 +752,8 @@ export function ToolList() {
               {activeTool?.id === 'json-model-generator' ? <JsonModelGeneratorTool /> : null}
               {activeTool?.id === 'jwt' ? <JwtTool /> : null}
               {activeTool?.id === 'uuid' ? <UuidTool /> : null}
+              {activeTool?.id === 'url-codec' ? <UrlCodecTool /> : null}
               {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
-              {activeTool?.id === 'url-codec' ? (
-                <ComingSoonTool toolName={activeTool?.name ?? 'Herramienta'} />
-              ) : null}
             </>
           ) : null}
         </main>

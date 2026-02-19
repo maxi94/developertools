@@ -62,7 +62,7 @@ export const tools: ToolDefinition[] = [
     name: 'Codificador URL',
     description: 'Escapa y desescapa contenido para URLs.',
     category: 'Utilidades web',
-    status: 'planned',
+    status: 'ready',
   },
   {
     id: 'readme-generator',
