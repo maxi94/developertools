@@ -9,6 +9,7 @@ import {
   KeyRound,
   Link2,
   Pin,
+  ScanSearch,
   Star,
 } from 'lucide-react'
 import type { ToolDefinition } from '@/shared/types/tool'
@@ -34,6 +35,7 @@ export function ToolCard({
     'base64-image': FileImage,
     'base64-pdf': FileText,
     'sql-formatter': Database,
+    'regex-tool': ScanSearch,
     'json-model-generator': FileJson2,
     jwt: KeyRound,
     uuid: Fingerprint,

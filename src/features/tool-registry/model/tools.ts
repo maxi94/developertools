@@ -37,6 +37,13 @@ export const tools: ToolDefinition[] = [
     status: 'ready',
   },
   {
+    id: 'regex-tool',
+    name: 'Expresiones regulares',
+    description: 'Crear, probar, debuggear y exportar regex.',
+    category: 'Formateadores',
+    status: 'ready',
+  },
+  {
     id: 'json-model-generator',
     name: 'JSON a clases',
     description: 'Genera clases desde JSON en C#, TypeScript y Java.',

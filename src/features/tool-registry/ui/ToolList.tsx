@@ -17,6 +17,7 @@ import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
 import { JsonModelGeneratorTool } from '@/features/json-model-generator/ui/JsonModelGeneratorTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
+import { RegexTool } from '@/features/regex-tool/ui/RegexTool'
 import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
 import { SqlFormatterTool } from '@/features/sql-formatter/ui/SqlFormatterTool'
 import { tools } from '@/features/tool-registry/model/tools'
@@ -749,6 +750,7 @@ export function ToolList() {
               {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
               {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
               {activeTool?.id === 'sql-formatter' ? <SqlFormatterTool /> : null}
+              {activeTool?.id === 'regex-tool' ? <RegexTool /> : null}
               {activeTool?.id === 'json-model-generator' ? <JsonModelGeneratorTool /> : null}
               {activeTool?.id === 'jwt' ? <JwtTool /> : null}
               {activeTool?.id === 'uuid' ? <UuidTool /> : null}
