@@ -12,4 +12,18 @@ describe('formatJson', () => {
   it('throws for invalid json', () => {
     expect(() => formatJson('{bad json}')).toThrow()
   })
+
+  it('resolves local references with ref key', () => {
+    const rawJson = `{
+      "definiciones": {
+        "usuario": { "nombre": "Matti", "rol": "dev" }
+      },
+      "payload": { "ref": "#/definiciones/usuario" }
+    }`
+
+    const result = formatJson(rawJson, { resolveRefs: true })
+
+    expect(result).toContain('"payload": {\n    "nombre": "Matti"')
+    expect(result).not.toContain('"ref"')
+  })
 })
