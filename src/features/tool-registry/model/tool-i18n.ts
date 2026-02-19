@@ -105,10 +105,6 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     name: 'SVG Optimizer/Preview',
     description: 'Minify SVG, preview and export the result.',
   },
-  'readme-generator': {
-    name: 'README Generator',
-    description: 'Create README.md with template and preview.',
-  },
   },
 }
 

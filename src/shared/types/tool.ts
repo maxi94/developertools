@@ -17,7 +17,6 @@ export type ToolId =
   | 'jwt'
   | 'uuid'
   | 'url-codec'
-  | 'readme-generator'
   | 'color-tools'
   | 'box-shadow-generator'
   | 'spacing-preview'

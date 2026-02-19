@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.0.0',
+    date: '2026-02-19',
+    title: 'Se elimina generador README',
+    changes: [
+      'La herramienta Generador README se quita del producto.',
+      'Se remueven acceso en menu/rutas y referencias asociadas.',
+      'Release mayor por cambio incompatible en el set de herramientas disponible.',
+    ],
+  },
+  {
     version: 'v0.12.0',
     date: '2026-02-19',
     title: 'Readme Generator overhaul',
@@ -346,10 +356,6 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
   'image-to-base64': lazyNamedTool(
     () => import('@/features/image-to-base64/ui/ImageToBase64Tool'),
     'ImageToBase64Tool',
-  ),
-  'readme-generator': lazyNamedTool(
-    () => import('@/features/readme-generator/ui/ReadmeGeneratorTool'),
-    'ReadmeGeneratorTool',
   ),
 }
 
