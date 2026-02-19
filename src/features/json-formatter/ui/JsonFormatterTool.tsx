@@ -21,30 +21,39 @@ export function JsonFormatterTool() {
   }, [source])
 
   return (
-    <section className="tool-panel" aria-label="JSON formatter">
+    <section className="tool-panel" aria-label="Formateador JSON">
       <div className="tool-panel-header">
-        <h2>JSON Formatter</h2>
-        <p>Entrada y salida permanecen en tu navegador.</p>
+        <h2>Formateador JSON</h2>
+        <p>La entrada y salida permanecen en tu navegador.</p>
+      </div>
+
+      <div className="tool-actions">
+        <button type="button" onClick={() => setSource(sample)}>
+          Usar ejemplo
+        </button>
+        <button type="button" onClick={() => setSource('')}>
+          Limpiar
+        </button>
       </div>
 
       <div className="tool-grid">
         <label className="tool-field">
-          <span>Input</span>
+          <span>Entrada</span>
           <textarea
             value={source}
             onChange={(event) => setSource(event.target.value)}
             spellCheck={false}
-            aria-label="JSON input"
+            aria-label="Entrada JSON"
           />
         </label>
 
         <label className="tool-field">
-          <span>Output</span>
+          <span>Salida</span>
           <textarea
             value={output.value}
             readOnly
             spellCheck={false}
-            aria-label="JSON output"
+            aria-label="Salida JSON"
             data-status={output.status}
           />
         </label>
