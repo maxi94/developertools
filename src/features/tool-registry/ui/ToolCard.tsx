@@ -48,8 +48,8 @@ export function ToolCard({
       tabIndex={0}
       className={`group w-full rounded-lg px-3 py-2 text-left transition ${
         isActive
-          ? 'bg-white/15 text-white'
-          : 'text-indigo-100/90 hover:bg-white/10 hover:text-white'
+          ? 'bg-slate-900/10 text-slate-900 dark:bg-white/15 dark:text-white'
+          : 'text-slate-700 hover:bg-slate-900/10 hover:text-slate-900 dark:text-indigo-100/90 dark:hover:bg-white/10 dark:hover:text-white'
       }`}
       onClick={() => onSelect(tool.id)}
       onKeyDown={(event) => {
@@ -66,23 +66,25 @@ export function ToolCard({
           <span
             className={`inline-flex size-7 shrink-0 items-center justify-center rounded-md ${
               isActive
-                ? 'bg-white/20 text-white'
-                : 'bg-indigo-900/80 text-indigo-100 group-hover:bg-white/15 group-hover:text-white'
+                ? 'bg-slate-900/15 text-slate-800 dark:bg-white/20 dark:text-white'
+                : 'bg-slate-200 text-slate-700 group-hover:bg-slate-300 dark:bg-indigo-900/80 dark:text-indigo-100 dark:group-hover:bg-white/15 dark:group-hover:text-white'
             }`}
           >
             <ToolIcon className="size-4" />
           </span>
           <div className="min-w-0">
             <h3 className="text-sm font-semibold leading-tight">{tool.name}</h3>
-            <p className="text-[11px] leading-tight text-indigo-100/65">{tool.description}</p>
+            <p className="text-[11px] leading-tight text-slate-500 dark:text-indigo-100/65">
+              {tool.description}
+            </p>
           </div>
         </div>
         <div className="flex shrink-0 items-center gap-1">
           <span
             className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
               tool.status === 'ready'
-                ? 'bg-emerald-300/20 text-emerald-100'
-                : 'bg-amber-300/25 text-amber-100'
+                ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/20 dark:text-emerald-100'
+                : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
             }`}
           >
             {tool.status === 'ready' ? 'On' : 'Soon'}
@@ -91,8 +93,8 @@ export function ToolCard({
             type="button"
             className={`inline-flex size-7 items-center justify-center rounded-md transition ${
               isFavorite
-                ? 'bg-amber-300/20 text-amber-200'
-                : 'text-indigo-200/70 hover:bg-white/10 hover:text-white'
+                ? 'bg-amber-100 text-amber-700 dark:bg-amber-300/20 dark:text-amber-200'
+                : 'text-slate-500 hover:bg-slate-900/10 hover:text-slate-800 dark:text-indigo-200/70 dark:hover:bg-white/10 dark:hover:text-white'
             }`}
             onClick={(event) => {
               event.stopPropagation()

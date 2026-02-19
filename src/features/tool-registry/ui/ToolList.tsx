@@ -142,16 +142,16 @@ function SidebarContent({
         onClick={onGoHome}
         className={`mb-3 inline-flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-xs font-semibold uppercase tracking-[0.14em] transition ${
           viewType === 'home'
-            ? 'border-white/30 bg-white/20 text-white'
-            : 'border-white/10 bg-white/5 text-indigo-100/80 hover:bg-white/10 hover:text-white'
+            ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-white/30 dark:bg-white/20 dark:text-white'
+            : 'border-slate-200 bg-white text-slate-700 hover:bg-slate-100 hover:text-slate-900 dark:border-white/10 dark:bg-white/5 dark:text-indigo-100/80 dark:hover:bg-white/10 dark:hover:text-white'
         }`}
       >
         <House className="size-4" />
         Inicio
       </button>
 
-      <div className="mb-4 rounded-lg border border-white/10 bg-white/5 p-3">
-        <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-indigo-200/80">
+      <div className="mb-4 rounded-lg border border-slate-200 bg-white p-3 dark:border-white/10 dark:bg-white/5">
+        <p className="mb-2 inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-indigo-200/80">
           <Star className="size-3.5" />
           Accesos rapidos
         </p>
@@ -163,8 +163,8 @@ function SidebarContent({
                 type="button"
                 className={`rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
                   tool.id === activeToolId && viewType === 'tool'
-                    ? 'border-white/25 bg-white/20 text-white'
-                    : 'border-white/10 bg-transparent text-indigo-100/80 hover:border-white/20 hover:bg-white/10 hover:text-white'
+                    ? 'border-slate-300 bg-slate-100 text-slate-900 dark:border-white/25 dark:bg-white/20 dark:text-white'
+                    : 'border-slate-200 bg-transparent text-slate-600 hover:border-slate-300 hover:bg-slate-100 hover:text-slate-900 dark:border-white/10 dark:text-indigo-100/80 dark:hover:border-white/20 dark:hover:bg-white/10 dark:hover:text-white'
                 }`}
                 onClick={() => onSelectTool(tool.id)}
               >
@@ -173,7 +173,9 @@ function SidebarContent({
             ))}
           </div>
         ) : (
-          <p className="text-xs text-indigo-100/70">Fija herramientas con el icono de pin.</p>
+          <p className="text-xs text-slate-500 dark:text-indigo-100/70">
+            Fija herramientas con el icono de pin.
+          </p>
         )}
       </div>
 
@@ -184,8 +186,8 @@ function SidebarContent({
               type="button"
               className={`rounded-md px-1 py-1 text-left text-[10px] font-semibold uppercase tracking-[0.14em] ${
                 selectedCategory === group.category
-                  ? 'text-white'
-                  : 'text-indigo-200/70 hover:text-indigo-100'
+                  ? 'text-slate-900 dark:text-white'
+                  : 'text-slate-500 hover:text-slate-700 dark:text-indigo-200/70 dark:hover:text-indigo-100'
               }`}
               onClick={() => onSelectCategory(group.category)}
             >
@@ -208,7 +210,7 @@ function SidebarContent({
       </div>
 
       {menuTools.length === 0 ? (
-        <p className="rounded-md border border-white/10 bg-white/5 px-3 py-2 text-xs text-indigo-100/80">
+        <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 dark:border-white/10 dark:bg-white/5 dark:text-indigo-100/80">
           No se encontraron herramientas para: <strong>{searchTerm}</strong>
         </p>
       ) : null}
@@ -564,8 +566,8 @@ export function ToolList() {
       </header>
 
       <div className="grid min-h-[calc(100vh-8rem)] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-4 lg:px-4 lg:py-4">
-        <aside className="hidden rounded-xl border border-slate-800 bg-indigo-950 px-3 py-4 lg:block">
-          <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-200/80">
+        <aside className="hidden rounded-xl border border-slate-300 bg-slate-50 px-3 py-4 dark:border-slate-800 dark:bg-indigo-950 lg:block">
+          <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-indigo-200/80">
             <PanelLeft className="size-3.5" />
             Menu
           </p>
@@ -665,18 +667,18 @@ export function ToolList() {
       />
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 w-[86vw] max-w-[340px] overflow-y-auto border-r border-indigo-900 bg-indigo-950 p-4 shadow-2xl transition-transform duration-300 lg:hidden ${
+        className={`fixed inset-y-0 left-0 z-50 w-[86vw] max-w-[340px] overflow-y-auto border-r border-slate-300 bg-slate-50 p-4 shadow-2xl transition-transform duration-300 dark:border-indigo-900 dark:bg-indigo-950 lg:hidden ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <div className="mb-4 flex items-center justify-between">
-          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-indigo-200/80">
+          <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-600 dark:text-indigo-200/80">
             <PanelLeft className="size-3.5" />
             Menu
           </p>
           <button
             type="button"
-            className="inline-flex size-8 items-center justify-center rounded-md border border-indigo-400/25 text-indigo-100"
+            className="inline-flex size-8 items-center justify-center rounded-md border border-slate-300 text-slate-700 dark:border-indigo-400/25 dark:text-indigo-100"
             onClick={() => setIsMobileMenuOpen(false)}
             aria-label="Cerrar menu"
           >
