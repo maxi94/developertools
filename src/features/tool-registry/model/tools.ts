@@ -30,6 +30,20 @@ export const tools: ToolDefinition[] = [
     status: 'ready',
   },
   {
+    id: 'sql-formatter',
+    name: 'Formateador SQL',
+    description: 'Formatea consultas SQL con soporte multi dialecto.',
+    category: 'Datos',
+    status: 'ready',
+  },
+  {
+    id: 'json-model-generator',
+    name: 'JSON a clases',
+    description: 'Genera clases desde JSON en C#, TypeScript y Java.',
+    category: 'Datos',
+    status: 'ready',
+  },
+  {
     id: 'jwt',
     name: 'Visualizador JWT',
     description: 'Decodifica header y payload para inspeccion.',

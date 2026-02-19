@@ -3,6 +3,8 @@ export type ToolId =
   | 'base64'
   | 'base64-image'
   | 'base64-pdf'
+  | 'sql-formatter'
+  | 'json-model-generator'
   | 'jwt'
   | 'uuid'
   | 'url-codec'

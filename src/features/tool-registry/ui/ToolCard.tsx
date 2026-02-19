@@ -1,7 +1,9 @@
 import {
   Binary,
   Braces,
+  Database,
   FileImage,
+  FileJson2,
   FileText,
   Fingerprint,
   KeyRound,
@@ -31,6 +33,8 @@ export function ToolCard({
     base64: Binary,
     'base64-image': FileImage,
     'base64-pdf': FileText,
+    'sql-formatter': Database,
+    'json-model-generator': FileJson2,
     jwt: KeyRound,
     uuid: Fingerprint,
     'url-codec': Link2,

@@ -15,8 +15,10 @@ import { Base64ImageTool } from '@/features/base64-image/ui/Base64ImageTool'
 import { Base64PdfTool } from '@/features/base64-pdf/ui/Base64PdfTool'
 import { Base64Tool } from '@/features/base64/ui/Base64Tool'
 import { JsonFormatterTool } from '@/features/json-formatter/ui/JsonFormatterTool'
+import { JsonModelGeneratorTool } from '@/features/json-model-generator/ui/JsonModelGeneratorTool'
 import { JwtTool } from '@/features/jwt/ui/JwtTool'
 import { ReadmeGeneratorTool } from '@/features/readme-generator/ui/ReadmeGeneratorTool'
+import { SqlFormatterTool } from '@/features/sql-formatter/ui/SqlFormatterTool'
 import { tools } from '@/features/tool-registry/model/tools'
 import { ComingSoonTool } from '@/features/tool-registry/ui/ComingSoonTool'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
@@ -557,8 +559,8 @@ export function ToolList() {
         </button>
       </header>
 
-      <div className="grid min-h-[calc(100vh-8rem)] lg:grid-cols-[280px_minmax(0,1fr)]">
-        <aside className="hidden border-r border-slate-800 bg-indigo-950 px-3 py-4 lg:block">
+      <div className="grid min-h-[calc(100vh-8rem)] lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-4 lg:px-4 lg:py-4">
+        <aside className="hidden rounded-xl border border-slate-800 bg-indigo-950 px-3 py-4 lg:block">
           <p className="mb-3 inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-indigo-200/80">
             <PanelLeft className="size-3.5" />
             Menu
@@ -638,6 +640,8 @@ export function ToolList() {
               {activeTool?.id === 'base64' ? <Base64Tool /> : null}
               {activeTool?.id === 'base64-image' ? <Base64ImageTool /> : null}
               {activeTool?.id === 'base64-pdf' ? <Base64PdfTool /> : null}
+              {activeTool?.id === 'sql-formatter' ? <SqlFormatterTool /> : null}
+              {activeTool?.id === 'json-model-generator' ? <JsonModelGeneratorTool /> : null}
               {activeTool?.id === 'jwt' ? <JwtTool /> : null}
               {activeTool?.id === 'uuid' ? <UuidTool /> : null}
               {activeTool?.id === 'readme-generator' ? <ReadmeGeneratorTool /> : null}
