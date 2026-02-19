@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v0.10.1',
+    date: '2026-02-19',
+    title: 'Versionado y changelog obligatorio',
+    changes: [
+      'Se define una politica de versionado semantico para cada entrega.',
+      'Se fuerza actualizar la version web en cada cambio aplicado.',
+      'Se estandariza el historial de cambios visible en la web por release.',
+    ],
+  },
+  {
     version: 'v0.10.0',
     date: '2026-02-19',
     title: 'Minify/Expand JS-CSS',

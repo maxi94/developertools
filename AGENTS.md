@@ -31,3 +31,19 @@
   - run/verify commands (`npm run lint`, `npm run test`, etc.)
   - git commands (branch, add, commit, push)
   - PR command (`gh pr create ...`) when a branch is ready
+
+## Versioning & Changelog Policy (Mandatory)
+- Any code change must include a version update.
+- Semver criteria:
+  - `major`: breaking or incompatible behavior changes.
+  - `minor`: new backward-compatible features.
+  - `patch`: fixes, refactors, UI tweaks, docs/internal adjustments without breaking changes.
+- For every delivered change, update:
+  - `src/features/tool-registry/model/tools.ts` (`WEB_VERSION`).
+  - Tool `version` fields in `src/features/tool-registry/model/tools.ts` for each impacted tool.
+  - `releaseNotes` in `src/features/tool-registry/ui/ToolList.tsx` with a new top entry.
+- The new `releaseNotes` entry must include:
+  - `version` matching `WEB_VERSION`.
+  - `date` in `YYYY-MM-DD`.
+  - short `title`.
+  - user-facing `changes` list.
