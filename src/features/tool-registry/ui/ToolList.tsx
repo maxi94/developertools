@@ -104,6 +104,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.0',
+    date: '2026-02-21',
+    title: 'Cobertura i18n completa para herramientas',
+    changes: [
+      'Se completan traducciones visibles en tools para ES/EN/PT sin mezclar idiomas.',
+      'Se amplian traducciones runtime para labels, descripciones y mensajes faltantes.',
+      'Se actualizan versiones de herramientas impactadas por ajustes de copy multiidioma.',
+    ],
+  },
+  {
     version: 'v1.2.3',
     date: '2026-02-21',
     title: 'Traducciones completas PT para menu de herramientas',
