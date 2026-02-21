@@ -102,6 +102,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.1',
+    date: '2026-02-21',
+    title: 'UI optimizada para vista de categoria',
+    changes: [
+      'La vista de categoria pasa a grilla de cards con mejor jerarquia visual y menor dispersion horizontal.',
+      'Acciones de cada herramienta (fijar/abrir) se acercan al contenido dentro de la misma card para uso mas comodo.',
+      'Se agrega badge de version y truncado de descripcion para mejorar escaneo rapido.',
+    ],
+  },
+  {
     version: 'v2.6.0',
     date: '2026-02-21',
     title: 'Menu desktop fijable/desfijable',
@@ -1272,39 +1282,46 @@ function CategoryOverview({
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
 
   return (
-    <section className="grid gap-2 [content-visibility:auto] [contain-intrinsic-size:740px]">
+    <section className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:740px]">
       {toolsByCategory.map((tool) => (
-          <article
-            key={tool.id}
-            className="rounded-lg border border-slate-200/80 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900/70"
-          >
-            <div className="flex flex-wrap items-start justify-between gap-2">
-              <div className="min-w-0">
-                <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{tool.name}</h3>
-                <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-300">{tool.description}</p>
-              </div>
-              <div className="flex items-center gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => onToggleFavorite(tool.id)}
-                  className={`cursor-pointer rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
-                    favoriteToolIdSet.has(tool.id)
-                      ? 'border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
-                      : 'border-slate-300 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
-                  }`}
-                >
-                  {favoriteToolIdSet.has(tool.id) ? ui.favorite : ui.pin}
-                </button>
-                <button
-                  type="button"
-                  className="inline-flex cursor-pointer items-center rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-[11px] font-semibold text-cyan-700 transition hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-500/40 dark:bg-cyan-900/20 dark:text-cyan-200 dark:hover:bg-cyan-900/30"
-                  onClick={() => onSelectTool(tool.id)}
-                >
-                  {ui.open}
-                </button>
-              </div>
-            </div>
-          </article>
+        <article
+          key={tool.id}
+          className="grid min-h-[152px] grid-rows-[auto_1fr_auto] rounded-xl border border-slate-200/80 bg-white/95 p-3 shadow-sm shadow-slate-900/5 transition hover:border-cyan-300/80 dark:border-slate-700 dark:bg-slate-900/70 dark:hover:border-cyan-500/40"
+        >
+          <div className="mb-1 flex items-center justify-between gap-2">
+            <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
+              {tool.name}
+            </h3>
+            <span className="shrink-0 rounded-md border border-slate-200 bg-slate-50 px-1.5 py-0.5 text-[10px] font-semibold text-slate-500 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-400">
+              v{tool.version}
+            </span>
+          </div>
+
+          <p className="overflow-hidden text-xs leading-relaxed text-slate-600 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:3] dark:text-slate-300">
+            {tool.description}
+          </p>
+
+          <div className="mt-2 flex flex-wrap items-center gap-1.5">
+            <button
+              type="button"
+              onClick={() => onToggleFavorite(tool.id)}
+              className={`inline-flex cursor-pointer items-center rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
+                favoriteToolIdSet.has(tool.id)
+                  ? 'border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
+                  : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300 dark:hover:border-slate-600'
+              }`}
+            >
+              {favoriteToolIdSet.has(tool.id) ? ui.favorite : ui.pin}
+            </button>
+            <button
+              type="button"
+              className="inline-flex cursor-pointer items-center rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-[11px] font-semibold text-cyan-700 transition hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-500/40 dark:bg-cyan-900/20 dark:text-cyan-200 dark:hover:bg-cyan-900/30"
+              onClick={() => onSelectTool(tool.id)}
+            >
+              {ui.open}
+            </button>
+          </div>
+        </article>
       ))}
     </section>
   )
