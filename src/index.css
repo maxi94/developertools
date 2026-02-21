@@ -127,4 +127,9 @@
   .tool-content select {
     max-width: 100%;
   }
+
+  .tool-content > section > h2:first-child,
+  .tool-content > section > div:first-child > h2:first-child {
+    display: none;
+  }
 }

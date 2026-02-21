@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.7',
+    date: '2026-02-21',
+    title: 'Formato unificado en tools y menu detallado',
+    changes: [
+      'Se oculta el titulo interno repetido dentro de la vista de herramientas para mantener un encabezado unico.',
+      'Se restaura el formato de tarjetas del menu lateral con icono, descripcion, version y fijador.',
+      'Ajustes visuales para mantener el comportamiento responsive en desktop y mobile.',
+    ],
+  },
+  {
     version: 'v1.3.6',
     date: '2026-02-21',
     title: 'Header de herramientas fuera de card',
