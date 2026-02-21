@@ -103,6 +103,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.1.1',
+    date: '2026-02-21',
+    title: 'Fix i18n en interfaz y categoria sin duplicacion',
+    changes: [
+      'Se reemplazan condicionales de texto por un diccionario UI completo para ES/EN/PT.',
+      'Se corrige la ruta de herramienta para portugues usando /ferramenta/:id.',
+      'La vista de categoria elimina la cabecera duplicada y conserva un resumen compacto.',
+    ],
+  },
+  {
     version: 'v1.1.0',
     date: '2026-02-21',
     title: 'UX global + tema avanzado + i18n escalable',
@@ -401,8 +411,208 @@ function toAppAbsolutePath(pathname: string): string {
   return `${APP_BASE_PATH}${normalized}`
 }
 
+type UiCopy = {
+  routeToolSegment: string
+  searchInMenu: string
+  clearSearch: string
+  favorites: string
+  favoritesMenu: string
+  expandFavorites: string
+  collapseFavorites: string
+  expandCategory: string
+  collapseCategory: string
+  menu: string
+  noToolsFound: string
+  developerHub: string
+  developerHubSubtitle: string
+  activeTools: string
+  categories: string
+  whatsNew: string
+  hide: string
+  noPinnedFavorites: string
+  activeCategory: string
+  tools: string
+  latestUpdate: string
+  favorite: string
+  pin: string
+  open: string
+  statusOn: string
+  statusSoon: string
+  openMenu: string
+  closeMenu: string
+  goHome: string
+  controlCenter: string
+  language: string
+  theme: string
+  themeLight: string
+  themeDark: string
+  themeSystem: string
+  changeThemeMode: string
+  navigation: string
+  expandMenu: string
+  collapseMenu: string
+  home: string
+  mainDashboard: string
+  statusSummary: string
+  selectFromMenu: string
+  pinFavorite: string
+  removeFavorite: string
+  loadingTool: string
+}
+
+const uiCopyByLanguage: Record<AppLanguage, UiCopy> = {
+  es: {
+    routeToolSegment: 'herramienta',
+    searchInMenu: 'Buscar en menu...',
+    clearSearch: 'Limpiar busqueda',
+    favorites: 'Favoritos',
+    favoritesMenu: 'Menu de favoritos',
+    expandFavorites: 'Expandir favoritos',
+    collapseFavorites: 'Colapsar favoritos',
+    expandCategory: 'Expandir categoria',
+    collapseCategory: 'Colapsar categoria',
+    menu: 'Menu',
+    noToolsFound: 'No se encontraron herramientas para:',
+    developerHub: 'Centro de herramientas para desarrollo',
+    developerHubSubtitle: 'Accesos por categoria, favoritos y utilidades locales en un solo lugar.',
+    activeTools: 'tools activas',
+    categories: 'categorias',
+    whatsNew: 'Novedades',
+    hide: 'Ocultar',
+    noPinnedFavorites: 'Todavia no tenes favoritos fijados.',
+    activeCategory: 'Categoria activa',
+    tools: 'tools',
+    latestUpdate: 'Novedad reciente:',
+    favorite: 'Favorito',
+    pin: 'Fijar',
+    open: 'Abrir',
+    statusOn: 'Lista',
+    statusSoon: 'Proxima',
+    openMenu: 'Abrir menu',
+    closeMenu: 'Cerrar menu',
+    goHome: 'Ir a inicio',
+    controlCenter: 'Centro de control',
+    language: 'Idioma',
+    theme: 'Tema',
+    themeLight: 'Claro',
+    themeDark: 'Oscuro',
+    themeSystem: 'Sistema',
+    changeThemeMode: 'Cambiar modo de tema',
+    navigation: 'Navegacion',
+    expandMenu: 'Expandir menu',
+    collapseMenu: 'Minimizar menu',
+    home: 'Inicio',
+    mainDashboard: 'Panel principal',
+    statusSummary: 'Resumen de estado, mejoras recientes y acceso por categorias.',
+    selectFromMenu: 'Selecciona una herramienta desde el menu lateral.',
+    pinFavorite: 'Fijar favorito',
+    removeFavorite: 'Quitar favorito',
+    loadingTool: 'Cargando herramienta...',
+  },
+  en: {
+    routeToolSegment: 'tool',
+    searchInMenu: 'Search in menu...',
+    clearSearch: 'Clear search',
+    favorites: 'Favorites',
+    favoritesMenu: 'Favorites menu',
+    expandFavorites: 'Expand favorites',
+    collapseFavorites: 'Collapse favorites',
+    expandCategory: 'Expand category',
+    collapseCategory: 'Collapse category',
+    menu: 'Menu',
+    noToolsFound: 'No tools found for:',
+    developerHub: 'Developer toolbox hub',
+    developerHubSubtitle: 'Category access, favorites and local utilities in one place.',
+    activeTools: 'active tools',
+    categories: 'categories',
+    whatsNew: 'What is new',
+    hide: 'Hide',
+    noPinnedFavorites: "You don't have pinned favorites yet.",
+    activeCategory: 'Active category',
+    tools: 'tools',
+    latestUpdate: 'Latest update:',
+    favorite: 'Favorite',
+    pin: 'Pin',
+    open: 'Open',
+    statusOn: 'On',
+    statusSoon: 'Soon',
+    openMenu: 'Open menu',
+    closeMenu: 'Close menu',
+    goHome: 'Go home',
+    controlCenter: 'Control Center',
+    language: 'Lang',
+    theme: 'Theme',
+    themeLight: 'Light',
+    themeDark: 'Dark',
+    themeSystem: 'System',
+    changeThemeMode: 'Change theme mode',
+    navigation: 'Navigation',
+    expandMenu: 'Expand menu',
+    collapseMenu: 'Collapse menu',
+    home: 'Home',
+    mainDashboard: 'Main dashboard',
+    statusSummary: 'Status summary, latest updates and category-based access.',
+    selectFromMenu: 'Select a tool from the side menu.',
+    pinFavorite: 'Pin favorite',
+    removeFavorite: 'Remove favorite',
+    loadingTool: 'Loading tool...',
+  },
+  pt: {
+    routeToolSegment: 'ferramenta',
+    searchInMenu: 'Buscar no menu...',
+    clearSearch: 'Limpar busca',
+    favorites: 'Favoritos',
+    favoritesMenu: 'Menu de favoritos',
+    expandFavorites: 'Expandir favoritos',
+    collapseFavorites: 'Recolher favoritos',
+    expandCategory: 'Expandir categoria',
+    collapseCategory: 'Recolher categoria',
+    menu: 'Menu',
+    noToolsFound: 'Nenhuma ferramenta encontrada para:',
+    developerHub: 'Centro de ferramentas para desenvolvimento',
+    developerHubSubtitle: 'Acesso por categoria, favoritos e utilitarios locais em um so lugar.',
+    activeTools: 'ferramentas ativas',
+    categories: 'categorias',
+    whatsNew: 'Novidades',
+    hide: 'Ocultar',
+    noPinnedFavorites: 'Voce ainda nao tem favoritos fixados.',
+    activeCategory: 'Categoria ativa',
+    tools: 'ferramentas',
+    latestUpdate: 'Atualizacao recente:',
+    favorite: 'Favorito',
+    pin: 'Fixar',
+    open: 'Abrir',
+    statusOn: 'Pronta',
+    statusSoon: 'Em breve',
+    openMenu: 'Abrir menu',
+    closeMenu: 'Fechar menu',
+    goHome: 'Ir para inicio',
+    controlCenter: 'Centro de controle',
+    language: 'Idioma',
+    theme: 'Tema',
+    themeLight: 'Claro',
+    themeDark: 'Escuro',
+    themeSystem: 'Sistema',
+    changeThemeMode: 'Alterar modo de tema',
+    navigation: 'Navegacao',
+    expandMenu: 'Expandir menu',
+    collapseMenu: 'Recolher menu',
+    home: 'Inicio',
+    mainDashboard: 'Painel principal',
+    statusSummary: 'Resumo de status, ultimas melhorias e acesso por categorias.',
+    selectFromMenu: 'Selecione uma ferramenta no menu lateral.',
+    pinFavorite: 'Fixar favorito',
+    removeFavorite: 'Remover favorito',
+    loadingTool: 'Carregando ferramenta...',
+  },
+}
+
+function getUiCopy(language: AppLanguage): UiCopy {
+  return uiCopyByLanguage[language] ?? uiCopyByLanguage.es
+}
+
 function getToolRouteSegment(language: AppLanguage): string {
-  return language !== 'es' ? 'tool' : 'herramienta'
+  return getUiCopy(language).routeToolSegment
 }
 
 function getCategoryPath(category: ToolCategory, language: AppLanguage): string {
@@ -459,7 +669,7 @@ function parseViewFromPath(pathname: string): ViewState {
   }
 
   const toolMatch = normalized.match(/^\/([^/]+)\/([^/]+)$/)
-  if (toolMatch && (toolMatch[1] === 'herramienta' || toolMatch[1] === 'tool')) {
+  if (toolMatch && (toolMatch[1] === 'herramienta' || toolMatch[1] === 'tool' || toolMatch[1] === 'ferramenta')) {
     const toolId = toolMatch[2] as ToolId
     if (toolById.has(toolId)) {
       return { type: 'tool', toolId }
@@ -543,6 +753,7 @@ function SidebarContent({
   onClearSearch,
 }: SidebarContentProps) {
   const { language } = useI18n()
+  const ui = getUiCopy(language)
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const favoriteTools = useMemo(
     () => menuTools.filter((tool) => favoriteToolIdSet.has(tool.id)),
@@ -605,7 +816,7 @@ function SidebarContent({
             <Search className="size-3.5" />
             <input
               className="w-full bg-transparent text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-100"
-              placeholder={language !== 'es' ? 'Search in menu...' : 'Buscar en menu...'}
+              placeholder={ui.searchInMenu}
               value={searchTerm}
               onChange={(event) => {
                 onSearchTermChange(event.target.value)
@@ -651,7 +862,7 @@ function SidebarContent({
                   onClearSearch()
                   setHighlightedIndex(0)
                 }}
-                aria-label={language !== 'es' ? 'Clear search' : 'Limpiar busqueda'}
+                aria-label={ui.clearSearch}
               >
                 <X className="size-3.5" />
               </button>
@@ -707,7 +918,7 @@ function SidebarContent({
             >
               <button
                 type="button"
-                title={isMenuCollapsed ? (language !== 'es' ? 'Favorites' : 'Favoritos') : undefined}
+                title={isMenuCollapsed ? ui.favorites : undefined}
                 className={`min-w-0 inline-flex cursor-pointer items-center ${
                   isMenuCollapsed ? 'justify-center px-0.5' : 'gap-1.5 px-1'
                 } rounded-md py-1 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-900 dark:text-white`}
@@ -717,7 +928,7 @@ function SidebarContent({
                   <Star className="size-3.5" />
                 </span>
                 {!isMenuCollapsed ? (
-                  <span className="truncate">{language !== 'es' ? 'Favorites' : 'Favoritos'}</span>
+                  <span className="truncate">{ui.favorites}</span>
                 ) : null}
               </button>
               {!isMenuCollapsed ? (
@@ -727,12 +938,8 @@ function SidebarContent({
                   onClick={() => setIsFavoritesCollapsed((current) => !current)}
                   aria-label={
                     isFavoritesCollapsed
-                      ? language !== 'es'
-                        ? 'Expand favorites'
-                        : 'Expandir favoritos'
-                      : language !== 'es'
-                        ? 'Collapse favorites'
-                        : 'Colapsar favoritos'
+                      ? ui.expandFavorites
+                      : ui.collapseFavorites
                   }
                 >
                   <ChevronDown
@@ -744,7 +951,7 @@ function SidebarContent({
             {!isFavoritesCollapsed ? (
               <nav
                 className="grid gap-1.5"
-                aria-label={language !== 'es' ? 'Favorites menu' : 'Menu de favoritos'}
+                aria-label={ui.favoritesMenu}
               >
                 {favoriteTools.map((tool) => (
                   <ToolCard
@@ -794,12 +1001,8 @@ function SidebarContent({
                   onClick={() => onToggleCategory(group.category)}
                   aria-label={
                     collapsedCategories.has(group.category)
-                      ? language !== 'es'
-                        ? 'Expand category'
-                        : 'Expandir categoria'
-                      : language !== 'es'
-                        ? 'Collapse category'
-                        : 'Colapsar categoria'
+                      ? ui.expandCategory
+                      : ui.collapseCategory
                   }
                 >
                   <ChevronDown
@@ -813,7 +1016,7 @@ function SidebarContent({
             {!collapsedCategories.has(group.category) ? (
               <nav
                 className="grid gap-1.5"
-                aria-label={`${language !== 'es' ? 'Menu' : 'Menu'} ${getCategoryLabel(group.category, language)}`}
+                aria-label={`${ui.menu} ${getCategoryLabel(group.category, language)}`}
               >
                 {group.tools.map((tool) => (
                   <ToolCard
@@ -834,7 +1037,7 @@ function SidebarContent({
 
       {menuTools.length === 0 ? (
         <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-          {language !== 'es' ? 'No tools found for:' : 'No se encontraron herramientas para:'}{' '}
+          {ui.noToolsFound}{' '}
           <strong>{searchTerm}</strong>
         </p>
       ) : null}
@@ -860,7 +1063,7 @@ function HomeOverview({
   onSelectTool,
 }: HomeOverviewProps) {
   const { language } = useI18n()
-  const isEnglish = language !== 'es'
+  const ui = getUiCopy(language)
   const totalTools = tools.length
   const activeCategories = useMemo(() => {
     const categoriesWithTools = new Set<ToolCategory>(tools.map((tool) => tool.category))
@@ -878,22 +1081,20 @@ function HomeOverview({
           Web {WEB_VERSION}
         </p>
         <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">
-          {isEnglish ? 'Developer toolbox hub' : 'Centro de herramientas para desarrollo'}
+          {ui.developerHub}
         </h2>
         <p className="mt-1 text-sm text-slate-600 dark:text-slate-200">
-          {isEnglish
-            ? 'Category access, favorites and local utilities in one place.'
-            : 'Accesos por categoria, favoritos y utilidades locales en un solo lugar.'}
+          {ui.developerHubSubtitle}
         </p>
         <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
           <span className="rounded-full border border-cyan-300/60 bg-cyan-100/75 px-2.5 py-1 text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
-            {totalTools} {isEnglish ? 'active tools' : 'tools activas'}
+            {totalTools} {ui.activeTools}
           </span>
           <span className="rounded-full border border-emerald-300/60 bg-emerald-100/75 px-2.5 py-1 text-emerald-800 dark:border-white/20 dark:bg-white/10 dark:text-emerald-100">
-            {totalCategories} {isEnglish ? 'categories' : 'categorias'}
+            {totalCategories} {ui.categories}
           </span>
           <span className="rounded-full border border-slate-300/80 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-white/20 dark:bg-white/10 dark:text-slate-100">
-            {isEnglish ? 'Favorites' : 'Favoritos'}: {favorites.length}
+            {ui.favorites}: {favorites.length}
           </span>
           <span className="rounded-full border border-violet-300/60 bg-violet-100/75 px-2.5 py-1 text-violet-800 dark:border-white/20 dark:bg-white/10 dark:text-violet-100">
             Release: {latest.version}
@@ -906,7 +1107,7 @@ function HomeOverview({
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
               <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
-                {isEnglish ? 'What is new' : 'Novedades'} {latest.version} - {latest.date}
+                {ui.whatsNew} {latest.version} - {latest.date}
               </p>
               <h2 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
                 {latest.title}
@@ -917,7 +1118,7 @@ function HomeOverview({
               className="rounded-lg border border-teal-300 bg-white px-2.5 py-1 text-xs font-semibold text-teal-700 transition hover:bg-teal-100 dark:border-teal-500/40 dark:bg-slate-900 dark:text-teal-300 dark:hover:bg-teal-950/35"
               onClick={onDismissLatestRelease}
             >
-              {isEnglish ? 'Hide' : 'Ocultar'}
+              {ui.hide}
             </button>
           </div>
           <ul className="mt-3 grid gap-1 text-sm text-slate-700 dark:text-slate-200">
@@ -929,7 +1130,7 @@ function HomeOverview({
       ) : null}
 
       <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 dark:border-slate-700 dark:bg-slate-900/70">
-        <h2 className="text-lg font-semibold">{isEnglish ? 'Categories' : 'Categorias'}</h2>
+        <h2 className="text-lg font-semibold">{ui.categories}</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4 [content-visibility:auto] [contain-intrinsic-size:520px]">
           {activeCategories.map((category) => (
             <button
@@ -958,7 +1159,7 @@ function HomeOverview({
       </section>
 
       <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 dark:border-slate-700 dark:bg-slate-900/70">
-        <h2 className="text-lg font-semibold">{isEnglish ? 'Favorites' : 'Favoritos'}</h2>
+        <h2 className="text-lg font-semibold">{ui.favorites}</h2>
         {favorites.length > 0 ? (
           <div className="mt-3 flex flex-wrap gap-2">
             {favorites.map((tool) => (
@@ -974,7 +1175,7 @@ function HomeOverview({
           </div>
         ) : (
           <p className="mt-2 text-sm text-slate-600 dark:text-slate-300">
-            {isEnglish ? "You don't have pinned favorites yet." : 'Todavia no tenes favoritos fijados.'}
+            {ui.noPinnedFavorites}
           </p>
         )}
       </section>
@@ -983,7 +1184,6 @@ function HomeOverview({
 }
 
 interface CategoryOverviewProps {
-  category: ToolCategory
   toolsByCategory: ToolDefinition[]
   favoriteToolIds: ToolId[]
   latest: ReleaseNote
@@ -992,7 +1192,6 @@ interface CategoryOverviewProps {
 }
 
 function CategoryOverview({
-  category,
   toolsByCategory,
   favoriteToolIds,
   latest,
@@ -1000,7 +1199,7 @@ function CategoryOverview({
   onToggleFavorite,
 }: CategoryOverviewProps) {
   const { language } = useI18n()
-  const isEnglish = language !== 'es'
+  const ui = getUiCopy(language)
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const favoriteCountInCategory = useMemo(
     () => toolsByCategory.filter((tool) => favoriteToolIdSet.has(tool.id)).length,
@@ -1009,49 +1208,18 @@ function CategoryOverview({
 
   return (
     <section className="grid gap-4">
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-sky-50 via-white to-cyan-50 p-5 text-slate-900 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-cyan-950 dark:text-slate-100 dark:shadow-slate-900/25">
-        <div className="pointer-events-none absolute -right-16 -top-16 size-44 rounded-full bg-cyan-300/30 blur-3xl dark:bg-cyan-300/25" />
-        <div className="pointer-events-none absolute -bottom-16 left-8 size-40 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-300/15" />
-        <div className="relative flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-700 dark:text-cyan-100/90">
-              {isEnglish ? 'Active category' : 'Categoria activa'}
-            </p>
-            <h2 className="mt-1 inline-flex items-center gap-2 text-2xl font-semibold text-slate-900 dark:text-white">
-              <span
-                className={`inline-flex size-7 items-center justify-center rounded-md ${categoryMeta[category].badgeClass}`}
-              >
-                {categoryMeta[category].icon}
-              </span>
-              {getCategoryLabel(category, language)}
-            </h2>
-            <p className="mt-2 max-w-2xl text-sm text-slate-600 dark:text-slate-100/90">
-              {getCategoryDescription(category, language)}
-            </p>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
-              <span className="rounded-full border border-cyan-300/60 bg-cyan-100/75 px-2.5 py-1 text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
-                {toolsByCategory.length} {isEnglish ? 'tools' : 'tools'}
-              </span>
-              <span className="rounded-full border border-amber-300/60 bg-amber-100/75 px-2.5 py-1 text-amber-800 dark:border-white/20 dark:bg-white/10 dark:text-amber-100">
-                {favoriteCountInCategory} {isEnglish ? 'favorites' : 'favoritas'}
-              </span>
-              <span className="rounded-full border border-emerald-300/60 bg-emerald-100/75 px-2.5 py-1 text-emerald-800 dark:border-white/20 dark:bg-white/10 dark:text-emerald-100">
-                Web: {WEB_VERSION}
-              </span>
-              <span className="rounded-full border border-violet-300/60 bg-violet-100/75 px-2.5 py-1 text-violet-800 dark:border-white/20 dark:bg-white/10 dark:text-violet-100">
-                Release: {latest.version}
-              </span>
-            </div>
-          </div>
-          <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-white/80 px-2.5 py-1 text-[11px] font-semibold uppercase tracking-wide text-slate-700 dark:border-white/25 dark:bg-white/10 dark:text-slate-100">
-            <Sparkles className="size-3.5" />
-            {latest.version} - {latest.date}
+      <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-3 dark:border-slate-700 dark:bg-slate-900/70">
+        <p className="text-xs text-slate-600 dark:text-slate-300">
+          {ui.latestUpdate} <span className="font-semibold">{latest.title}</span> ({latest.version})
+        </p>
+        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-wide">
+          <span className="rounded-full border border-cyan-300/60 bg-cyan-100/75 px-2 py-0.5 text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
+            {toolsByCategory.length} {ui.tools}
+          </span>
+          <span className="rounded-full border border-amber-300/60 bg-amber-100/75 px-2 py-0.5 text-amber-800 dark:border-white/20 dark:bg-white/10 dark:text-amber-100">
+            {favoriteCountInCategory} {ui.favorites}
           </span>
         </div>
-        <p className="relative mt-3 text-xs text-slate-600 dark:text-slate-200/85">
-          {isEnglish ? 'Latest update:' : 'Novedad reciente:'}{' '}
-          <span className="font-semibold text-slate-900 dark:text-white">{latest.title}</span>
-        </p>
       </section>
 
       <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:740px]">
@@ -1078,7 +1246,7 @@ function CategoryOverview({
                       : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
                   }`}
                 >
-                  {tool.status === 'ready' ? 'On' : 'Soon'}
+                  {tool.status === 'ready' ? ui.statusOn : ui.statusSoon}
                 </span>
               </div>
 
@@ -1100,12 +1268,8 @@ function CategoryOverview({
                   }`}
                 >
                   {favoriteToolIdSet.has(tool.id)
-                    ? isEnglish
-                      ? 'Favorite'
-                      : 'Favorito'
-                    : isEnglish
-                      ? 'Pin'
-                      : 'Fijar'}
+                    ? ui.favorite
+                    : ui.pin}
                 </button>
 
                 <button
@@ -1113,7 +1277,7 @@ function CategoryOverview({
                   className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-cyan-300 bg-cyan-50 px-2.5 py-1.5 text-[11px] font-semibold text-cyan-700 transition hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-500/40 dark:bg-cyan-900/20 dark:text-cyan-200 dark:hover:bg-cyan-900/30"
                   onClick={() => onSelectTool(tool.id)}
                 >
-                  {isEnglish ? 'Open' : 'Abrir'}
+                  {ui.open}
                   <ChevronRight className="size-3.5" />
                 </button>
               </div>
@@ -1128,6 +1292,7 @@ function CategoryOverview({
 export function ToolList() {
   const { language, setLanguage } = useI18n()
   const { themeMode, setThemeMode } = useTheme()
+  const ui = getUiCopy(language)
   const toolContentRef = useRef<HTMLDivElement | null>(null)
   const [view, setView] = useState<ViewState>(() => parseViewFromPath(window.location.pathname))
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
@@ -1138,7 +1303,6 @@ export function ToolList() {
   const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
-  const isEnglish = language !== 'es'
 
   const localizedTools = useMemo(
     () => tools.map((tool) => localizeTool(tool, language)),
@@ -1359,7 +1523,7 @@ export function ToolList() {
           type="button"
           className="inline-flex size-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 lg:hidden dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
           onClick={() => setIsMobileMenuOpen(true)}
-          aria-label={isEnglish ? 'Open menu' : 'Abrir menu'}
+          aria-label={ui.openMenu}
         >
           <Menu className="size-4" />
         </button>
@@ -1368,7 +1532,7 @@ export function ToolList() {
           type="button"
           className="inline-flex min-w-0 cursor-pointer items-center gap-2 rounded-xl px-1 py-1 text-left transition hover:bg-slate-100/80 dark:hover:bg-slate-800/70"
           onClick={goHome}
-          aria-label={isEnglish ? 'Go home' : 'Ir a inicio'}
+          aria-label={ui.goHome}
         >
           <img
             src={`${import.meta.env.BASE_URL}logo.svg`}
@@ -1380,13 +1544,13 @@ export function ToolList() {
               Developer Tools
             </span>
             <span className="block truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
-              {isEnglish ? 'Control Center' : 'Centro de control'}
+              {ui.controlCenter}
             </span>
           </span>
         </button>
 
         <label className="ml-auto hidden items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-          <span className="uppercase">{isEnglish ? 'Lang' : 'Idioma'}</span>
+          <span className="uppercase">{ui.language}</span>
           <select
             value={language}
             onChange={(event) => setLanguage(normalizeLanguage(event.target.value))}
@@ -1401,22 +1565,22 @@ export function ToolList() {
         </label>
 
         <label className="hidden items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
-          <span className="uppercase">{isEnglish ? 'Theme' : 'Tema'}</span>
+          <span className="uppercase">{ui.theme}</span>
           <select
             value={themeMode}
             onChange={(event) => setThemeMode(event.target.value as 'light' | 'dark' | 'system')}
             className="rounded border border-slate-300 bg-white px-1 py-0.5 text-xs dark:border-slate-600 dark:bg-slate-900"
           >
-            <option value="light">{isEnglish ? 'Light' : 'Claro'}</option>
-            <option value="dark">{isEnglish ? 'Dark' : 'Oscuro'}</option>
-            <option value="system">{isEnglish ? 'System' : 'Sistema'}</option>
+            <option value="light">{ui.themeLight}</option>
+            <option value="dark">{ui.themeDark}</option>
+            <option value="system">{ui.themeSystem}</option>
           </select>
         </label>
         <button
           type="button"
           onClick={cycleThemeMode}
           className="inline-flex cursor-pointer items-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 md:hidden dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-          aria-label={isEnglish ? 'Change theme mode' : 'Cambiar modo de tema'}
+          aria-label={ui.changeThemeMode}
         >
           {themeMode}
         </button>
@@ -1442,7 +1606,7 @@ export function ToolList() {
             {!isDesktopMenuCollapsed ? (
               <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                 <PanelLeft className="size-3.5" />
-                {isEnglish ? 'Navigation' : 'Navegacion'}
+                {ui.navigation}
               </p>
             ) : null}
             <button
@@ -1450,13 +1614,9 @@ export function ToolList() {
               className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
               onClick={() => setIsDesktopMenuCollapsed((value) => !value)}
               aria-label={
-                isEnglish
-                  ? isDesktopMenuCollapsed
-                    ? 'Expand menu'
-                    : 'Collapse menu'
-                  : isDesktopMenuCollapsed
-                    ? 'Expandir menu'
-                    : 'Minimizar menu'
+                isDesktopMenuCollapsed
+                  ? ui.expandMenu
+                  : ui.collapseMenu
               }
             >
               {isDesktopMenuCollapsed ? (
@@ -1493,7 +1653,7 @@ export function ToolList() {
                 className="cursor-pointer hover:text-cyan-700 dark:hover:text-cyan-300"
                 onClick={goHome}
               >
-                {isEnglish ? 'Home' : 'Inicio'}
+                {ui.home}
               </button>
               {selectedCategory ? (
                 <>
@@ -1514,9 +1674,7 @@ export function ToolList() {
                 <div className="flex flex-wrap items-center gap-2">
                   <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
                     {view.type === 'home'
-                      ? isEnglish
-                        ? 'Main dashboard'
-                        : 'Panel principal'
+                      ? ui.mainDashboard
                       : (activeToolLocalized?.name ??
                         (selectedCategory ? getCategoryLabel(selectedCategory, language) : null))}
                   </h1>
@@ -1532,15 +1690,11 @@ export function ToolList() {
                 </div>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                   {view.type === 'home'
-                    ? isEnglish
-                      ? 'Status summary, latest updates and category-based access.'
-                      : 'Resumen de estado, mejoras recientes y acceso por categorias.'
+                    ? ui.statusSummary
                     : (activeToolLocalized?.description ??
                       (selectedCategory
                         ? getCategoryDescription(selectedCategory, language)
-                        : isEnglish
-                          ? 'Select a tool from the side menu.'
-                          : 'Selecciona una herramienta desde el menu lateral.'))}
+                        : ui.selectFromMenu))}
                 </p>
               </div>
               {activeTool ? (
@@ -1559,12 +1713,8 @@ export function ToolList() {
                     <Pin className="size-3.5" />
                   )}
                   {isActiveToolFavorite
-                    ? isEnglish
-                      ? 'Remove favorite'
-                      : 'Quitar favorito'
-                    : isEnglish
-                      ? 'Pin favorite'
-                      : 'Fijar favorito'}
+                    ? ui.removeFavorite
+                    : ui.pinFavorite}
                 </button>
               ) : null}
             </div>
@@ -1583,7 +1733,6 @@ export function ToolList() {
 
           {view.type === 'category' && selectedCategory ? (
             <CategoryOverview
-              category={selectedCategory}
               toolsByCategory={toolsForSelectedCategory}
               favoriteToolIds={favoriteToolIds}
               latest={latestRelease}
@@ -1598,7 +1747,7 @@ export function ToolList() {
                 <Suspense
                   fallback={
                     <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-4 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-900/70 dark:text-slate-300">
-                      {isEnglish ? 'Loading tool...' : 'Cargando herramienta...'}
+                      {ui.loadingTool}
                     </section>
                   }
                 >
@@ -1631,7 +1780,7 @@ export function ToolList() {
             type="button"
             className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
             onClick={() => setIsMobileMenuOpen(false)}
-            aria-label={isEnglish ? 'Close menu' : 'Cerrar menu'}
+            aria-label={ui.closeMenu}
           >
             <X className="size-4" />
           </button>

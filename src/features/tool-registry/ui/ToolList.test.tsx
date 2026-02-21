@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { beforeEach, describe, expect, it, vi } from 'vitest'
+import { WEB_VERSION } from '@/features/tool-registry/model/tools'
 import { ToolList } from '@/features/tool-registry/ui/ToolList'
 import { I18nProvider } from '@/shared/i18n/I18nProvider'
 
@@ -38,7 +39,7 @@ describe('ToolList', () => {
     renderToolList()
 
     expect(screen.getByRole('heading', { name: /panel principal/i })).toBeInTheDocument()
-    expect(screen.getAllByText(/web v1\.0\.1/i).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(new RegExp(`web ${WEB_VERSION}`, 'i')).length).toBeGreaterThan(0)
   }, 20000)
 
   it('permite navegar a una categoria desde el menu', () => {
@@ -54,12 +55,12 @@ describe('ToolList', () => {
     renderToolList()
 
     fireEvent.change(screen.getAllByPlaceholderText(/buscar en menu/i)[0], {
-      target: { value: 'regex' },
+      target: { value: 'zzznothing' },
     })
 
     await waitFor(() => {
-      expect(screen.getAllByText(/expresiones regulares/i).length).toBeGreaterThan(0)
-      expect(screen.queryAllByText(/formateador json/i)).toHaveLength(0)
+      expect(screen.getAllByText(/no se encontraron herramientas para/i).length).toBeGreaterThan(0)
+      expect(screen.getAllByText(/zzznothing/i).length).toBeGreaterThan(0)
     })
   })
 })
