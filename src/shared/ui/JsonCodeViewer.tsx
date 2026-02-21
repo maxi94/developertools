@@ -13,6 +13,10 @@ interface FoldRange {
   end: number
 }
 
+interface BracketPairMap {
+  pairByPosition: Map<string, string>
+}
+
 function getTokenClass(tokenType: string): string {
   switch (tokenType) {
     case 'key':
@@ -32,8 +36,8 @@ function getTokenClass(tokenType: string): string {
   }
 }
 
-function tokenizeLine(line: string): Array<{ value: string; type: string }> {
-  const tokens: Array<{ value: string; type: string }> = []
+function tokenizeLine(line: string): Array<{ value: string; type: string; start: number }> {
+  const tokens: Array<{ value: string; type: string; start: number }> = []
   const pattern =
     /("(?:\\.|[^"\\])*")(?=\s*:)|("(?:\\.|[^"\\])*")|\b(?:true|false)\b|\bnull\b|-?\d+(?:\.\d+)?(?:[eE][+-]?\d+)?|[{}\[\],:]/g
 
@@ -41,7 +45,7 @@ function tokenizeLine(line: string): Array<{ value: string; type: string }> {
   let match = pattern.exec(line)
   while (match) {
     if (match.index > lastIndex) {
-      tokens.push({ value: line.slice(lastIndex, match.index), type: 'plain' })
+      tokens.push({ value: line.slice(lastIndex, match.index), type: 'plain', start: lastIndex })
     }
 
     const matchedValue = match[0]
@@ -61,13 +65,13 @@ function tokenizeLine(line: string): Array<{ value: string; type: string }> {
       type = 'punctuation'
     }
 
-    tokens.push({ value: matchedValue, type })
+    tokens.push({ value: matchedValue, type, start: match.index })
     lastIndex = match.index + matchedValue.length
     match = pattern.exec(line)
   }
 
   if (lastIndex < line.length) {
-    tokens.push({ value: line.slice(lastIndex), type: 'plain' })
+    tokens.push({ value: line.slice(lastIndex), type: 'plain', start: lastIndex })
   }
 
   return tokens
@@ -134,6 +138,57 @@ function buildFoldRanges(lines: string[]): Map<number, FoldRange> {
   return ranges
 }
 
+function buildBracketPairs(lines: string[]): BracketPairMap {
+  const stack: Array<{ bracket: '{' | '['; line: number; char: number }> = []
+  const pairByPosition = new Map<string, string>()
+
+  let inString = false
+  let escaped = false
+
+  lines.forEach((line, lineIndex) => {
+    for (let charIndex = 0; charIndex < line.length; charIndex += 1) {
+      const char = line[charIndex]
+      if (inString) {
+        if (escaped) {
+          escaped = false
+          continue
+        }
+        if (char === '\\') {
+          escaped = true
+          continue
+        }
+        if (char === '"') {
+          inString = false
+        }
+        continue
+      }
+
+      if (char === '"') {
+        inString = true
+        continue
+      }
+
+      if (isOpeningBracket(char)) {
+        stack.push({ bracket: char, line: lineIndex, char: charIndex })
+        continue
+      }
+
+      if (isClosingBracket(char)) {
+        const open = stack.pop()
+        if (!open || !matchesBracket(open.bracket, char)) {
+          continue
+        }
+        const openKey = `${open.line}:${open.char}`
+        const closeKey = `${lineIndex}:${charIndex}`
+        pairByPosition.set(openKey, closeKey)
+        pairByPosition.set(closeKey, openKey)
+      }
+    }
+  })
+
+  return { pairByPosition }
+}
+
 export function JsonCodeViewer({
   value,
   status,
@@ -143,10 +198,13 @@ export function JsonCodeViewer({
 }: JsonCodeViewerProps) {
   const lines = useMemo(() => value.split('\n'), [value])
   const foldRanges = useMemo(() => buildFoldRanges(lines), [lines])
+  const { pairByPosition } = useMemo(() => buildBracketPairs(lines), [lines])
   const [collapsedStarts, setCollapsedStarts] = useState<Set<number>>(new Set())
+  const [hoveredBracketPosition, setHoveredBracketPosition] = useState<string | null>(null)
 
   useEffect(() => {
     setCollapsedStarts(new Set())
+    setHoveredBracketPosition(null)
   }, [value])
 
   const toggleLineCollapse = (lineIndex: number) => {
@@ -178,15 +236,23 @@ export function JsonCodeViewer({
   let lineIndex = 0
 
   while (lineIndex < lines.length) {
-    const line = lines[lineIndex]
-    const foldRange = foldRanges.get(lineIndex)
-    const isCollapsed = foldRange ? collapsedStarts.has(lineIndex) : false
+    const currentLineIndex = lineIndex
+    const line = lines[currentLineIndex]
+    const foldRange = foldRanges.get(currentLineIndex)
+    const isCollapsed = foldRange ? collapsedStarts.has(currentLineIndex) : false
 
     renderedLines.push(
-      <div key={`line-${lineIndex}`} className="grid grid-cols-[auto_auto_1fr] gap-2">
+      <div
+        key={`line-${currentLineIndex}`}
+        className={`grid grid-cols-[auto_auto_1fr] gap-2 rounded-sm px-1 ${
+          currentLineIndex % 2 === 0
+            ? 'bg-slate-100/45 dark:bg-slate-900/35'
+            : 'bg-slate-50/35 dark:bg-slate-950/20'
+        }`}
+      >
         {showLineNumbers ? (
           <span className="select-none pr-1 text-right text-[10px] text-slate-400 dark:text-slate-500">
-            {lineIndex + 1}
+            {currentLineIndex + 1}
           </span>
         ) : (
           <span className="hidden" />
@@ -196,7 +262,7 @@ export function JsonCodeViewer({
             <button
               type="button"
               className="inline-flex h-4 w-4 cursor-pointer items-center justify-center rounded text-[11px] font-bold text-slate-500 hover:bg-slate-200/70 hover:text-slate-700 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100"
-              onClick={() => toggleLineCollapse(lineIndex)}
+              onClick={() => toggleLineCollapse(currentLineIndex)}
               aria-label={isCollapsed ? 'Expandir bloque' : 'Colapsar bloque'}
             >
               {isCollapsed ? '+' : '-'}
@@ -205,9 +271,42 @@ export function JsonCodeViewer({
         </span>
         <span>
           {tokenizeLine(line).map((token, tokenIndex) => (
-            <span key={`line-${lineIndex}-token-${tokenIndex}`} className={getTokenClass(token.type)}>
-              {token.value}
-            </span>
+            (() => {
+              const positionKey = `${currentLineIndex}:${token.start}`
+              const isBracketToken =
+                token.type === 'punctuation' &&
+                (token.value === '{' || token.value === '}' || token.value === '[' || token.value === ']')
+              const linkedPosition = hoveredBracketPosition
+                ? pairByPosition.get(hoveredBracketPosition) ?? null
+                : null
+              const isActiveBracket =
+                isBracketToken &&
+                hoveredBracketPosition !== null &&
+                (hoveredBracketPosition === positionKey || linkedPosition === positionKey)
+
+              return (
+                <span
+                  key={`line-${currentLineIndex}-token-${tokenIndex}`}
+                  className={`${getTokenClass(token.type)} ${
+                    isActiveBracket
+                      ? 'rounded bg-cyan-200/80 px-[1px] text-cyan-900 dark:bg-cyan-500/35 dark:text-cyan-100'
+                      : ''
+                  }`}
+                  onMouseEnter={() => {
+                    if (isBracketToken) {
+                      setHoveredBracketPosition(positionKey)
+                    }
+                  }}
+                  onMouseLeave={() => {
+                    if (isBracketToken) {
+                      setHoveredBracketPosition(null)
+                    }
+                  }}
+                >
+                  {token.value}
+                </span>
+              )
+            })()
           ))}
         </span>
       </div>,
@@ -217,14 +316,14 @@ export function JsonCodeViewer({
       const hiddenLines = foldRange.end - foldRange.start
       renderedLines.push(
         <div
-          key={`collapsed-${lineIndex}`}
-          className="ml-7 grid grid-cols-[auto_1fr] gap-2 text-[11px] text-slate-500 dark:text-slate-400"
+          key={`collapsed-${currentLineIndex}`}
+          className="ml-7 grid grid-cols-[auto_1fr] gap-2 rounded-sm bg-slate-100/50 px-1 text-[11px] text-slate-500 dark:bg-slate-900/35 dark:text-slate-400"
         >
           <span className="select-none">...</span>
           <button
             type="button"
             className="w-fit cursor-pointer rounded px-1 py-0.5 text-left hover:bg-slate-200/60 hover:text-slate-700 dark:hover:bg-slate-800 dark:hover:text-slate-200"
-            onClick={() => toggleLineCollapse(lineIndex)}
+            onClick={() => toggleLineCollapse(currentLineIndex)}
           >
             {hiddenLines} lineas colapsadas
           </button>

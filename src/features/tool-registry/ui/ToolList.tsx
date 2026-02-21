@@ -100,6 +100,36 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.5.4',
+    date: '2026-02-21',
+    title: 'Resaltado de llaves y corchetes en hover',
+    changes: [
+      'Al pasar el mouse por { } [ ] en JSON normalizado se resaltan ambos extremos del bloque.',
+      'Mejora de navegacion visual para encontrar cierres de estructura en payloads grandes.',
+      'Se mantiene el plegado inline con +/- y el fondo alternado por fila.',
+    ],
+  },
+  {
+    version: 'v2.5.3',
+    date: '2026-02-21',
+    title: 'Legibilidad mejorada en salida JSON',
+    changes: [
+      'Se agrega fondo alternado por fila en la salida JSON para distinguir lineas rapidamente.',
+      'Se mantiene el plegado inline con +/- por linea y bloques colapsados.',
+      'Ajuste visual aplicado para mejorar lectura en claro y oscuro.',
+    ],
+  },
+  {
+    version: 'v2.5.2',
+    date: '2026-02-21',
+    title: 'Fix folding y fullscreen en Visor JSON Pro',
+    changes: [
+      'Se corrige el boton +/- del JSON normalizado para colapsar/expandir bloques correctamente por linea.',
+      'Pantalla completa vuelve a aplicarse solo al panel de JSON normalizado, no a toda la herramienta.',
+      'Se elimina duplicacion del boton de salir pantalla completa en el flujo del Visor JSON Pro.',
+    ],
+  },
+  {
     version: 'v2.5.1',
     date: '2026-02-21',
     title: 'Folding inline real en salida JSON',

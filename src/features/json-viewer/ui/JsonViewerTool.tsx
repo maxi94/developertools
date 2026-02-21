@@ -45,7 +45,7 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     maxDepth: 'Profundidad max',
     fullscreen: 'Pantalla completa',
     exitFullscreen: 'Salir pantalla completa',
-    fullscreenTitle: 'Visor JSON ampliado',
+    fullscreenTitle: 'JSON normalizado ampliado',
   },
   en: {
     title: 'JSON Viewer Pro',
@@ -65,7 +65,7 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     maxDepth: 'Max depth',
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',
-    fullscreenTitle: 'Expanded JSON viewer',
+    fullscreenTitle: 'Expanded normalized JSON',
   },
   pt: {
     title: 'Visualizador JSON Pro',
@@ -85,7 +85,7 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     maxDepth: 'Profundidade max',
     fullscreen: 'Tela cheia',
     exitFullscreen: 'Sair tela cheia',
-    fullscreenTitle: 'Visualizador JSON ampliado',
+    fullscreenTitle: 'JSON normalizado ampliado',
   },
 }
 
@@ -175,7 +175,6 @@ function collectNodeStats(value: unknown, depth = 0): { nodeCount: number; maxDe
   if (value === null || typeof value !== 'object') {
     return { nodeCount: 1, maxDepth: depth }
   }
-
   if (Array.isArray(value)) {
     if (value.length === 0) {
       return { nodeCount: 1, maxDepth: depth }
@@ -191,7 +190,6 @@ function collectNodeStats(value: unknown, depth = 0): { nodeCount: number; maxDe
       { nodeCount: 1, maxDepth: depth },
     )
   }
-
   const entries = Object.values(value as Record<string, unknown>)
   if (entries.length === 0) {
     return { nodeCount: 1, maxDepth: depth }
@@ -213,12 +211,10 @@ function parseErrorDetails(raw: string, message: string) {
   if (!match) {
     return null
   }
-
   const position = Number(match[1])
   if (!Number.isFinite(position) || position < 0) {
     return null
   }
-
   const before = raw.slice(0, position)
   const line = before.split('\n').length
   const column = position - before.lastIndexOf('\n')
@@ -277,8 +273,8 @@ export function JsonViewerTool() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isFullscreen])
 
-  const renderContent = (isOverlay = false) => (
-    <>
+  return (
+    <section className="grid gap-3">
       <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -317,14 +313,6 @@ export function JsonViewerTool() {
                 {resolveRefs ? t.refsOn : t.refsOff}
               </span>
             </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
-              onClick={() => setIsFullscreen((value) => !value)}
-            >
-              {isOverlay ? <Minimize2 className="size-3.5" /> : <Expand className="size-3.5" />}
-              {isOverlay ? t.exitFullscreen : t.fullscreen}
-            </button>
           </div>
         </div>
 
@@ -350,12 +338,22 @@ export function JsonViewerTool() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {t.normalized}
               </span>
-              {output.status === 'success' && stats ? (
-                <p className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-                  <strong>{t.stats}:</strong> {t.nodeCount} {stats.nodeCount} | {t.maxDepth}{' '}
-                  {stats.maxDepth}
-                </p>
-              ) : null}
+              <div className="inline-flex items-center gap-1.5">
+                {output.status === 'success' && stats ? (
+                  <p className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
+                    <strong>{t.stats}:</strong> {t.nodeCount} {stats.nodeCount} | {t.maxDepth}{' '}
+                    {stats.maxDepth}
+                  </p>
+                ) : null}
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+                  onClick={() => setIsFullscreen(true)}
+                >
+                  <Expand className="size-3.5" />
+                  {t.fullscreen}
+                </button>
+              </div>
             </div>
             <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
               <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
@@ -383,14 +381,8 @@ export function JsonViewerTool() {
           />
         </section>
       ) : null}
-    </>
-  )
 
-  return (
-    <section className="grid gap-3">
-      {renderContent(false)}
-
-      {isFullscreen && output.status === 'success' ? (
+      {isFullscreen ? (
         <div className="fixed inset-0 z-[130] bg-slate-950/70 p-3 backdrop-blur-sm md:p-6">
           <section className="grid h-full grid-rows-[auto_1fr] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-2xl dark:border-slate-700 dark:bg-slate-900">
             <header className="flex items-center justify-between gap-2 border-b border-slate-200 px-3 py-2 dark:border-slate-700">
@@ -407,8 +399,13 @@ export function JsonViewerTool() {
                 {t.exitFullscreen}
               </button>
             </header>
-            <div className="min-h-0 overflow-auto p-3">
-              {renderContent(true)}
+            <div className="min-h-0 overflow-hidden p-3">
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                showLineNumbers
+                className="h-full"
+              />
             </div>
           </section>
         </div>
