@@ -35,7 +35,7 @@ import {
   resolveCategoryFromSlug,
 } from '@/features/tool-registry/model/categories'
 import { localizeTool } from '@/features/tool-registry/model/tool-i18n'
-import { WEB_VERSION, tools } from '@/features/tool-registry/model/tools'
+import { tools } from '@/features/tool-registry/model/tools'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
 import { getI18nCopy } from '@/shared/i18n/catalog'
 import { SUPPORTED_LANGUAGES, normalizeLanguage, type AppLanguage } from '@/shared/i18n/config'
@@ -99,6 +99,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v1.3.6',
+    date: '2026-02-21',
+    title: 'Header de herramientas fuera de card',
+    changes: [
+      'La cabecera de herramienta deja de mostrarse como card y se integra al layout general.',
+      'Se elimina la version web visible del header superior para reducir ruido visual.',
+      'JSON a tabla incorpora ayuda de modos en tooltip y se actualiza su version a v1.0.2.',
+    ],
+  },
   {
     version: 'v1.3.5',
     date: '2026-02-21',
@@ -1372,9 +1382,7 @@ export function ToolList() {
             <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
               Developer Tools
             </span>
-            <span className="block truncate text-xs font-semibold text-slate-900 dark:text-slate-100">
-              {ui.controlCenter} · Web {WEB_VERSION}
-            </span>
+            <span className="block truncate text-xs font-semibold text-slate-900 dark:text-slate-100">{ui.controlCenter}</span>
           </span>
         </button>
 
@@ -1498,8 +1506,8 @@ export function ToolList() {
               ) : null}
             </div>
 
-            {view.type === 'tool' && activeTool && activeToolLocalized ? (
-              <div className="mt-2 flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+            <div className="mt-2 flex items-start gap-3">
+              {activeTool ? (
                 <button
                   type="button"
                   className={`inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border transition ${
@@ -1512,34 +1520,31 @@ export function ToolList() {
                 >
                   <Star className={`size-4 ${isActiveToolFavorite ? 'fill-current' : ''}`} />
                 </button>
-                <div className="min-w-0 flex-1">
-                  <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-2xl">
-                    {activeToolLocalized.name}
+              ) : null}
+              <div className="min-w-0 flex-1">
+                <div className="flex flex-wrap items-center gap-2">
+                  <h1 className="truncate text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
+                    {view.type === 'home'
+                      ? ui.mainDashboard
+                      : (activeToolLocalized?.name ??
+                        (selectedCategory ? getCategoryLabel(selectedCategory, language) : null))}
                   </h1>
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                    {activeToolLocalized.description}
-                  </p>
+                  {activeTool ? (
+                    <span className="rounded border border-slate-300/80 bg-slate-100/80 px-1.5 py-0.5 text-[10px] font-medium text-slate-600 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-300">
+                      v{activeTool.version}
+                    </span>
+                  ) : null}
                 </div>
-                <span className="shrink-0 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-600 dark:border-slate-600 dark:bg-slate-950 dark:text-slate-300">
-                  v{activeTool.version}
-                </span>
-              </div>
-            ) : (
-              <div className="mt-1">
-                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
-                  {view.type === 'home'
-                    ? ui.mainDashboard
-                    : (selectedCategory ? getCategoryLabel(selectedCategory, language) : null)}
-                </h1>
                 <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
                   {view.type === 'home'
                     ? ui.statusSummary
-                    : (selectedCategory
-                      ? getCategoryDescription(selectedCategory, language)
-                      : ui.selectFromMenu)}
+                    : (activeToolLocalized?.description ??
+                      (selectedCategory
+                        ? getCategoryDescription(selectedCategory, language)
+                        : ui.selectFromMenu))}
                 </p>
               </div>
-            )}
+            </div>
           </section>
 
           {view.type === 'home' ? (

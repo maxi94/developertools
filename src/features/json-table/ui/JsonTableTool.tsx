@@ -1,5 +1,5 @@
 import { useMemo, useState, type ReactNode } from 'react'
-import { Database, FileSpreadsheet, FileText, Sparkles } from 'lucide-react'
+import { CircleHelp, FileSpreadsheet, FileText, Sparkles } from 'lucide-react'
 
 const sampleJson = `[
   {
@@ -259,16 +259,6 @@ export function JsonTableTool() {
 
   return (
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
-      <div className="mb-3">
-        <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
-          <Database className="size-5" />
-          JSON a tabla
-        </h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-          Modo plano (default) o modo anidado con subtablas para listas y objetos complejos.
-        </p>
-      </div>
-
       <div className="mb-3 flex flex-wrap items-center gap-2">
         <button
           type="button"
@@ -278,14 +268,29 @@ export function JsonTableTool() {
           <Sparkles className="size-3.5" />
           Usar ejemplo
         </button>
-        <select
-          className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
-          value={mode}
-          onChange={(event) => setMode(event.target.value as TableMode)}
-        >
-          <option value="flat">Tabla plana (default)</option>
-          <option value="nested">Tabla anidada (subtablas)</option>
-        </select>
+        <div className="relative inline-flex items-center gap-1.5">
+          <select
+            id="json-table-mode"
+            className="rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 outline-none dark:border-slate-600 dark:bg-slate-800 dark:text-slate-100"
+            value={mode}
+            onChange={(event) => setMode(event.target.value as TableMode)}
+          >
+            <option value="flat">Tabla plana (default)</option>
+            <option value="nested">Tabla anidada (subtablas)</option>
+          </select>
+          <span className="group relative">
+            <button
+              type="button"
+              aria-label="Ayuda de modos de tabla"
+              className="inline-flex size-7 items-center justify-center rounded-lg border border-slate-300 bg-white text-slate-600 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
+            >
+              <CircleHelp className="size-3.5" />
+            </button>
+            <span className="pointer-events-none absolute left-1/2 top-[calc(100%+0.4rem)] z-20 w-[min(19rem,82vw)] -translate-x-1/2 rounded-lg border border-slate-300 bg-white px-2.5 py-2 text-[11px] font-medium leading-relaxed text-slate-700 opacity-0 shadow-lg transition group-hover:opacity-100 group-focus-within:opacity-100 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 sm:left-auto sm:right-0 sm:translate-x-0">
+              Modo plano (default) o modo anidado con subtablas para listas y objetos complejos.
+            </span>
+          </span>
+        </div>
         <button
           type="button"
           className="inline-flex items-center gap-1.5 rounded-xl border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
