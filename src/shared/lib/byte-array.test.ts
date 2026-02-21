@@ -7,9 +7,9 @@ describe('byte-array parser', () => {
     expect(Array.from(result.bytes)).toEqual([255, 216, 255, 224])
   })
 
-  it('soporta bytes negativos y hex', () => {
+  it('si hay hex, ignora valores previos aunque sean negativos', () => {
     const result = parseByteArrayInput('[-1, -128, 0x7F, 0xFF]')
-    expect(Array.from(result.bytes)).toEqual([255, 128, 127, 255])
+    expect(Array.from(result.bytes)).toEqual([127, 255])
   })
 
   it('si hay 0x, toma solo desde el primer 0x en adelante', () => {

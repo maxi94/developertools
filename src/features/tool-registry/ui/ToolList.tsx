@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.3.1',
+    date: '2026-02-21',
+    title: 'byte[] parser desde primer 0x',
+    changes: [
+      'El parser de byte[] ahora toma solo tokens desde el primer valor hexadecimal (0x...) en adelante.',
+      'Esto evita incluir prefijos/metadatos numericos que vienen antes del contenido real del archivo.',
+      'Version de byte[] a archivo actualizada a v1.0.1.',
+    ],
+  },
+  {
     version: 'v2.3.0',
     date: '2026-02-21',
     title: 'Nueva tool byte[] a archivo',
