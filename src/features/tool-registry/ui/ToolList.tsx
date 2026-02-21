@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.3.4',
+    date: '2026-02-21',
+    title: 'Refinamiento de paleta en modo claro',
+    changes: [
+      'Se mejora la gama cromatica global del modo claro para un look mas limpio y menos saturado.',
+      'Se ajustan gradientes, overlays y acentos del fondo general sin modificar el modo oscuro.',
+      'Mejor contraste visual en el layout principal para lectura y jerarquia.',
+    ],
+  },
+  {
     version: 'v2.3.3',
     date: '2026-02-21',
     title: 'Fix deteccion SVG en byte[] a archivo',
