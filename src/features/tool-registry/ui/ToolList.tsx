@@ -41,8 +41,9 @@ import {
 import { localizeTool } from '@/features/tool-registry/model/tool-i18n'
 import { WEB_VERSION, tools } from '@/features/tool-registry/model/tools'
 import { ToolCard } from '@/features/tool-registry/ui/ToolCard'
-import { applyDomTranslations } from '@/shared/i18n/dom-translation'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { SUPPORTED_LANGUAGES, normalizeLanguage, type AppLanguage } from '@/shared/i18n/config'
+import { applyDomTranslations } from '@/shared/i18n/dom-translation'
 import { useI18n } from '@/shared/i18n/useI18n'
 import { useTheme } from '@/shared/hooks/useTheme'
 import type { ToolCategory, ToolDefinition, ToolId } from '@/shared/types/tool'
@@ -102,6 +103,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v1.2.0',
+    date: '2026-02-21',
+    title: 'I18n unificado en catalogos y limpieza de textos mezclados',
+    changes: [
+      'Se centralizan textos UI en un catalogo tipado por idioma para menu y vistas principales.',
+      'Se migran herramientas clave (Color, Box Shadow, Spacing, Image to Base64 y SVG Optimizer) al catalogo.',
+      'Se mantiene traduccion de respaldo para componentes legacy sin condicionales por idioma.',
+    ],
+  },
   {
     version: 'v1.1.1',
     date: '2026-02-21',
@@ -411,208 +422,8 @@ function toAppAbsolutePath(pathname: string): string {
   return `${APP_BASE_PATH}${normalized}`
 }
 
-type UiCopy = {
-  routeToolSegment: string
-  searchInMenu: string
-  clearSearch: string
-  favorites: string
-  favoritesMenu: string
-  expandFavorites: string
-  collapseFavorites: string
-  expandCategory: string
-  collapseCategory: string
-  menu: string
-  noToolsFound: string
-  developerHub: string
-  developerHubSubtitle: string
-  activeTools: string
-  categories: string
-  whatsNew: string
-  hide: string
-  noPinnedFavorites: string
-  activeCategory: string
-  tools: string
-  latestUpdate: string
-  favorite: string
-  pin: string
-  open: string
-  statusOn: string
-  statusSoon: string
-  openMenu: string
-  closeMenu: string
-  goHome: string
-  controlCenter: string
-  language: string
-  theme: string
-  themeLight: string
-  themeDark: string
-  themeSystem: string
-  changeThemeMode: string
-  navigation: string
-  expandMenu: string
-  collapseMenu: string
-  home: string
-  mainDashboard: string
-  statusSummary: string
-  selectFromMenu: string
-  pinFavorite: string
-  removeFavorite: string
-  loadingTool: string
-}
-
-const uiCopyByLanguage: Record<AppLanguage, UiCopy> = {
-  es: {
-    routeToolSegment: 'herramienta',
-    searchInMenu: 'Buscar en menu...',
-    clearSearch: 'Limpiar busqueda',
-    favorites: 'Favoritos',
-    favoritesMenu: 'Menu de favoritos',
-    expandFavorites: 'Expandir favoritos',
-    collapseFavorites: 'Colapsar favoritos',
-    expandCategory: 'Expandir categoria',
-    collapseCategory: 'Colapsar categoria',
-    menu: 'Menu',
-    noToolsFound: 'No se encontraron herramientas para:',
-    developerHub: 'Centro de herramientas para desarrollo',
-    developerHubSubtitle: 'Accesos por categoria, favoritos y utilidades locales en un solo lugar.',
-    activeTools: 'tools activas',
-    categories: 'categorias',
-    whatsNew: 'Novedades',
-    hide: 'Ocultar',
-    noPinnedFavorites: 'Todavia no tenes favoritos fijados.',
-    activeCategory: 'Categoria activa',
-    tools: 'tools',
-    latestUpdate: 'Novedad reciente:',
-    favorite: 'Favorito',
-    pin: 'Fijar',
-    open: 'Abrir',
-    statusOn: 'Lista',
-    statusSoon: 'Proxima',
-    openMenu: 'Abrir menu',
-    closeMenu: 'Cerrar menu',
-    goHome: 'Ir a inicio',
-    controlCenter: 'Centro de control',
-    language: 'Idioma',
-    theme: 'Tema',
-    themeLight: 'Claro',
-    themeDark: 'Oscuro',
-    themeSystem: 'Sistema',
-    changeThemeMode: 'Cambiar modo de tema',
-    navigation: 'Navegacion',
-    expandMenu: 'Expandir menu',
-    collapseMenu: 'Minimizar menu',
-    home: 'Inicio',
-    mainDashboard: 'Panel principal',
-    statusSummary: 'Resumen de estado, mejoras recientes y acceso por categorias.',
-    selectFromMenu: 'Selecciona una herramienta desde el menu lateral.',
-    pinFavorite: 'Fijar favorito',
-    removeFavorite: 'Quitar favorito',
-    loadingTool: 'Cargando herramienta...',
-  },
-  en: {
-    routeToolSegment: 'tool',
-    searchInMenu: 'Search in menu...',
-    clearSearch: 'Clear search',
-    favorites: 'Favorites',
-    favoritesMenu: 'Favorites menu',
-    expandFavorites: 'Expand favorites',
-    collapseFavorites: 'Collapse favorites',
-    expandCategory: 'Expand category',
-    collapseCategory: 'Collapse category',
-    menu: 'Menu',
-    noToolsFound: 'No tools found for:',
-    developerHub: 'Developer toolbox hub',
-    developerHubSubtitle: 'Category access, favorites and local utilities in one place.',
-    activeTools: 'active tools',
-    categories: 'categories',
-    whatsNew: 'What is new',
-    hide: 'Hide',
-    noPinnedFavorites: "You don't have pinned favorites yet.",
-    activeCategory: 'Active category',
-    tools: 'tools',
-    latestUpdate: 'Latest update:',
-    favorite: 'Favorite',
-    pin: 'Pin',
-    open: 'Open',
-    statusOn: 'On',
-    statusSoon: 'Soon',
-    openMenu: 'Open menu',
-    closeMenu: 'Close menu',
-    goHome: 'Go home',
-    controlCenter: 'Control Center',
-    language: 'Lang',
-    theme: 'Theme',
-    themeLight: 'Light',
-    themeDark: 'Dark',
-    themeSystem: 'System',
-    changeThemeMode: 'Change theme mode',
-    navigation: 'Navigation',
-    expandMenu: 'Expand menu',
-    collapseMenu: 'Collapse menu',
-    home: 'Home',
-    mainDashboard: 'Main dashboard',
-    statusSummary: 'Status summary, latest updates and category-based access.',
-    selectFromMenu: 'Select a tool from the side menu.',
-    pinFavorite: 'Pin favorite',
-    removeFavorite: 'Remove favorite',
-    loadingTool: 'Loading tool...',
-  },
-  pt: {
-    routeToolSegment: 'ferramenta',
-    searchInMenu: 'Buscar no menu...',
-    clearSearch: 'Limpar busca',
-    favorites: 'Favoritos',
-    favoritesMenu: 'Menu de favoritos',
-    expandFavorites: 'Expandir favoritos',
-    collapseFavorites: 'Recolher favoritos',
-    expandCategory: 'Expandir categoria',
-    collapseCategory: 'Recolher categoria',
-    menu: 'Menu',
-    noToolsFound: 'Nenhuma ferramenta encontrada para:',
-    developerHub: 'Centro de ferramentas para desenvolvimento',
-    developerHubSubtitle: 'Acesso por categoria, favoritos e utilitarios locais em um so lugar.',
-    activeTools: 'ferramentas ativas',
-    categories: 'categorias',
-    whatsNew: 'Novidades',
-    hide: 'Ocultar',
-    noPinnedFavorites: 'Voce ainda nao tem favoritos fixados.',
-    activeCategory: 'Categoria ativa',
-    tools: 'ferramentas',
-    latestUpdate: 'Atualizacao recente:',
-    favorite: 'Favorito',
-    pin: 'Fixar',
-    open: 'Abrir',
-    statusOn: 'Pronta',
-    statusSoon: 'Em breve',
-    openMenu: 'Abrir menu',
-    closeMenu: 'Fechar menu',
-    goHome: 'Ir para inicio',
-    controlCenter: 'Centro de controle',
-    language: 'Idioma',
-    theme: 'Tema',
-    themeLight: 'Claro',
-    themeDark: 'Escuro',
-    themeSystem: 'Sistema',
-    changeThemeMode: 'Alterar modo de tema',
-    navigation: 'Navegacao',
-    expandMenu: 'Expandir menu',
-    collapseMenu: 'Recolher menu',
-    home: 'Inicio',
-    mainDashboard: 'Painel principal',
-    statusSummary: 'Resumo de status, ultimas melhorias e acesso por categorias.',
-    selectFromMenu: 'Selecione uma ferramenta no menu lateral.',
-    pinFavorite: 'Fixar favorito',
-    removeFavorite: 'Remover favorito',
-    loadingTool: 'Carregando ferramenta...',
-  },
-}
-
-function getUiCopy(language: AppLanguage): UiCopy {
-  return uiCopyByLanguage[language] ?? uiCopyByLanguage.es
-}
-
 function getToolRouteSegment(language: AppLanguage): string {
-  return getUiCopy(language).routeToolSegment
+  return getI18nCopy(language, 'toolRegistry').routeToolSegment
 }
 
 function getCategoryPath(category: ToolCategory, language: AppLanguage): string {
@@ -753,7 +564,7 @@ function SidebarContent({
   onClearSearch,
 }: SidebarContentProps) {
   const { language } = useI18n()
-  const ui = getUiCopy(language)
+  const ui = getI18nCopy(language, 'toolRegistry')
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const favoriteTools = useMemo(
     () => menuTools.filter((tool) => favoriteToolIdSet.has(tool.id)),
@@ -1063,7 +874,7 @@ function HomeOverview({
   onSelectTool,
 }: HomeOverviewProps) {
   const { language } = useI18n()
-  const ui = getUiCopy(language)
+  const ui = getI18nCopy(language, 'toolRegistry')
   const totalTools = tools.length
   const activeCategories = useMemo(() => {
     const categoriesWithTools = new Set<ToolCategory>(tools.map((tool) => tool.category))
@@ -1199,7 +1010,7 @@ function CategoryOverview({
   onToggleFavorite,
 }: CategoryOverviewProps) {
   const { language } = useI18n()
-  const ui = getUiCopy(language)
+  const ui = getI18nCopy(language, 'toolRegistry')
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const favoriteCountInCategory = useMemo(
     () => toolsByCategory.filter((tool) => favoriteToolIdSet.has(tool.id)).length,
@@ -1292,7 +1103,7 @@ function CategoryOverview({
 export function ToolList() {
   const { language, setLanguage } = useI18n()
   const { themeMode, setThemeMode } = useTheme()
-  const ui = getUiCopy(language)
+  const ui = getI18nCopy(language, 'toolRegistry')
   const toolContentRef = useRef<HTMLDivElement | null>(null)
   const [view, setView] = useState<ViewState>(() => parseViewFromPath(window.location.pathname))
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
@@ -1807,6 +1618,7 @@ export function ToolList() {
     </section>
   )
 }
+
 
 
 

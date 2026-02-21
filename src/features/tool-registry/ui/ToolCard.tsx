@@ -18,6 +18,8 @@
   Scissors,
   Star,
 } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
+import { useI18n } from '@/shared/i18n/useI18n'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -37,6 +39,8 @@ export function ToolCard({
   onSelect,
   onToggleFavorite,
 }: ToolCardProps) {
+  const { language } = useI18n()
+  const ui = getI18nCopy(language, 'toolCard')
   const iconByTool = {
     'json-formatter': Braces,
     'json-table': FileJson2,
@@ -116,7 +120,7 @@ export function ToolCard({
               event.stopPropagation()
               onToggleFavorite(tool.id)
             }}
-            aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+            aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
           >
             {isFavorite ? <Star className="size-4 fill-current" /> : <Pin className="size-4" />}
           </button>

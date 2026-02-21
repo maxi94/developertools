@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Copy, Download, FileCode2 } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 function minifySvg(raw: string): string {
@@ -22,7 +23,7 @@ function isValidSvg(raw: string): boolean {
 
 export function SvgOptimizerTool() {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const ui = getI18nCopy(language, 'svgOptimizer')
   const [input, setInput] = useState('')
 
   const result = useMemo(() => {
@@ -66,18 +67,14 @@ export function SvgOptimizerTool() {
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
       <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
         <FileCode2 className="size-5" />
-        {isEnglish ? 'SVG Optimizer / Preview' : 'Optimizador SVG / Preview'}
+        {ui.title}
       </h2>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {isEnglish
-          ? 'Minify SVG by removing comments and extra spaces, with live preview.'
-          : 'Minifica SVG removiendo comentarios y espacios extra, con vista previa en vivo.'}
-      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.description}</p>
 
       <div className="mt-4 grid gap-3 lg:grid-cols-2">
         <label className="grid gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {isEnglish ? 'SVG input' : 'Entrada SVG'}
+              {ui.svgInput}
             </span>
           <textarea
             value={input}
@@ -91,11 +88,11 @@ export function SvgOptimizerTool() {
         <div className="grid gap-2">
           <div className="flex items-center justify-between gap-2">
             <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {isEnglish ? 'Result' : 'Resultado'}
+              {ui.result}
             </span>
             {result.status === 'success' ? (
               <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-300">
-                {result.bytesSaved} {isEnglish ? 'fewer chars' : 'chars menos'}
+                {result.bytesSaved} {ui.fewerChars}
               </span>
             ) : null}
           </div>
@@ -103,7 +100,7 @@ export function SvgOptimizerTool() {
           {result.status === 'success' ? (
             <>
               <div className="rounded-xl border border-slate-300 bg-white p-3 dark:border-slate-700 dark:bg-slate-950/40">
-                <img src={previewSrc ?? ''} alt="SVG preview" className="mx-auto max-h-40 object-contain" />
+                <img src={previewSrc ?? ''} alt={ui.previewAlt} className="mx-auto max-h-40 object-contain" />
               </div>
               <div className="flex gap-2">
                 <button
@@ -112,7 +109,7 @@ export function SvgOptimizerTool() {
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
                 >
                   <Copy className="size-3.5" />
-                  {isEnglish ? 'Copy minified' : 'Copiar minified'}
+                  {ui.copyMinified}
                 </button>
                 <button
                   type="button"
@@ -120,7 +117,7 @@ export function SvgOptimizerTool() {
                   className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 hover:border-emerald-400 hover:text-emerald-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
                 >
                   <Download className="size-3.5" />
-                  {isEnglish ? 'Download' : 'Descargar'}
+                  {ui.download}
                 </button>
               </div>
               <textarea
@@ -131,13 +128,7 @@ export function SvgOptimizerTool() {
             </>
           ) : (
             <div className="rounded-xl border border-slate-300 bg-slate-50 p-3 text-sm text-slate-600 dark:border-slate-700 dark:bg-slate-950/40 dark:text-slate-300">
-              {result.status === 'error'
-                ? isEnglish
-                  ? 'The content does not look like a valid SVG.'
-                  : 'El contenido no parece un SVG valido.'
-                : isEnglish
-                  ? 'Paste an SVG to preview and minify.'
-                  : 'Pega un SVG para ver preview y minificacion.'}
+              {result.status === 'error' ? ui.invalidSvg : ui.emptyState}
             </div>
           )}
         </div>

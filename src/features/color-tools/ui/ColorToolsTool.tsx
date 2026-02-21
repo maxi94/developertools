@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Copy, Palette } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 interface RgbColor {
@@ -182,7 +183,7 @@ function ColorField({
 
 export function ColorToolsTool() {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const ui = getI18nCopy(language, 'colorTools')
   const [colorInput, setColorInput] = useState('#22C55E')
   const [foregroundInput, setForegroundInput] = useState('#0F172A')
   const [backgroundInput, setBackgroundInput] = useState('#F8FAFC')
@@ -223,18 +224,16 @@ export function ColorToolsTool() {
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
       <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
         <Palette className="size-5" />
-        {isEnglish ? 'Color Tools' : 'Herramientas de color'}
+        {ui.title}
       </h2>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {isEnglish
-          ? 'HEX/RGB/HSL conversion + WCAG contrast checker with live preview.'
-          : 'Conversion HEX/RGB/HSL + contrast checker WCAG con preview real.'}
+        {ui.description}
       </p>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,380px)_minmax(0,1fr)]">
         <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
           <ColorField
-            label={isEnglish ? 'Base color (HEX/RGB/HSL)' : 'Color base (HEX/RGB/HSL)'}
+            label={ui.baseColor}
             value={colorInput}
             onTextChange={setColorInput}
             onPickerChange={setColorInput}
@@ -265,7 +264,7 @@ export function ColorToolsTool() {
                       type="button"
                       onClick={() => navigator.clipboard.writeText(value)}
                       className="inline-flex size-6 items-center justify-center rounded border border-slate-300 text-slate-600 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:text-slate-300 dark:hover:border-sky-400 dark:hover:text-sky-300"
-                      aria-label={`Copiar ${label}`}
+                      aria-label={`${ui.copyValue} ${label}`}
                     >
                       <Copy className="size-3.5" />
                     </button>
@@ -275,25 +274,25 @@ export function ColorToolsTool() {
             </div>
           ) : (
             <p className="text-xs font-semibold text-rose-600 dark:text-rose-300">
-              {isEnglish ? 'Invalid color. Use HEX, RGB or HSL.' : 'Color invalido. Usa HEX, RGB o HSL.'}
+              {ui.invalidColor}
             </p>
           )}
         </section>
 
         <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-            {isEnglish ? 'Contrast checker (WCAG)' : 'Validador de contraste (WCAG)'}
+            {ui.contrastChecker}
           </p>
 
           <div className="grid gap-2 sm:grid-cols-2">
             <ColorField
-              label={isEnglish ? 'Foreground' : 'Texto'}
+              label={ui.foreground}
               value={foregroundInput}
               onTextChange={setForegroundInput}
               onPickerChange={setForegroundInput}
             />
             <ColorField
-              label={isEnglish ? 'Background' : 'Fondo'}
+              label={ui.background}
               value={backgroundInput}
               onTextChange={setBackgroundInput}
               onPickerChange={setBackgroundInput}
@@ -310,9 +309,7 @@ export function ColorToolsTool() {
             <div className="max-w-md text-center">
               <p className="text-lg font-semibold">Aa</p>
               <p className="mt-1 text-sm font-semibold">
-                {isEnglish
-                  ? 'The quick brown fox jumps over the lazy dog.'
-                  : 'Texto de prueba para validar legibilidad y contraste.'}
+                {ui.previewText}
               </p>
               <p className="mt-1 text-xs">0123456789 !@#$%^&*</p>
             </div>
@@ -320,19 +317,21 @@ export function ColorToolsTool() {
 
           {ratio && wcag ? (
             <div className="grid gap-1.5 text-xs">
-              <p className="font-semibold text-slate-700 dark:text-slate-200">Ratio: {ratio.toFixed(2)}:1</p>
-              <p className="text-slate-600 dark:text-slate-300">
-                AA normal: {wcag.normalAA ? 'Pass' : 'Fail'} | AAA normal: {wcag.normalAAA ? 'Pass' : 'Fail'}
+              <p className="font-semibold text-slate-700 dark:text-slate-200">
+                {ui.ratio}: {ratio.toFixed(2)}:1
               </p>
               <p className="text-slate-600 dark:text-slate-300">
-                AA large: {wcag.largeAA ? 'Pass' : 'Fail'} | AAA large: {wcag.largeAAA ? 'Pass' : 'Fail'}
+                {ui.aaNormal}: {wcag.normalAA ? ui.pass : ui.fail} | {ui.aaaNormal}:{' '}
+                {wcag.normalAAA ? ui.pass : ui.fail}
+              </p>
+              <p className="text-slate-600 dark:text-slate-300">
+                {ui.aaLarge}: {wcag.largeAA ? ui.pass : ui.fail} | {ui.aaaLarge}:{' '}
+                {wcag.largeAAA ? ui.pass : ui.fail}
               </p>
             </div>
           ) : (
             <p className="text-xs font-semibold text-rose-600 dark:text-rose-300">
-              {isEnglish
-                ? 'Enter valid colors to compute contrast.'
-                : 'Ingresa colores validos para calcular contraste.'}
+              {ui.enterValidColors}
             </p>
           )}
         </section>

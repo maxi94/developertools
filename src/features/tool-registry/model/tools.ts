@@ -1,6 +1,6 @@
 import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.1.1'
+export const WEB_VERSION = 'v1.2.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -129,7 +129,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte HEX/RGB/HSL y valida contraste WCAG.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'box-shadow-generator',
@@ -137,7 +137,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera sombras CSS con preview y salida lista para copiar.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.2',
   },
   {
     id: 'spacing-preview',
@@ -145,7 +145,7 @@ export const tools: ToolDefinition[] = [
     description: 'Previsualiza border-radius, padding y margin con CSS exportable.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.2',
   },
   {
     id: 'datetime-tools',
@@ -177,7 +177,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte imagenes locales a Data URL/Base64.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'svg-optimizer',
@@ -185,7 +185,7 @@ export const tools: ToolDefinition[] = [
     description: 'Minifica SVG, previsualiza y exporta el resultado.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'case-converter',
