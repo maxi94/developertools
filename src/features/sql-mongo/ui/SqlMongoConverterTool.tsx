@@ -75,6 +75,19 @@ const sqlExampleGroups: SqlExampleGroup[] = [
         name: 'OR simple',
         value: "SELECT id, name FROM users WHERE plan = 'pro' OR plan = 'enterprise'",
       },
+      {
+        name: 'AND/OR con parentesis',
+        value:
+          "SELECT id, name FROM users WHERE (plan = 'pro' OR plan = 'enterprise') AND active = true",
+      },
+      {
+        name: 'LIMIT + OFFSET',
+        value: "SELECT id, name FROM users WHERE active = 1 ORDER BY id DESC LIMIT 10 OFFSET 20",
+      },
+      {
+        name: 'TOP N',
+        value: "SELECT TOP 5 id, name FROM users WHERE country = 'AR' ORDER BY id DESC",
+      },
     ],
   },
 ]
@@ -112,6 +125,7 @@ export function SqlMongoConverterTool() {
         filter: filter.trim() || '{}',
         projection: projection.trim() || '{}',
         sort: sort.trim() || '{}',
+        skip: null,
         limit: limit.trim() ? Number.parseInt(limit.trim(), 10) : null,
         distinctField: null,
       }

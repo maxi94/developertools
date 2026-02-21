@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.0.0'
+export const WEB_VERSION = 'v2.1.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -73,7 +73,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte SELECT SQL simples a queries MongoDB.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.2.2',
+    version: '1.3.0',
   },
   {
     id: 'json-model-generator',

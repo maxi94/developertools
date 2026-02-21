@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.1.0',
+    date: '2026-02-21',
+    title: 'SQL a MongoDB mas robusto',
+    changes: [
+      'SQL a MongoDB: soporte para mezcla AND/OR con parentesis y prioridad correcta.',
+      'Nuevos casos soportados: OFFSET y SELECT TOP N en conversion a Mongo.',
+      'Version de SQL a MongoDB actualizada a v1.3.0.',
+    ],
+  },
+  {
     version: 'v2.0.0',
     date: '2026-02-21',
     title: 'Se elimina Fake Data Generator',
