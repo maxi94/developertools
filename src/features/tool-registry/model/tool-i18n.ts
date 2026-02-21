@@ -93,10 +93,6 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     name: 'UUID/ULID/KSUID Toolkit',
     description: 'Generator, validator and batch export for IDs.',
   },
-  'fake-data-generator': {
-    name: 'Fake Data Generator',
-    description: 'Generate fake JSON with names, emails, UUID and dates.',
-  },
   'image-to-base64': {
     name: 'Image to Base64',
     description: 'Convert local images to Data URL/Base64.',
@@ -190,10 +186,6 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     'id-toolkit': {
       name: 'Toolkit UUID/ULID/KSUID',
       description: 'Gerador, validador e exportacao em lote de IDs.',
-    },
-    'fake-data-generator': {
-      name: 'Gerador de dados falsos',
-      description: 'Gere JSON falso com nomes, emails, UUID e datas.',
     },
     'image-to-base64': {
       name: 'Imagem para Base64',

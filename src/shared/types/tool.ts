@@ -12,7 +12,6 @@ export type ToolId =
   | 'code-minifier'
   | 'sql-mongo-converter'
   | 'id-toolkit'
-  | 'fake-data-generator'
   | 'json-model-generator'
   | 'jwt'
   | 'uuid'

@@ -9,7 +9,6 @@ import {
   FileJson2,
   FileText,
   FingerprintPattern as Fingerprint,
-  FlaskConical,
   KeyRound,
   KeySquare,
   Link2,
@@ -63,7 +62,6 @@ export function ToolCard({
     'spacing-preview': FileCode2,
     'datetime-tools': Clock3,
     'id-toolkit': Fingerprint,
-    'fake-data-generator': FlaskConical,
     'svg-optimizer': FileCode2,
     'image-to-base64': FileImage,
   } as const

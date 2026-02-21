@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.4.0'
+export const WEB_VERSION = 'v2.0.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -162,14 +162,6 @@ export const tools: ToolDefinition[] = [
     category: 'Tokens e identidad',
     status: 'ready',
     version: '1.1.1',
-  },
-  {
-    id: 'fake-data-generator',
-    name: 'Generador fake data',
-    description: 'Genera JSON fake con nombres, emails, UUID y fechas.',
-    category: 'Datos',
-    status: 'ready',
-    version: '1.1.0',
   },
   {
     id: 'image-to-base64',

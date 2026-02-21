@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.0.0',
+    date: '2026-02-21',
+    title: 'Se elimina Fake Data Generator',
+    changes: [
+      'La herramienta Fake Data Generator se elimina del producto.',
+      'Se remueven menu, registro y carga lazy asociados.',
+      'Release mayor por cambio incompatible en el set de herramientas disponible.',
+    ],
+  },
+  {
     version: 'v1.4.0',
     date: '2026-02-21',
     title: 'Fake Data flexible por esquema',
@@ -461,10 +471,6 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
   'base64-pdf': lazyNamedTool(
     () => import('@/features/base64-pdf/ui/Base64PdfTool'),
     'Base64PdfTool',
-  ),
-  'fake-data-generator': lazyNamedTool(
-    () => import('@/features/fake-data/ui/FakeDataTool'),
-    'FakeDataTool',
   ),
   'sql-formatter': lazyNamedTool(
     () => import('@/features/sql-formatter/ui/SqlFormatterTool'),
