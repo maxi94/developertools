@@ -104,6 +104,14 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.2.2',
+    date: '2026-02-21',
+    title: 'Fallback i18n ajustado para portugues',
+    changes: [
+      'Se prioriza Espanol antes de Ingles cuando faltan traducciones en Portugues.',
+      'Se evita que el menu de herramientas quede mezclado en Ingles en modo PT.',
+    ],
+  },  {
     version: 'v1.2.1',
     date: '2026-02-21',
     title: 'Correccion de idioma en menu de herramientas',
@@ -1627,6 +1635,7 @@ export function ToolList() {
     </section>
   )
 }
+
 
 
 
