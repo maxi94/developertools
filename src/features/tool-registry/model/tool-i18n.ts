@@ -110,16 +110,111 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     description: 'Minify SVG, preview and export the result.',
   },
   },
-  pt: {},
+  pt: {
+    'json-formatter': {
+      name: 'Formatador JSON',
+      description: 'Formate e valide JSON localmente no seu navegador.',
+    },
+    'json-table': {
+      name: 'JSON para tabela',
+      description: 'Converta JSON (incluindo objetos aninhados) em tabela e exporte CSV/Excel.',
+    },
+    base64: {
+      name: 'Base64 Texto',
+      description: 'Codifique e decodifique texto rapidamente.',
+    },
+    'base64-image': {
+      name: 'Base64 para imagem',
+      description: 'Converta uma ou varias strings Base64 em imagens.',
+    },
+    'base64-pdf': {
+      name: 'Base64 para PDF',
+      description: 'Converta uma ou varias strings Base64 em arquivos PDF.',
+    },
+    'sql-formatter': {
+      name: 'Formatador SQL',
+      description: 'Formate consultas SQL com suporte a multiplos dialetos.',
+    },
+    'code-minifier': {
+      name: 'Minify/Expand JS-CSS',
+      description: 'Minifique e expanda JavaScript ou CSS a partir de texto ou arquivo.',
+    },
+    'regex-tool': {
+      name: 'Ferramenta Regex',
+      description: 'Crie, teste, depure e exporte expressoes regulares.',
+    },
+    'sql-mongo-converter': {
+      name: 'SQL para MongoDB',
+      description: 'Converta consultas SQL SELECT simples em consultas MongoDB.',
+    },
+    'json-model-generator': {
+      name: 'JSON para classes',
+      description: 'Gere classes a partir de JSON em C#, TypeScript, Java, Python, Kotlin e Go.',
+    },
+    'jwt-builder': {
+      name: 'JWT Builder',
+      description: 'Crie tokens JWT e assine HS256 localmente.',
+    },
+    jwt: {
+      name: 'Visualizador JWT',
+      description: 'Decodifique header e payload para inspecao.',
+    },
+    uuid: {
+      name: 'Gerador UUID',
+      description: 'Gere UUID v4 e valide seu formato.',
+    },
+    'url-codec': {
+      name: 'Codificador URL',
+      description: 'Codifique e decodifique conteudo para URLs.',
+    },
+    'encoding-suite': {
+      name: 'Encoder/Decoder extra',
+      description: 'HTML, Unicode, Hex e Base64 URL-safe.',
+    },
+    'color-tools': {
+      name: 'Ferramentas de cor',
+      description: 'Converta HEX/RGB/HSL e valide contraste WCAG.',
+    },
+    'box-shadow-generator': {
+      name: 'Gerador de Box Shadow',
+      description: 'Crie sombras CSS com preview em tempo real e saida pronta para copiar.',
+    },
+    'spacing-preview': {
+      name: 'Preview de borda/espacamento',
+      description: 'Visualize border-radius, padding e margin com CSS exportavel.',
+    },
+    'datetime-tools': {
+      name: 'Ferramentas DateTime',
+      description: 'Conversao de fuso horario, Unix timestamp e formatador ISO.',
+    },
+    'id-toolkit': {
+      name: 'Toolkit UUID/ULID/KSUID',
+      description: 'Gerador, validador e exportacao em lote de IDs.',
+    },
+    'fake-data-generator': {
+      name: 'Gerador de dados falsos',
+      description: 'Gere JSON falso com nomes, emails, UUID e datas.',
+    },
+    'image-to-base64': {
+      name: 'Imagem para Base64',
+      description: 'Converta imagens locais para Data URL/Base64.',
+    },
+    'case-converter': {
+      name: 'Conversor de caixa',
+      description: 'Converta texto entre camelCase, snake_case, kebab-case e mais.',
+    },
+    'svg-optimizer': {
+      name: 'Otimizador SVG/Preview',
+      description: 'Minifique SVG, visualize e exporte o resultado.',
+    },
+  },
 }
 
 export function localizeTool(tool: ToolDefinition, language: AppLanguage): ToolDefinition {
   const localizedForLanguage = toolTextsByLanguage[language]?.[tool.id]
-  const localizedFallback =
-    language === DEFAULT_LANGUAGE
-      ? undefined
-      : toolTextsByLanguage[DEFAULT_LANGUAGE]?.[tool.id]
-        ?? toolTextsByLanguage[SECONDARY_FALLBACK_LANGUAGE]?.[tool.id]
+  const localizedFallback = language === SECONDARY_FALLBACK_LANGUAGE
+    ? toolTextsByLanguage[DEFAULT_LANGUAGE]?.[tool.id]
+    : toolTextsByLanguage[SECONDARY_FALLBACK_LANGUAGE]?.[tool.id]
   const localized = localizedForLanguage ?? localizedFallback
   if (!localized) {
     return tool

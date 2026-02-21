@@ -104,6 +104,15 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.2.3',
+    date: '2026-02-21',
+    title: 'Traducciones completas PT para menu de herramientas',
+    changes: [
+      'Se agregan textos en Portugues para nombres y descripciones de herramientas.',
+      'Se elimina el caso donde el menu mostraba descripciones en Ingles en modo PT.',
+    ],
+  },
+  {
     version: 'v1.2.2',
     date: '2026-02-21',
     title: 'Fallback i18n ajustado para portugues',
@@ -111,7 +120,8 @@ const releaseNotes = [
       'Se prioriza Espanol antes de Ingles cuando faltan traducciones en Portugues.',
       'Se evita que el menu de herramientas quede mezclado en Ingles en modo PT.',
     ],
-  },  {
+  },
+  {
     version: 'v1.2.1',
     date: '2026-02-21',
     title: 'Correccion de idioma en menu de herramientas',
