@@ -51,6 +51,8 @@ import { ToolErrorBoundary } from '@/shared/ui/ToolErrorBoundary'
 const FAVORITES_KEY = 'developer-tools-favorites'
 const FAVORITES_STORAGE_VERSION = 1
 const RELEASE_SEEN_KEY = 'developer-tools-release-seen'
+const MENU_PREFERENCES_KEY = 'developer-tools-menu-preferences'
+const MENU_PREFERENCES_STORAGE_VERSION = 1
 const APP_BASE_PATH = import.meta.env.BASE_URL === '/' ? '' : import.meta.env.BASE_URL.replace(/\/$/, '')
 
 const categoryMeta: Record<
@@ -102,6 +104,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v2.6.6',
+    date: '2026-02-21',
+    title: 'Scroll acotado en JSON normalizado y menu persistente',
+    changes: [
+      'Json Viewer Pro: el panel de JSON normalizado ahora usa altura acotada con scroll interno, evitando crecimiento infinito.',
+      'Se mantiene el uso del espacio disponible en pantalla, pero con limite responsive para mejorar lectura.',
+      'El estado del menu (fijado, colapsado y categorias colapsadas) ahora se guarda en localStorage y se restaura al volver.',
+    ],
+  },
   {
     version: 'v2.6.5',
     date: '2026-02-21',
@@ -896,6 +908,52 @@ function getInitialSeenReleaseVersion(): string | null {
   return raw && raw.trim() ? raw : null
 }
 
+interface MenuPreferencesStorage {
+  version: number
+  isDesktopMenuPinned: boolean
+  isDesktopMenuCollapsed: boolean
+  collapsedCategories: ToolCategory[]
+}
+
+function getInitialMenuPreferences() {
+  const defaults = {
+    isDesktopMenuPinned: true,
+    isDesktopMenuCollapsed: false,
+    collapsedCategories: new Set<ToolCategory>(),
+  }
+
+  const raw = window.localStorage.getItem(MENU_PREFERENCES_KEY)
+  if (!raw) {
+    return defaults
+  }
+
+  try {
+    const parsed = JSON.parse(raw) as Partial<MenuPreferencesStorage>
+    const validCategories = new Set<ToolCategory>(categoryOrder)
+    const collapsedCategories = Array.isArray(parsed.collapsedCategories)
+      ? parsed.collapsedCategories.filter(
+          (category): category is ToolCategory => validCategories.has(category as ToolCategory),
+        )
+      : []
+
+    if (
+      parsed.version !== MENU_PREFERENCES_STORAGE_VERSION ||
+      typeof parsed.isDesktopMenuPinned !== 'boolean' ||
+      typeof parsed.isDesktopMenuCollapsed !== 'boolean'
+    ) {
+      return defaults
+    }
+
+    return {
+      isDesktopMenuPinned: parsed.isDesktopMenuPinned,
+      isDesktopMenuCollapsed: parsed.isDesktopMenuCollapsed,
+      collapsedCategories: new Set(collapsedCategories),
+    }
+  } catch {
+    return defaults
+  }
+}
+
 function SidebarContent({
   favoriteToolIds,
   menuTools,
@@ -1372,6 +1430,7 @@ export function ToolList() {
   const { language, setLanguage } = useI18n()
   const { themeMode, setThemeMode } = useTheme()
   const ui = getI18nCopy(language, 'toolRegistry')
+  const initialMenuPreferences = useMemo(() => getInitialMenuPreferences(), [])
   const toolContentRef = useRef<HTMLDivElement | null>(null)
   const [view, setView] = useState<ViewState>(() => parseViewFromPath(window.location.pathname))
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
@@ -1379,10 +1438,16 @@ export function ToolList() {
     getInitialSeenReleaseVersion,
   )
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
-  const [isDesktopMenuPinned, setIsDesktopMenuPinned] = useState(true)
-  const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false)
+  const [isDesktopMenuPinned, setIsDesktopMenuPinned] = useState(
+    initialMenuPreferences.isDesktopMenuPinned,
+  )
+  const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(
+    initialMenuPreferences.isDesktopMenuCollapsed,
+  )
   const [isDesktopMenuHoverExpanded, setIsDesktopMenuHoverExpanded] = useState(false)
-  const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(new Set())
+  const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(
+    initialMenuPreferences.collapsedCategories,
+  )
   const [searchTerm, setSearchTerm] = useState('')
   const isDesktopMenuEffectivelyCollapsed =
     isDesktopMenuPinned && isDesktopMenuCollapsed && !isDesktopMenuHoverExpanded
@@ -1543,6 +1608,18 @@ export function ToolList() {
 
     window.localStorage.setItem(RELEASE_SEEN_KEY, seenReleaseVersion)
   }, [seenReleaseVersion])
+
+  useEffect(() => {
+    window.localStorage.setItem(
+      MENU_PREFERENCES_KEY,
+      JSON.stringify({
+        version: MENU_PREFERENCES_STORAGE_VERSION,
+        isDesktopMenuPinned,
+        isDesktopMenuCollapsed,
+        collapsedCategories: Array.from(collapsedCategories),
+      } satisfies MenuPreferencesStorage),
+    )
+  }, [collapsedCategories, isDesktopMenuCollapsed, isDesktopMenuPinned])
 
   useEffect(() => {
     document.body.style.overflow = isMobileMenuOpen ? 'hidden' : ''
