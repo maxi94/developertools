@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.5.1',
+    date: '2026-02-21',
+    title: 'Folding inline real en salida JSON',
+    changes: [
+      'La salida JSON ahora permite colapsar/expandir bloques con botones +/- por linea, estilo editor de codigo.',
+      'Se elimina el modo duplicado codigo/plegable del Visor JSON Pro para simplificar la experiencia.',
+      'Fullscreen del Visor JSON Pro mantiene alcance total de herramienta con flujo unificado.',
+    ],
+  },
+  {
     version: 'v2.5.0',
     date: '2026-02-21',
     title: 'Ajustes UX para Visor JSON Pro',

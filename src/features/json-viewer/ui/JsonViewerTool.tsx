@@ -21,8 +21,6 @@ type UiCopy = {
   stats: string
   nodeCount: string
   maxDepth: string
-  outputCode: string
-  outputFold: string
   fullscreen: string
   exitFullscreen: string
   fullscreenTitle: string
@@ -45,8 +43,6 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Resumen',
     nodeCount: 'Nodos',
     maxDepth: 'Profundidad max',
-    outputCode: 'Codigo',
-    outputFold: 'Plegable',
     fullscreen: 'Pantalla completa',
     exitFullscreen: 'Salir pantalla completa',
     fullscreenTitle: 'Visor JSON ampliado',
@@ -67,8 +63,6 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Summary',
     nodeCount: 'Nodes',
     maxDepth: 'Max depth',
-    outputCode: 'Code',
-    outputFold: 'Collapsible',
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',
     fullscreenTitle: 'Expanded JSON viewer',
@@ -89,8 +83,6 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Resumo',
     nodeCount: 'Nos',
     maxDepth: 'Profundidade max',
-    outputCode: 'Codigo',
-    outputFold: 'Colapsavel',
     fullscreen: 'Tela cheia',
     exitFullscreen: 'Sair tela cheia',
     fullscreenTitle: 'Visualizador JSON ampliado',
@@ -242,7 +234,6 @@ export function JsonViewerTool() {
   const [source, setSource] = useState(swaggerSample)
   const [resolveRefs, setResolveRefs] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [outputMode, setOutputMode] = useState<'code' | 'fold'>('code')
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
 
@@ -359,31 +350,6 @@ export function JsonViewerTool() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {t.normalized}
               </span>
-              <div className="inline-flex rounded-xl border border-slate-300 p-1 dark:border-slate-600">
-                <button
-                  type="button"
-                  className={`inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-semibold ${
-                    outputMode === 'code'
-                      ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
-                      : 'text-slate-600 dark:text-slate-300'
-                  }`}
-                  onClick={() => setOutputMode('code')}
-                >
-                  {t.outputCode}
-                </button>
-                <button
-                  type="button"
-                  className={`inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-semibold ${
-                    outputMode === 'fold'
-                      ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
-                      : 'text-slate-600 dark:text-slate-300'
-                  }`}
-                  onClick={() => setOutputMode('fold')}
-                  disabled={output.status !== 'success'}
-                >
-                  {t.outputFold}
-                </button>
-              </div>
               {output.status === 'success' && stats ? (
                 <p className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
                   <strong>{t.stats}:</strong> {t.nodeCount} {stats.nodeCount} | {t.maxDepth}{' '}
@@ -391,13 +357,9 @@ export function JsonViewerTool() {
                 </p>
               ) : null}
             </div>
-            {outputMode === 'fold' && output.status === 'success' ? (
-              <JsonTreeViewer data={output.parsed} title={`${t.normalized} (${t.outputFold})`} />
-            ) : (
-              <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
-                <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
-              </div>
-            )}
+            <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+              <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
+            </div>
           </section>
         </div>
 
