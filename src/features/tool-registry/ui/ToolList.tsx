@@ -104,6 +104,15 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.2.1',
+    date: '2026-02-21',
+    title: 'Correccion de idioma en menu de herramientas',
+    changes: [
+      'Se corrige el fallback de localizacion para que Espanol no herede textos en Ingles.',
+      'El menu de herramientas ahora respeta el idioma seleccionado de forma consistente.',
+    ],
+  },
+  {
     version: 'v1.2.0',
     date: '2026-02-21',
     title: 'I18n unificado en catalogos y limpieza de textos mezclados',

@@ -114,9 +114,13 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
 }
 
 export function localizeTool(tool: ToolDefinition, language: AppLanguage): ToolDefinition {
-  const localized = toolTextsByLanguage[language]?.[tool.id]
-    ?? toolTextsByLanguage[SECONDARY_FALLBACK_LANGUAGE]?.[tool.id]
-    ?? toolTextsByLanguage[DEFAULT_LANGUAGE]?.[tool.id]
+  const localizedForLanguage = toolTextsByLanguage[language]?.[tool.id]
+  const localizedFallback =
+    language === DEFAULT_LANGUAGE
+      ? undefined
+      : toolTextsByLanguage[SECONDARY_FALLBACK_LANGUAGE]?.[tool.id]
+        ?? toolTextsByLanguage[DEFAULT_LANGUAGE]?.[tool.id]
+  const localized = localizedForLanguage ?? localizedFallback
   if (!localized) {
     return tool
   }
