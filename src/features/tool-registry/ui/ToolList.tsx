@@ -103,6 +103,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.4',
+    date: '2026-02-21',
+    title: 'Fix filtro en modo grafo del visor JSON',
+    changes: [
+      'La vista grafo ahora mantiene ancestros de nodos filtrados para no perder la raiz del arbol.',
+      'Al filtrar por campos como "type", los resultados visibles en arbol tambien aparecen en grafo.',
+      'Se mejora la consistencia del filtro entre modos arbol y grafo en el JsonTreeViewer.',
+    ],
+  },
+  {
     version: 'v2.6.3',
     date: '2026-02-21',
     title: 'Restaurar animacion de sidebar colapsado',

@@ -253,16 +253,36 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set())
   const nodes = useMemo(() => collectGraphNodes(data, 'root', 'root', null), [data])
+  const nodeById = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes])
   const filteredNodes = useMemo(
-    () =>
-      nodes.filter((node) => {
+    () => {
+      if (!query) {
+        return nodes
+      }
+
+      const matchedNodes = nodes.filter((node) => {
         if (!query) {
           return true
         }
         const target = `${node.label} ${node.path} ${node.preview}`.toLowerCase()
         return target.includes(query)
-      }),
-    [nodes, query],
+      })
+
+      const includedIds = new Set<string>()
+      for (const node of matchedNodes) {
+        let current: GraphNode | undefined = node
+        while (current) {
+          includedIds.add(current.id)
+          if (!current.parentId) {
+            break
+          }
+          current = nodeById.get(current.parentId)
+        }
+      }
+
+      return nodes.filter((node) => includedIds.has(node.id))
+    },
+    [nodeById, nodes, query],
   )
   const deferredNodes = useDeferredValue(filteredNodes)
   const isRendering = deferredNodes !== filteredNodes
