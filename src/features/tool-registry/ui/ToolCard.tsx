@@ -76,7 +76,7 @@ export function ToolCard({
       tabIndex={0}
       className={`group w-full cursor-pointer rounded-lg border ${compact ? 'px-1.5 py-1.5' : 'px-2 py-1.5'} text-left transition ${
         isActive
-          ? 'border-cyan-300/70 bg-cyan-50 text-slate-900 dark:border-cyan-400/50 dark:bg-cyan-950/35 dark:text-white'
+          ? 'border-slate-300 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white'
           : 'border-transparent bg-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-900/70'
       }`}
       onClick={() => onSelect(tool.id)}
@@ -89,42 +89,43 @@ export function ToolCard({
       aria-pressed={isActive}
       title={tool.name}
     >
-      <div className="flex items-center gap-2">
-        <button
-          type="button"
-          className={`inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition ${
-            isFavorite
-              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
-              : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-200'
-          } ${compact ? 'hidden' : ''}`}
-          onClick={(event) => {
-            event.stopPropagation()
-            onToggleFavorite(tool.id)
-          }}
-          aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
-        >
-          <Star className={`size-3.5 ${isFavorite ? 'fill-current' : ''}`} />
-        </button>
-
-        <div
-          className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}
-        >
+      <div className="flex items-center justify-between gap-2">
+        {compact ? (
           <span
             className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg border ${
               isActive
-                ? 'border-cyan-300/70 bg-white/90 text-cyan-700 dark:border-cyan-400/60 dark:bg-cyan-500/20 dark:text-cyan-200'
-                : 'border-slate-200 bg-white text-slate-700 group-hover:border-slate-300 group-hover:bg-white dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:group-hover:border-cyan-500/60 dark:group-hover:bg-slate-800 dark:group-hover:text-cyan-200'
+                ? 'border-slate-300 bg-white text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200'
+                : 'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300'
             }`}
           >
             <ToolIcon className="size-3.5" />
-          </span>
-
-          {!compact ? (
-            <h3 className="truncate text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
-          ) : (
             <span className="sr-only">{tool.name}</span>
-          )}
-        </div>
+          </span>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-2">
+            <button
+              type="button"
+              className={`inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition ${
+                isFavorite
+                  ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
+                  : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
+              }`}
+              onClick={(event) => {
+                event.stopPropagation()
+                onToggleFavorite(tool.id)
+              }}
+              aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
+            >
+              <Star className={`size-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+            </button>
+            <h3 className="truncate text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
+          </div>
+        )}
+        {!compact ? (
+          <span className="shrink-0 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
+            v{tool.version}
+          </span>
+        ) : null}
       </div>
     </article>
   )
