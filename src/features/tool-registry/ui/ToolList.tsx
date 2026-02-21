@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.0.1',
+    date: '2026-02-21',
+    title: 'Base de testing UI',
+    changes: [
+      'Se agregan tests de interfaz para ToolCard y ToolList con Vitest + Testing Library.',
+      'Cobertura inicial de interacciones clave: seleccion, favoritos, busqueda y navegacion por categoria.',
+      'Mejora de confiabilidad para detectar regresiones en el dashboard principal.',
+    ],
+  },
+  {
     version: 'v1.0.0',
     date: '2026-02-19',
     title: 'Se elimina generador README',
