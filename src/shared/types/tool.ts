@@ -4,6 +4,7 @@ export type ToolId =
   | 'base64'
   | 'base64-image'
   | 'base64-pdf'
+  | 'byte-array-converter'
   | 'sql-formatter'
   | 'regex-tool'
   | 'jwt-builder'

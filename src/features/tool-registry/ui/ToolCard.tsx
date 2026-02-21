@@ -46,6 +46,7 @@ export function ToolCard({
     base64: Binary,
     'base64-image': FileImage,
     'base64-pdf': FileText,
+    'byte-array-converter': FileCode2,
     'sql-formatter': Database,
     'code-minifier': Scissors,
     'case-converter': FileCode2,

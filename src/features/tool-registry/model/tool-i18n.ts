@@ -33,6 +33,10 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     name: 'Base64 to PDF',
     description: 'Convert one or many Base64 strings into PDF files.',
   },
+  'byte-array-converter': {
+    name: 'byte[] to file',
+    description: 'Convert byte[] (C#/JSON/list) into image, PDF and other file types.',
+  },
   'sql-formatter': {
     name: 'SQL Formatter',
     description: 'Format SQL queries with multi-dialect support.',
@@ -126,6 +130,10 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     'base64-pdf': {
       name: 'Base64 para PDF',
       description: 'Converta uma ou varias strings Base64 em arquivos PDF.',
+    },
+    'byte-array-converter': {
+      name: 'byte[] para arquivo',
+      description: 'Converta byte[] (C#/JSON/lista) em imagem, PDF e outros tipos de arquivo.',
     },
     'sql-formatter': {
       name: 'Formatador SQL',

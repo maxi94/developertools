@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.3.0',
+    date: '2026-02-21',
+    title: 'Nueva tool byte[] a archivo',
+    changes: [
+      'Se agrega herramienta byte[] a archivo con soporte para entrada C#/JSON/lista.',
+      'Detecta tipo por firma (imagen, PDF y otros), con preview y descarga.',
+      'Textos y catalogo de herramienta completos en ES/EN/PT.',
+    ],
+  },
+  {
     version: 'v2.2.0',
     date: '2026-02-21',
     title: 'Guia de operadores para SQL a MongoDB',
@@ -491,6 +501,10 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
   'base64-pdf': lazyNamedTool(
     () => import('@/features/base64-pdf/ui/Base64PdfTool'),
     'Base64PdfTool',
+  ),
+  'byte-array-converter': lazyNamedTool(
+    () => import('@/features/byte-array-converter/ui/ByteArrayConverterTool'),
+    'ByteArrayConverterTool',
   ),
   'sql-formatter': lazyNamedTool(
     () => import('@/features/sql-formatter/ui/SqlFormatterTool'),

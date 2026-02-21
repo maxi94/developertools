@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.2.0'
+export const WEB_VERSION = 'v2.3.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -42,6 +42,14 @@ export const tools: ToolDefinition[] = [
     category: 'Datos',
     status: 'ready',
     version: '1.2.1',
+  },
+  {
+    id: 'byte-array-converter',
+    name: 'byte[] a archivo',
+    description: 'Convierte byte[] (C#/JSON/lista) a imagen, PDF y otros archivos.',
+    category: 'Datos',
+    status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'sql-formatter',
