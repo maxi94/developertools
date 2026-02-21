@@ -6,6 +6,7 @@
   useMemo,
   useRef,
   useState,
+  type CSSProperties,
   type ComponentType,
   type LazyExoticComponent,
   type ReactNode,
@@ -101,6 +102,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v2.6.3',
+    date: '2026-02-21',
+    title: 'Restaurar animacion de sidebar colapsado',
+    changes: [
+      'Se restaura la animacion suave del ancho del layout cuando el sidebar colapsado se expande por hover.',
+      'La transicion se aplica con variable CSS de columnas para evitar saltos bruscos al alternar estado.',
+      'Se mantiene el comportamiento de hover-expand en menu fijo colapsado.',
+    ],
+  },
   {
     version: 'v2.6.2',
     date: '2026-02-21',
@@ -1678,13 +1689,16 @@ export function ToolList() {
       </header>
 
       <div
-        className={`grid min-h-0 flex-1 ${
-          isDesktopMenuPinned
-            ? isDesktopMenuEffectivelyCollapsed
-              ? 'lg:grid-cols-[82px_minmax(0,1fr)]'
-              : 'lg:grid-cols-[280px_minmax(0,1fr)]'
-            : 'lg:grid-cols-[minmax(0,1fr)]'
-        } transition-[grid-template-columns] duration-300 lg:h-[calc(100dvh-var(--app-header-h))]`}
+        className="grid min-h-0 flex-1 transition-[grid-template-columns] duration-300 lg:h-[calc(100dvh-var(--app-header-h))] lg:[grid-template-columns:var(--desktop-columns)]"
+        style={
+          {
+            '--desktop-columns': isDesktopMenuPinned
+              ? isDesktopMenuEffectivelyCollapsed
+                ? '82px minmax(0,1fr)'
+                : '280px minmax(0,1fr)'
+              : 'minmax(0,1fr)',
+          } as CSSProperties
+        }
       >
         <aside
           className={`hidden overflow-x-hidden border-r border-slate-200/80 bg-white/70 py-4 transition-all duration-300 dark:border-slate-800 dark:bg-slate-950/55 lg:h-full lg:overflow-y-auto ${
@@ -1925,6 +1939,7 @@ export function ToolList() {
     </section>
   )
 }
+
 
 
 
