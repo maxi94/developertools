@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.7',
+    date: '2026-02-21',
+    title: 'Grafo JSON horizontal ordenado por niveles',
+    changes: [
+      'Se mantiene el layout actual como predeterminado para no romper el flujo existente.',
+      'Se agrega modo Arbol horizontal para ordenar nodos por niveles y subarboles de forma mas prolija.',
+      'En Arbol horizontal, cada rama ocupa su espacio vertical para evitar superposicion en la parte alta.',
+    ],
+  },
+  {
     version: 'v2.6.6',
     date: '2026-02-21',
     title: 'Scroll acotado en JSON normalizado y menu persistente',
