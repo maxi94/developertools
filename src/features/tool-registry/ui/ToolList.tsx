@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.3.3',
+    date: '2026-02-21',
+    title: 'Fix deteccion SVG en byte[] a archivo',
+    changes: [
+      'La herramienta byte[] a archivo ahora detecta correctamente SVG desde contenido XML y lo trata como imagen.',
+      'El guardado evita forzar extension extra cuando el nombre ya incluye una extension manual (por ejemplo archivo.svg).',
+      'Version de byte[] a archivo actualizada a v1.0.3.',
+    ],
+  },
+  {
     version: 'v2.3.2',
     date: '2026-02-21',
     title: 'Fix parser byte[] para blobs SQL 0x',

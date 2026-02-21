@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.3.2'
+export const WEB_VERSION = 'v2.3.3'
 
 export const tools: ToolDefinition[] = [
   {
@@ -49,7 +49,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte byte[] (C#/JSON/lista) a imagen, PDF y otros archivos.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.2',
+    version: '1.0.3',
   },
   {
     id: 'sql-formatter',

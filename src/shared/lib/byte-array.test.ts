@@ -37,4 +37,13 @@ describe('byte-array parser', () => {
     expect(type.mime).toBe('image/png')
     expect(type.category).toBe('image')
   })
+
+  it('detecta SVG por contenido XML', () => {
+    const svg = "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'><circle cx='5' cy='5' r='4'/></svg>"
+    const bytes = Uint8Array.from(new TextEncoder().encode(svg))
+    const type = detectFileType(bytes)
+    expect(type.mime).toBe('image/svg+xml')
+    expect(type.extension).toBe('svg')
+    expect(type.category).toBe('image')
+  })
 })

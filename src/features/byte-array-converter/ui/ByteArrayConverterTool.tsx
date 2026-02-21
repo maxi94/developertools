@@ -146,9 +146,13 @@ export function ByteArrayConverterTool() {
       return
     }
 
+    const trimmedName = (baseName || 'archivo').trim()
+    const hasAnyExtension = /\.[a-z0-9]+$/i.test(trimmedName)
+    const fileName = hasAnyExtension ? trimmedName : `${trimmedName}.${parsed.fileType.extension}`
+
     const link = document.createElement('a')
     link.href = downloadUrl
-    link.download = `${baseName || 'archivo'}.${parsed.fileType.extension}`
+    link.download = fileName
     link.click()
   }
 

@@ -75,6 +75,20 @@ function includesAt(bytes: Uint8Array, offset: number, signature: number[]): boo
   return signature.every((value, index) => bytes[offset + index] === value)
 }
 
+function looksLikeSvg(bytes: Uint8Array): boolean {
+  try {
+    const decoder = new TextDecoder('utf-8', { fatal: false })
+    const textHead = decoder.decode(bytes.slice(0, Math.min(bytes.length, 2048))).trimStart()
+    if (!textHead) {
+      return false
+    }
+    const normalized = textHead.replace(/^\uFEFF/, '')
+    return /^<\?xml[\s\S]*?\?>\s*<svg[\s>]/i.test(normalized) || /^<svg[\s>]/i.test(normalized)
+  } catch {
+    return false
+  }
+}
+
 function isMostlyText(bytes: Uint8Array): boolean {
   if (bytes.length === 0) {
     return false
@@ -121,6 +135,10 @@ export function detectFileType(bytes: Uint8Array): DetectedFileType {
 
   if (bytes.length >= 4 && startsWith(bytes, [80, 75, 3, 4])) {
     return { mime: 'application/zip', extension: 'zip', category: 'binary' }
+  }
+
+  if (looksLikeSvg(bytes)) {
+    return { mime: 'image/svg+xml', extension: 'svg', category: 'image' }
   }
 
   if (isMostlyText(bytes)) {
