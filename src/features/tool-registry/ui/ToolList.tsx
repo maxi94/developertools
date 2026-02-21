@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.2.0',
+    date: '2026-02-21',
+    title: 'Guia de operadores para SQL a MongoDB',
+    changes: [
+      'SQL a MongoDB ahora incluye una guia visual de operadores de busqueda ($eq, $regex, $in, $or, etc.).',
+      'Cada operador incluye descripcion y ejemplo listo para usar en filtros Mongo.',
+      'Version de SQL a MongoDB actualizada a v1.4.0.',
+    ],
+  },
+  {
     version: 'v2.1.0',
     date: '2026-02-21',
     title: 'SQL a MongoDB mas robusto',
