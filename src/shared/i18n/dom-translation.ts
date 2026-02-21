@@ -183,6 +183,22 @@ const TRANSLATIONS: TranslationEntry[] = [
   { es: 'SQL formateado', en: 'Formatted SQL', pt: 'SQL formatado' },
   { es: 'Entrada y modo intercambiados', en: 'Input and mode swapped', pt: 'Entrada e modo invertidos' },
   { es: 'Por ahora puedes usar la herramienta Formateador JSON desde el menu.', en: 'For now you can use the JSON Formatter tool from the menu.', pt: 'Por enquanto voce pode usar a ferramenta Formatador JSON pelo menu.' },
+  { es: 'Visualizador JSON', en: 'JSON viewer', pt: 'Visualizador JSON' },
+  { es: 'Filtrar por clave, ruta o valor...', en: 'Filter by key, path or value...', pt: 'Filtrar por chave, rota ou valor...' },
+  { es: 'Arbol', en: 'Tree', pt: 'Arvore' },
+  { es: 'Grafo', en: 'Graph', pt: 'Grafo' },
+  { es: 'Expandir todo', en: 'Expand all', pt: 'Expandir tudo' },
+  { es: 'Colapsar todo', en: 'Collapse all', pt: 'Recolher tudo' },
+  { es: 'Pantalla completa', en: 'Fullscreen', pt: 'Tela cheia' },
+  { es: 'Salir pantalla completa', en: 'Exit fullscreen', pt: 'Sair da tela cheia' },
+  { es: 'Expandir nodo', en: 'Expand node', pt: 'Expandir no' },
+  { es: 'Colapsar nodo', en: 'Collapse node', pt: 'Recolher no' },
+  { es: 'Expandir seleccion', en: 'Expand selection', pt: 'Expandir selecao' },
+  { es: 'Colapsar seleccion', en: 'Collapse selection', pt: 'Recolher selecao' },
+  { es: 'Detalle nodo', en: 'Node details', pt: 'Detalhes do no' },
+  { es: 'Conexiones hijas', en: 'Child connections', pt: 'Conexoes filhas' },
+  { es: 'Sin hijos.', en: 'No children.', pt: 'Sem filhos.' },
+  { es: 'Sin nodos para mostrar.', en: 'No nodes to display.', pt: 'Sem nos para exibir.' },
 ]
 
 const SKIPPED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE'])

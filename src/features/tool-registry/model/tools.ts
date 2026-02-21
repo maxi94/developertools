@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.3.0'
+export const WEB_VERSION = 'v1.3.1'
 
 export const tools: ToolDefinition[] = [
   {
@@ -9,7 +9,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea y valida JSON localmente en tu navegador.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.5.1',
+    version: '1.5.2',
   },
   {
     id: 'json-table',
@@ -97,7 +97,7 @@ export const tools: ToolDefinition[] = [
     description: 'Decodifica header y payload para inspeccion.',
     category: 'Tokens e identidad',
     status: 'ready',
-    version: '1.1.1',
+    version: '1.1.2',
   },
   {
     id: 'uuid',

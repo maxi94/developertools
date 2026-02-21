@@ -104,6 +104,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.1',
+    date: '2026-02-21',
+    title: 'Fix definitivo i18n en tools y recarga',
+    changes: [
+      'Se corrige fallback de localizacion para evitar mezcla de idiomas en menu y descripciones.',
+      'Se agrega observador de mutaciones para traducir contenido lazy al recargar sin tocar el selector.',
+      'Se amplian textos traducibles de visualizador JSON (tree/graph) en ES/EN/PT.',
+    ],
+  },
+  {
     version: 'v1.3.0',
     date: '2026-02-21',
     title: 'Cobertura i18n completa para herramientas',
@@ -1257,11 +1267,35 @@ export function ToolList() {
       return
     }
 
-    const frameId = window.requestAnimationFrame(() => {
+    const translate = () => {
       applyDomTranslations(root, language)
+    }
+
+    let queuedFrame: number | null = null
+    const scheduleTranslate = () => {
+      if (queuedFrame !== null) {
+        return
+      }
+      queuedFrame = window.requestAnimationFrame(() => {
+        queuedFrame = null
+        translate()
+      })
+    }
+
+    const frameId = window.requestAnimationFrame(translate)
+    const observer = new MutationObserver(() => {
+      scheduleTranslate()
+    })
+    observer.observe(root, {
+      childList: true,
+      subtree: true,
     })
 
     return () => {
+      observer.disconnect()
+      if (queuedFrame !== null) {
+        window.cancelAnimationFrame(queuedFrame)
+      }
       window.cancelAnimationFrame(frameId)
     }
   }, [language, view.type, activeTool?.id])
