@@ -102,6 +102,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.4',
+    date: '2026-02-21',
+    title: 'Fix regresion de output JSON e i18n en portugues',
+    changes: [
+      'JSON Formatter: se elimina el toggle involuntario de Minificar/Expandir al hacer click en la salida.',
+      'I18n DOM: se evita reemplazar subcadenas dentro de palabras para frenar corrupciones como Expandiririri.',
+      'Se agregan tests de regresion para ambos casos.',
+    ],
+  },
+  {
     version: 'v1.3.3',
     date: '2026-02-21',
     title: 'Barrido i18n completo en herramientas',
