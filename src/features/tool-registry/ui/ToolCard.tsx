@@ -116,11 +116,8 @@ export function ToolCard({
             </span>
             <div className="min-w-0 flex-1">
               <h3 className="truncate text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
-              <p className="mt-0.5 max-h-[2.2rem] overflow-hidden text-[11px] leading-snug text-slate-500 dark:text-slate-400">
-                {tool.description}
-              </p>
-              <p className="mt-1 text-[10px] font-semibold uppercase tracking-[0.12em] text-slate-500 dark:text-slate-400">
-                v{tool.version}
+              <p className="mt-0.5 overflow-hidden text-[11px] leading-snug text-slate-500 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-400">
+                v{tool.version} · {tool.description}
               </p>
             </div>
           </div>

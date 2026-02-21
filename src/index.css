@@ -132,4 +132,9 @@
   .tool-content > section > div:first-child > h2:first-child {
     display: none;
   }
+
+  .tool-content > section > h2:first-child + p,
+  .tool-content > section > div:first-child > h2:first-child + p {
+    display: none;
+  }
 }

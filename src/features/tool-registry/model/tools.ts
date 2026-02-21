@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.3.7'
+export const WEB_VERSION = 'v1.3.8'
 
 export const tools: ToolDefinition[] = [
   {
@@ -33,7 +33,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte una o varias cadenas Base64 en imagenes.',
     category: 'Datos',
     status: 'ready',
-    version: '1.2.1',
+    version: '1.2.2',
   },
   {
     id: 'base64-pdf',

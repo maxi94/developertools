@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.8',
+    date: '2026-02-21',
+    title: 'Fix formato tool interno + snippet de menu',
+    changes: [
+      'Se ocultan titulo y descripcion internos repetidos dentro de cada herramienta para un formato consistente.',
+      'Menu lateral: metadata de cada tool en formato vX.X.X · descripcion con truncado a dos lineas y ellipsis.',
+      'Version de Base64 a imagen actualizada a v1.2.2 por ajuste de presentacion en el flujo unificado.',
+    ],
+  },
+  {
     version: 'v1.3.7',
     date: '2026-02-21',
     title: 'Formato unificado en tools y menu detallado',
