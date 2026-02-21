@@ -107,11 +107,11 @@ const releaseNotes = [
   {
     version: 'v2.6.7',
     date: '2026-02-21',
-    title: 'Grafo JSON con layout arbol por defecto',
+    title: 'Grafo JSON horizontal ordenado por niveles',
     changes: [
-      'La vista grafo ahora abre con layout jerarquico tipo arbol para lectura mas prolija.',
-      'Se agrega selector para alternar entre Layout arbol (nuevo) y Layout actual (compacto).',
-      'Se evita que los hijos queden visualmente por encima del padre en el layout por defecto.',
+      'Se mantiene el layout actual como predeterminado para no romper el flujo existente.',
+      'Se agrega modo Arbol horizontal para ordenar nodos por niveles y subarboles de forma mas prolija.',
+      'En Arbol horizontal, cada rama ocupa su espacio vertical para evitar superposicion en la parte alta.',
     ],
   },
   {

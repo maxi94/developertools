@@ -250,7 +250,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
   const [selectedId, setSelectedId] = useState<string>('root')
   const [zoom, setZoom] = useState(1)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('tree')
+  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('compact')
   const [isPanning, setIsPanning] = useState(false)
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set())
@@ -384,41 +384,45 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
 
     if (layoutMode === 'tree') {
       const roots = graphNodes.filter((node) => !node.parentId)
-      const horizontalGap = 174
-      const verticalGap = 92
-      const marginX = 96
-      const marginY = 54
-      let leafIndex = 0
+      const colWidth = 210
+      const rowHeight = 60
+      const marginX = 120
+      const marginY = 52
+      let rowCursor = 0
       let maxDepth = 0
 
-      const assign = (node: GraphNode, depth: number): number => {
+      const assignTreeHorizontal = (node: GraphNode, depth: number): number => {
         maxDepth = Math.max(maxDepth, depth)
         const children = childMap.get(node.id) ?? []
-        const childXs = children.map((child) => assign(child, depth + 1))
-        const x = childXs.length > 0 ? childXs.reduce((sum, value) => sum + value, 0) / childXs.length : leafIndex++
-        const y = depth
-        const px = marginX + x * horizontalGap
-        const py = marginY + y * verticalGap
+        const childRows = children.map((child) => assignTreeHorizontal(child, depth + 1))
+        const row = childRows.length > 0
+          ? childRows.reduce((sum, value) => sum + value, 0) / childRows.length
+          : rowCursor++
+        const x = marginX + depth * colWidth
+        const y = marginY + row * rowHeight
         positions.push({
           id: node.id,
-          x: px,
-          y: py,
+          x,
+          y,
           label: node.label,
           type: node.type,
           preview: node.preview,
         })
-        posById.set(node.id, { x: px, y: py })
-        return x
+        posById.set(node.id, { x, y })
+        return row
       }
 
       for (const root of roots) {
-        assign(root, 0)
-        leafIndex += 0.7
+        assignTreeHorizontal(root, getDepth(root))
+        rowCursor += 0.7
       }
 
-      const width = Math.max(760, marginX * 2 + Math.max(1, leafIndex) * horizontalGap)
-      const height = Math.max(260, marginY * 2 + Math.max(1, maxDepth + 1) * verticalGap)
-      return { width, height, positions, posById }
+      return {
+        width: Math.max(760, (maxDepth + 1) * colWidth + 220),
+        height: Math.max(260, rowCursor * rowHeight + 100),
+        positions,
+        posById,
+      }
     }
 
     const byDepth = new Map<number, GraphNode[]>()
@@ -668,7 +672,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
                   centerOnNode(activeSelectedId)
                 }}
               >
-                Layout arbol
+                Arbol horizontal
               </button>
               <button
                 type="button"
@@ -682,7 +686,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
                   centerOnNode(activeSelectedId)
                 }}
               >
-                Layout actual
+                Actual
               </button>
             </div>
             <button
@@ -940,17 +944,13 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
                 if (!from || !to) {
                   return null
                 }
-                const x1 = layoutMode === 'tree' ? from.x : from.x + 52
-                const y1 = layoutMode === 'tree' ? from.y + 23 : from.y
-                const x2 = layoutMode === 'tree' ? to.x : to.x - 52
-                const y2 = layoutMode === 'tree' ? to.y - 23 : to.y
                 return (
                   <line
                     key={`${edge.parentId}-${edge.id}`}
-                    x1={x1}
-                    y1={y1}
-                    x2={x2}
-                    y2={y2}
+                    x1={from.x + 52}
+                    y1={from.y}
+                    x2={to.x - 52}
+                    y2={to.y}
                     stroke="currentColor"
                     className="text-slate-400 dark:text-slate-500"
                     strokeWidth={1.4}
