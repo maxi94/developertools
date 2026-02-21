@@ -22,8 +22,6 @@ import {
   Globe2,
   Menu,
   PanelLeft,
-  Pin,
-  PinOff,
   Search,
   Star,
   X,
@@ -101,6 +99,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v1.3.5',
+    date: '2026-02-21',
+    title: 'Menu minimalista y cabecera de herramienta unificada',
+    changes: [
+      'Menu lateral redisenado con fila compacta: estrella a la izquierda, nombre y version a la derecha.',
+      'Cabecera de herramienta simplificada en un solo bloque superior con nombre, descripcion y version.',
+      'Ajuste de colores hacia una paleta mas neutra para reducir saturacion visual.',
+    ],
+  },
   {
     version: 'v1.3.4',
     date: '2026-02-21',
@@ -1490,45 +1498,48 @@ export function ToolList() {
               ) : null}
             </div>
 
-            <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
-              <div>
+            {view.type === 'tool' && activeTool && activeToolLocalized ? (
+              <div className="mt-2 flex items-start gap-3 rounded-xl border border-slate-200 bg-slate-50/80 p-3 dark:border-slate-700 dark:bg-slate-900/60">
+                <button
+                  type="button"
+                  className={`inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-lg border transition ${
+                    isActiveToolFavorite
+                      ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-500/50 dark:bg-amber-900/25 dark:text-amber-200'
+                      : 'border-slate-300 bg-white text-slate-500 hover:text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-300 dark:hover:text-slate-100'
+                  }`}
+                  onClick={() => toggleFavorite(activeTool.id)}
+                  aria-label={isActiveToolFavorite ? ui.removeFavorite : ui.pinFavorite}
+                >
+                  <Star className={`size-4 ${isActiveToolFavorite ? 'fill-current' : ''}`} />
+                </button>
+                <div className="min-w-0 flex-1">
+                  <h1 className="truncate text-xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-2xl">
+                    {activeToolLocalized.name}
+                  </h1>
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                    {activeToolLocalized.description}
+                  </p>
+                </div>
+                <span className="shrink-0 rounded-md border border-slate-300 bg-white px-2 py-1 text-xs font-semibold text-slate-600 dark:border-slate-600 dark:bg-slate-950 dark:text-slate-300">
+                  v{activeTool.version}
+                </span>
+              </div>
+            ) : (
+              <div className="mt-1">
                 <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
                   {view.type === 'home'
                     ? ui.mainDashboard
-                    : (activeToolLocalized?.name ??
-                      (selectedCategory ? getCategoryLabel(selectedCategory, language) : null))}
+                    : (selectedCategory ? getCategoryLabel(selectedCategory, language) : null)}
                 </h1>
-                {view.type !== 'tool' ? (
-                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-                    {view.type === 'home'
-                      ? ui.statusSummary
-                      : (selectedCategory
-                        ? getCategoryDescription(selectedCategory, language)
-                        : ui.selectFromMenu)}
-                  </p>
-                ) : null}
+                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                  {view.type === 'home'
+                    ? ui.statusSummary
+                    : (selectedCategory
+                      ? getCategoryDescription(selectedCategory, language)
+                      : ui.selectFromMenu)}
+                </p>
               </div>
-              {activeTool ? (
-                <button
-                  type="button"
-                  className={`inline-flex cursor-pointer items-center gap-1.5 rounded-lg border px-3 py-2 text-xs font-semibold ${
-                    isActiveToolFavorite
-                      ? 'border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-500/50 dark:bg-amber-900/25 dark:text-amber-200'
-                      : 'border-slate-300 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200'
-                  }`}
-                  onClick={() => toggleFavorite(activeTool.id)}
-                >
-                  {isActiveToolFavorite ? (
-                    <PinOff className="size-3.5" />
-                  ) : (
-                    <Pin className="size-3.5" />
-                  )}
-                  {isActiveToolFavorite
-                    ? ui.removeFavorite
-                    : ui.pinFavorite}
-                </button>
-              ) : null}
-            </div>
+            )}
           </section>
 
           {view.type === 'home' ? (
