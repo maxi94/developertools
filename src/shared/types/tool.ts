@@ -1,5 +1,6 @@
 export type ToolId =
   | 'json-formatter'
+  | 'json-viewer'
   | 'json-table'
   | 'base64'
   | 'base64-image'

@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.3.4'
+export const WEB_VERSION = 'v2.4.0'
 
 export const tools: ToolDefinition[] = [
   {
@@ -18,6 +18,14 @@ export const tools: ToolDefinition[] = [
     category: 'Datos',
     status: 'ready',
     version: '1.0.4',
+  },
+  {
+    id: 'json-viewer',
+    name: 'Visor JSON Pro',
+    description: 'Explora JSON grande (Swagger/OpenAPI) con arbol, grafo, filtros y pantalla completa.',
+    category: 'Datos',
+    status: 'ready',
+    version: '1.0.0',
   },
   {
     id: 'base64',

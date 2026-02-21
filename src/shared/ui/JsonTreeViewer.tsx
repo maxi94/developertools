@@ -57,6 +57,22 @@ function getValueType(value: unknown): string {
   return typeof value === 'object' ? 'Object' : typeof value
 }
 
+function getLeafValueClass(value: unknown): string {
+  if (value === null) {
+    return 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300'
+  }
+  if (typeof value === 'string') {
+    return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+  }
+  if (typeof value === 'number') {
+    return 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'
+  }
+  if (typeof value === 'boolean') {
+    return 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+  }
+  return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
+}
+
 function matchesQuery(path: string, label: string, value: unknown, query: string): boolean {
   if (!query) {
     return true
@@ -131,7 +147,9 @@ function JsonTreeNode({
     return (
       <div className="grid grid-cols-1 gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:grid-cols-[minmax(0,180px)_1fr] sm:gap-2">
         <span className="truncate font-semibold text-slate-600 dark:text-slate-300">{label}</span>
-        <code className="truncate rounded bg-slate-100 px-1.5 py-0.5 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+        <code
+          className={`truncate rounded px-1.5 py-0.5 font-semibold ${getLeafValueClass(value)}`}
+        >
           {JSON.stringify(value)}
         </code>
       </div>

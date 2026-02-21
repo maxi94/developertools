@@ -42,6 +42,7 @@ export function ToolCard({
 
   const iconByTool = {
     'json-formatter': Braces,
+    'json-viewer': FileJson2,
     'json-table': FileJson2,
     base64: Binary,
     'base64-image': FileImage,

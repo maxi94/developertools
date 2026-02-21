@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.4.0',
+    date: '2026-02-21',
+    title: 'Nueva herramienta Visor JSON Pro',
+    changes: [
+      'Se agrega Visor JSON Pro para explorar payloads grandes (incluyendo Swagger/OpenAPI).',
+      'Incluye vista arbol y grafo, filtros, colapsado/expandido de secciones y pantalla completa.',
+      'Se mejora el arbol JSON con colores por tipo de valor para lectura mas rapida.',
+    ],
+  },
+  {
     version: 'v2.3.4',
     date: '2026-02-21',
     title: 'Refinamiento de paleta en modo claro',
@@ -528,6 +538,10 @@ const toolComponentById: Partial<Record<ToolId, LazyExoticComponent<ComponentTyp
   'json-formatter': lazyNamedTool(
     () => import('@/features/json-formatter/ui/JsonFormatterTool'),
     'JsonFormatterTool',
+  ),
+  'json-viewer': lazyNamedTool(
+    () => import('@/features/json-viewer/ui/JsonViewerTool'),
+    'JsonViewerTool',
   ),
   'json-table': lazyNamedTool(
     () => import('@/features/json-table/ui/JsonTableTool'),

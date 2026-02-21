@@ -21,6 +21,10 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     name: 'JSON to Table',
     description: 'Convert JSON (including nested objects) to table and export CSV/Excel.',
   },
+  'json-viewer': {
+    name: 'JSON Viewer Pro',
+    description: 'Inspect large JSON (Swagger/OpenAPI) with tree, graph, filters and fullscreen.',
+  },
   base64: {
     name: 'Base64 Text',
     description: 'Encode and decode text quickly.',
@@ -118,6 +122,10 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     'json-table': {
       name: 'JSON para tabela',
       description: 'Converta JSON (incluindo objetos aninhados) em tabela e exporte CSV/Excel.',
+    },
+    'json-viewer': {
+      name: 'Visualizador JSON Pro',
+      description: 'Explore JSON grande (Swagger/OpenAPI) com arvore, grafo, filtros e tela cheia.',
     },
     base64: {
       name: 'Base64 Texto',
