@@ -44,6 +44,8 @@ type ToolRegistryCopy = {
   navigation: string
   expandMenu: string
   collapseMenu: string
+  pinMenu: string
+  unpinMenu: string
   home: string
   mainDashboard: string
   statusSummary: string
@@ -170,6 +172,8 @@ const catalogByLanguage: Record<AppLanguage, Catalog> = {
       navigation: 'Navegacion',
       expandMenu: 'Expandir menu',
       collapseMenu: 'Minimizar menu',
+      pinMenu: 'Fijar menu',
+      unpinMenu: 'Desfijar menu',
       home: 'Inicio',
       mainDashboard: 'Panel principal',
       statusSummary: 'Resumen de estado, mejoras recientes y acceso por categorias.',
@@ -279,6 +283,8 @@ const catalogByLanguage: Record<AppLanguage, Catalog> = {
       navigation: 'Navigation',
       expandMenu: 'Expand menu',
       collapseMenu: 'Collapse menu',
+      pinMenu: 'Pin menu',
+      unpinMenu: 'Unpin menu',
       home: 'Home',
       mainDashboard: 'Main dashboard',
       statusSummary: 'Status summary, latest updates and category-based access.',
@@ -388,6 +394,8 @@ const catalogByLanguage: Record<AppLanguage, Catalog> = {
       navigation: 'Navegacao',
       expandMenu: 'Expandir menu',
       collapseMenu: 'Recolher menu',
+      pinMenu: 'Fixar menu',
+      unpinMenu: 'Desfixar menu',
       home: 'Inicio',
       mainDashboard: 'Painel principal',
       statusSummary: 'Resumo de status, ultimas melhorias e acesso por categorias.',

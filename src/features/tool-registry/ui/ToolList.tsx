@@ -22,6 +22,8 @@ import {
   Globe2,
   Menu,
   PanelLeft,
+  Pin,
+  PinOff,
   Search,
   Star,
   X,
@@ -99,6 +101,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v2.6.0',
+    date: '2026-02-21',
+    title: 'Menu desktop fijable/desfijable',
+    changes: [
+      'Se agrega modo de menu fijado (sidebar desktop) y desfijado (hamburguesa tipo mobile en desktop).',
+      'Cuando el menu esta desfijado, el drawer lateral funciona igual que en mobile y se puede volver a fijar desde header o drawer.',
+      'Se mantiene comportamiento responsive actual y colapso vertical del menu fijado.',
+    ],
+  },
   {
     version: 'v2.5.4',
     date: '2026-02-21',
@@ -1309,6 +1321,7 @@ export function ToolList() {
     getInitialSeenReleaseVersion,
   )
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isDesktopMenuPinned, setIsDesktopMenuPinned] = useState(true)
   const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
@@ -1549,17 +1562,40 @@ export function ToolList() {
     })
   }
 
+  const toggleDesktopMenuPinned = () => {
+    setIsDesktopMenuPinned((current) => {
+      const next = !current
+      if (next) {
+        setIsMobileMenuOpen(false)
+      }
+      return next
+    })
+  }
+
   return (
     <section className="relative z-10 flex min-h-[100dvh] w-full flex-col [--app-header-h:64px] lg:h-[100dvh] lg:overflow-hidden">
       <header className="sticky top-0 z-20 flex min-h-[var(--app-header-h)] items-center gap-3 border-b border-slate-200/80 bg-white/85 px-3 py-2 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80 sm:px-4">
         <button
           type="button"
-          className="inline-flex size-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 lg:hidden dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          className={`inline-flex size-9 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 ${
+            isDesktopMenuPinned ? 'lg:hidden' : ''
+          }`}
           onClick={() => setIsMobileMenuOpen(true)}
           aria-label={ui.openMenu}
         >
           <Menu className="size-4" />
         </button>
+        {!isDesktopMenuPinned ? (
+          <button
+            type="button"
+            className="hidden cursor-pointer items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 lg:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+            onClick={toggleDesktopMenuPinned}
+            aria-label={ui.pinMenu}
+          >
+            <Pin className="size-3.5" />
+            {ui.pin}
+          </button>
+        ) : null}
 
         <button
           type="button"
@@ -1619,14 +1655,18 @@ export function ToolList() {
 
       <div
         className={`grid min-h-0 flex-1 ${
-          isDesktopMenuCollapsed
-            ? 'lg:grid-cols-[82px_minmax(0,1fr)]'
-            : 'lg:grid-cols-[280px_minmax(0,1fr)]'
+          isDesktopMenuPinned
+            ? isDesktopMenuCollapsed
+              ? 'lg:grid-cols-[82px_minmax(0,1fr)]'
+              : 'lg:grid-cols-[280px_minmax(0,1fr)]'
+            : 'lg:grid-cols-[minmax(0,1fr)]'
         } lg:h-[calc(100dvh-var(--app-header-h))]`}
       >
         <aside
-          className={`hidden overflow-x-hidden border-r border-slate-200/80 bg-white/70 py-4 dark:border-slate-800 dark:bg-slate-950/55 lg:block lg:h-full lg:overflow-y-auto ${
+          className={`hidden overflow-x-hidden border-r border-slate-200/80 bg-white/70 py-4 dark:border-slate-800 dark:bg-slate-950/55 lg:h-full lg:overflow-y-auto ${
             isDesktopMenuCollapsed ? 'px-2' : 'px-3'
+          } ${
+            isDesktopMenuPinned ? 'lg:block' : 'lg:hidden'
           }`}
         >
           <div
@@ -1640,22 +1680,30 @@ export function ToolList() {
                 {ui.navigation}
               </p>
             ) : null}
-            <button
-              type="button"
-              className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-              onClick={() => setIsDesktopMenuCollapsed((value) => !value)}
-              aria-label={
-                isDesktopMenuCollapsed
-                  ? ui.expandMenu
-                  : ui.collapseMenu
-              }
-            >
-              {isDesktopMenuCollapsed ? (
-                <ChevronsRight className="size-4" />
-              ) : (
-                <ChevronsLeft className="size-4" />
-              )}
-            </button>
+            <div className="inline-flex items-center gap-1">
+              <button
+                type="button"
+                className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                onClick={() => setIsDesktopMenuCollapsed((value) => !value)}
+                aria-label={isDesktopMenuCollapsed ? ui.expandMenu : ui.collapseMenu}
+              >
+                {isDesktopMenuCollapsed ? (
+                  <ChevronsRight className="size-4" />
+                ) : (
+                  <ChevronsLeft className="size-4" />
+                )}
+              </button>
+              {!isDesktopMenuCollapsed ? (
+                <button
+                  type="button"
+                  className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
+                  onClick={toggleDesktopMenuPinned}
+                  aria-label={ui.unpinMenu}
+                >
+                  <PinOff className="size-4" />
+                </button>
+              ) : null}
+            </div>
           </div>
           <SidebarContent
             favoriteToolIds={favoriteToolIds}
@@ -1780,14 +1828,18 @@ export function ToolList() {
       </div>
 
       <div
-        className={`fixed inset-0 z-40 bg-slate-950/60 transition lg:hidden ${
+        className={`fixed inset-0 z-40 bg-slate-950/60 transition ${
+          isDesktopMenuPinned ? 'lg:hidden' : ''
+        } ${
           isMobileMenuOpen ? 'pointer-events-auto opacity-100' : 'pointer-events-none opacity-0'
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
       />
 
       <aside
-        className={`fixed left-0 top-0 z-50 h-[100dvh] max-h-[100dvh] w-[86vw] max-w-[360px] overflow-y-auto overflow-x-hidden overscroll-contain border-r border-slate-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-[calc(env(safe-area-inset-top)+1rem)] shadow-2xl transition-transform duration-300 touch-pan-y dark:border-slate-700 dark:bg-slate-950 lg:hidden ${
+        className={`fixed left-0 top-0 z-50 h-[100dvh] max-h-[100dvh] w-[86vw] max-w-[360px] overflow-y-auto overflow-x-hidden overscroll-contain border-r border-slate-200 bg-white px-4 pb-[calc(env(safe-area-inset-bottom)+1rem)] pt-[calc(env(safe-area-inset-top)+1rem)] shadow-2xl transition-transform duration-300 touch-pan-y dark:border-slate-700 dark:bg-slate-950 ${
+          isDesktopMenuPinned ? 'lg:hidden' : ''
+        } ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
@@ -1796,14 +1848,26 @@ export function ToolList() {
             <PanelLeft className="size-3.5" />
             {ui.menu}
           </p>
-          <button
-            type="button"
-            className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
-            onClick={() => setIsMobileMenuOpen(false)}
-            aria-label={ui.closeMenu}
-          >
-            <X className="size-4" />
-          </button>
+          <div className="inline-flex items-center gap-1">
+            {!isDesktopMenuPinned ? (
+              <button
+                type="button"
+                className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+                onClick={toggleDesktopMenuPinned}
+                aria-label={ui.pinMenu}
+              >
+                <Pin className="size-4" />
+              </button>
+            ) : null}
+            <button
+              type="button"
+              className="inline-flex size-8 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+              onClick={() => setIsMobileMenuOpen(false)}
+              aria-label={ui.closeMenu}
+            >
+              <X className="size-4" />
+            </button>
+          </div>
         </div>
 
         <SidebarContent
