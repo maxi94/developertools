@@ -463,6 +463,28 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
     event.key === '-' ||
     event.key === '_'
 
+  const collectDescendantIds = useCallback(
+    (nodeId: string): string[] => {
+      const descendants: string[] = []
+      const stack = [...(childrenByParent.get(nodeId) ?? [])]
+
+      while (stack.length > 0) {
+        const current = stack.pop()
+        if (!current) {
+          continue
+        }
+        descendants.push(current.id)
+        const children = childrenByParent.get(current.id) ?? []
+        for (const child of children) {
+          stack.push(child)
+        }
+      }
+
+      return descendants
+    },
+    [childrenByParent],
+  )
+
   const toggleNodeCollapse = useCallback((nodeId: string) => {
     setSelectedId(nodeId)
     setCollapsedNodeIds((current) => {
@@ -471,10 +493,16 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
         next.delete(nodeId)
       } else {
         next.add(nodeId)
+        const descendants = collectDescendantIds(nodeId)
+        for (const descendantId of descendants) {
+          if (hasChildrenSet.has(descendantId)) {
+            next.add(descendantId)
+          }
+        }
       }
       return next
     })
-  }, [])
+  }, [collectDescendantIds, hasChildrenSet])
 
   const collapseAll = useCallback(() => {
     const next = new Set<string>()

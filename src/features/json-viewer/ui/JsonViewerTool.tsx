@@ -21,6 +21,8 @@ type UiCopy = {
   stats: string
   nodeCount: string
   maxDepth: string
+  outputCode: string
+  outputFold: string
   fullscreen: string
   exitFullscreen: string
   fullscreenTitle: string
@@ -43,6 +45,8 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Resumen',
     nodeCount: 'Nodos',
     maxDepth: 'Profundidad max',
+    outputCode: 'Codigo',
+    outputFold: 'Plegable',
     fullscreen: 'Pantalla completa',
     exitFullscreen: 'Salir pantalla completa',
     fullscreenTitle: 'Visor JSON ampliado',
@@ -63,6 +67,8 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Summary',
     nodeCount: 'Nodes',
     maxDepth: 'Max depth',
+    outputCode: 'Code',
+    outputFold: 'Collapsible',
     fullscreen: 'Fullscreen',
     exitFullscreen: 'Exit fullscreen',
     fullscreenTitle: 'Expanded JSON viewer',
@@ -83,6 +89,8 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     stats: 'Resumo',
     nodeCount: 'Nos',
     maxDepth: 'Profundidade max',
+    outputCode: 'Codigo',
+    outputFold: 'Colapsavel',
     fullscreen: 'Tela cheia',
     exitFullscreen: 'Sair tela cheia',
     fullscreenTitle: 'Visualizador JSON ampliado',
@@ -234,6 +242,7 @@ export function JsonViewerTool() {
   const [source, setSource] = useState(swaggerSample)
   const [resolveRefs, setResolveRefs] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [outputMode, setOutputMode] = useState<'code' | 'fold'>('code')
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
 
@@ -277,8 +286,8 @@ export function JsonViewerTool() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isFullscreen])
 
-  return (
-    <section className="grid gap-3">
+  const renderContent = (isOverlay = false) => (
+    <>
       <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
         <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
           <div>
@@ -317,6 +326,14 @@ export function JsonViewerTool() {
                 {resolveRefs ? t.refsOn : t.refsOff}
               </span>
             </button>
+            <button
+              type="button"
+              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
+              onClick={() => setIsFullscreen((value) => !value)}
+            >
+              {isOverlay ? <Minimize2 className="size-3.5" /> : <Expand className="size-3.5" />}
+              {isOverlay ? t.exitFullscreen : t.fullscreen}
+            </button>
           </div>
         </div>
 
@@ -342,6 +359,31 @@ export function JsonViewerTool() {
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {t.normalized}
               </span>
+              <div className="inline-flex rounded-xl border border-slate-300 p-1 dark:border-slate-600">
+                <button
+                  type="button"
+                  className={`inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-semibold ${
+                    outputMode === 'code'
+                      ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                  onClick={() => setOutputMode('code')}
+                >
+                  {t.outputCode}
+                </button>
+                <button
+                  type="button"
+                  className={`inline-flex items-center rounded-lg px-2 py-1 text-[11px] font-semibold ${
+                    outputMode === 'fold'
+                      ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                      : 'text-slate-600 dark:text-slate-300'
+                  }`}
+                  onClick={() => setOutputMode('fold')}
+                  disabled={output.status !== 'success'}
+                >
+                  {t.outputFold}
+                </button>
+              </div>
               {output.status === 'success' && stats ? (
                 <p className="rounded-lg border border-slate-200 bg-slate-50 px-2 py-1 text-[11px] text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
                   <strong>{t.stats}:</strong> {t.nodeCount} {stats.nodeCount} | {t.maxDepth}{' '}
@@ -349,9 +391,13 @@ export function JsonViewerTool() {
                 </p>
               ) : null}
             </div>
-            <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
-              <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
-            </div>
+            {outputMode === 'fold' && output.status === 'success' ? (
+              <JsonTreeViewer data={output.parsed} title={`${t.normalized} (${t.outputFold})`} />
+            ) : (
+              <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+                <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
+              </div>
+            )}
           </section>
         </div>
 
@@ -369,22 +415,18 @@ export function JsonViewerTool() {
 
       {output.status === 'success' ? (
         <section className="grid gap-2">
-          <div className="flex justify-end">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
-              onClick={() => setIsFullscreen(true)}
-            >
-              <Expand className="size-3.5" />
-              {t.fullscreen}
-            </button>
-          </div>
           <JsonTreeViewer
             data={output.parsed}
             title={`${t.title} (${resolveRefs ? `${t.refs}: ${t.refsOn}` : `${t.refs}: ${t.refsOff}`})`}
           />
         </section>
       ) : null}
+    </>
+  )
+
+  return (
+    <section className="grid gap-3">
+      {renderContent(false)}
 
       {isFullscreen && output.status === 'success' ? (
         <div className="fixed inset-0 z-[130] bg-slate-950/70 p-3 backdrop-blur-sm md:p-6">
@@ -404,10 +446,7 @@ export function JsonViewerTool() {
               </button>
             </header>
             <div className="min-h-0 overflow-auto p-3">
-              <JsonTreeViewer
-                data={output.parsed}
-                title={`${t.title} (${resolveRefs ? `${t.refs}: ${t.refsOn}` : `${t.refs}: ${t.refsOff}`})`}
-              />
+              {renderContent(true)}
             </div>
           </section>
         </div>

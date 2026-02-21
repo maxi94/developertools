@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.5.0',
+    date: '2026-02-21',
+    title: 'Ajustes UX para Visor JSON Pro',
+    changes: [
+      'Pantalla completa del Visor JSON Pro ahora aplica a toda la herramienta (entrada, salida y visor), no solo al bloque inferior.',
+      'La salida JSON agrega modo plegable para colapsar/expandir objetos y arrays durante la inspeccion.',
+      'En vista de grafo, al colapsar un nodo tambien se marcan colapsados sus descendientes para evitar re-expansion completa al abrir de nuevo.',
+    ],
+  },
+  {
     version: 'v2.4.0',
     date: '2026-02-21',
     title: 'Nueva herramienta Visor JSON Pro',
