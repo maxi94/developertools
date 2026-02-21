@@ -317,7 +317,7 @@ export function JsonViewerTool() {
             />
           </label>
 
-          <section className="grid min-h-[340px] grid-rows-[auto_1fr] gap-2 lg:min-h-[420px]">
+          <section className="grid min-h-[340px] max-h-[68vh] grid-rows-[auto_1fr] gap-2 lg:min-h-[420px] lg:max-h-[72vh]">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {t.normalized}
@@ -340,7 +340,12 @@ export function JsonViewerTool() {
               </div>
             </div>
             <div className="min-h-0 overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
-              <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
+              <JsonCodeViewer
+                value={output.formatted}
+                status={output.status}
+                showLineNumbers
+                className="h-full"
+              />
             </div>
           </section>
         </div>
