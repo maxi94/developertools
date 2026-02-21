@@ -130,11 +130,11 @@
 
   .tool-content > section > h2:first-child,
   .tool-content > section > div:first-child > h2:first-child {
-    display: none;
+    display: none !important;
   }
 
   .tool-content > section > h2:first-child + p,
   .tool-content > section > div:first-child > h2:first-child + p {
-    display: none;
+    display: none !important;
   }
 }

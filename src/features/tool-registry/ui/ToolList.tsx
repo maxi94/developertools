@@ -100,6 +100,26 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.10',
+    date: '2026-02-21',
+    title: 'Fix definitivo: ocultar titulo interno en tools',
+    changes: [
+      'Se oculta el titulo/descripcion internos de cada herramienta para igualar el formato de JSON a tabla.',
+      'La regla global de ocultado se refuerza para evitar que utilidades visuales la sobreescriban.',
+      'Versiones de JSON a tabla y Minify/Expand JS-CSS actualizadas por ajuste de presentacion.',
+    ],
+  },
+  {
+    version: 'v1.3.9',
+    date: '2026-02-21',
+    title: 'Ajuste de duplicados internos en tools',
+    changes: [
+      'Se mantiene la cabecera general del template sin cambios de estructura.',
+      'Se elimina duplicacion de titulo/descripcion dentro del contenido interno de herramientas.',
+      'Se actualizan versiones de JSON a tabla y Minify/Expand JS-CSS por ajuste de formato unificado.',
+    ],
+  },
+  {
     version: 'v1.3.8',
     date: '2026-02-21',
     title: 'Fix formato tool interno + snippet de menu',

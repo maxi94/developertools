@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.3.8'
+export const WEB_VERSION = 'v1.3.10'
 
 export const tools: ToolDefinition[] = [
   {
@@ -17,7 +17,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte JSON (incluyendo objetos anidados) a tabla y exporta CSV/Excel.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.2',
+    version: '1.0.4',
   },
   {
     id: 'base64',
@@ -57,7 +57,7 @@ export const tools: ToolDefinition[] = [
     description: 'Minifica y expande JavaScript o CSS desde texto o archivo.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.3',
   },
   {
     id: 'regex-tool',
