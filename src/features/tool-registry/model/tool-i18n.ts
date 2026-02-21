@@ -1,5 +1,9 @@
 import type { ToolDefinition, ToolId } from '@/shared/types/tool'
-import { DEFAULT_LANGUAGE, type AppLanguage } from '@/shared/i18n/config'
+import {
+  DEFAULT_LANGUAGE,
+  SECONDARY_FALLBACK_LANGUAGE,
+  type AppLanguage,
+} from '@/shared/i18n/config'
 
 type LocalizedToolText = {
   name: string
@@ -106,10 +110,12 @@ const toolTextsByLanguage: Record<AppLanguage, Partial<Record<ToolId, LocalizedT
     description: 'Minify SVG, preview and export the result.',
   },
   },
+  pt: {},
 }
 
 export function localizeTool(tool: ToolDefinition, language: AppLanguage): ToolDefinition {
   const localized = toolTextsByLanguage[language]?.[tool.id]
+    ?? toolTextsByLanguage[SECONDARY_FALLBACK_LANGUAGE]?.[tool.id]
     ?? toolTextsByLanguage[DEFAULT_LANGUAGE]?.[tool.id]
   if (!localized) {
     return tool

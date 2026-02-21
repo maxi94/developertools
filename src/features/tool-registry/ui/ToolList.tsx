@@ -22,14 +22,12 @@ import {
   FingerprintPattern as Fingerprint,
   Globe2,
   Menu,
-  MoonStar,
   PanelLeft,
   Pin,
   PinOff,
   Search,
   Sparkles,
   Star,
-  Sun,
   X,
 } from 'lucide-react'
 import {
@@ -105,13 +103,13 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
-    version: 'v1.0.1',
+    version: 'v1.1.0',
     date: '2026-02-21',
-    title: 'Base de testing UI',
+    title: 'UX global + tema avanzado + i18n escalable',
     changes: [
-      'Se agregan tests de interfaz para ToolCard y ToolList con Vitest + Testing Library.',
-      'Cobertura inicial de interacciones clave: seleccion, favoritos, busqueda y navegacion por categoria.',
-      'Mejora de confiabilidad para detectar regresiones en el dashboard principal.',
+      'Se agrega modo de tema Light/Dark/System con persistencia y deteccion del sistema.',
+      'La app incorpora base multilenguaje ampliada (ES/EN/PT) con fallback seguro.',
+      'Se mejoran textos y controles del header para una experiencia mas clara en desktop y mobile.',
     ],
   },
   {
@@ -404,7 +402,7 @@ function toAppAbsolutePath(pathname: string): string {
 }
 
 function getToolRouteSegment(language: AppLanguage): string {
-  return language === 'en' ? 'tool' : 'herramienta'
+  return language !== 'es' ? 'tool' : 'herramienta'
 }
 
 function getCategoryPath(category: ToolCategory, language: AppLanguage): string {
@@ -607,7 +605,7 @@ function SidebarContent({
             <Search className="size-3.5" />
             <input
               className="w-full bg-transparent text-slate-700 outline-none placeholder:text-slate-400 dark:text-slate-100"
-              placeholder={language === 'en' ? 'Search in menu...' : 'Buscar en menu...'}
+              placeholder={language !== 'es' ? 'Search in menu...' : 'Buscar en menu...'}
               value={searchTerm}
               onChange={(event) => {
                 onSearchTermChange(event.target.value)
@@ -653,7 +651,7 @@ function SidebarContent({
                   onClearSearch()
                   setHighlightedIndex(0)
                 }}
-                aria-label={language === 'en' ? 'Clear search' : 'Limpiar busqueda'}
+                aria-label={language !== 'es' ? 'Clear search' : 'Limpiar busqueda'}
               >
                 <X className="size-3.5" />
               </button>
@@ -709,7 +707,7 @@ function SidebarContent({
             >
               <button
                 type="button"
-                title={isMenuCollapsed ? (language === 'en' ? 'Favorites' : 'Favoritos') : undefined}
+                title={isMenuCollapsed ? (language !== 'es' ? 'Favorites' : 'Favoritos') : undefined}
                 className={`min-w-0 inline-flex cursor-pointer items-center ${
                   isMenuCollapsed ? 'justify-center px-0.5' : 'gap-1.5 px-1'
                 } rounded-md py-1 text-left text-[10px] font-semibold uppercase tracking-[0.1em] text-slate-900 dark:text-white`}
@@ -719,7 +717,7 @@ function SidebarContent({
                   <Star className="size-3.5" />
                 </span>
                 {!isMenuCollapsed ? (
-                  <span className="truncate">{language === 'en' ? 'Favorites' : 'Favoritos'}</span>
+                  <span className="truncate">{language !== 'es' ? 'Favorites' : 'Favoritos'}</span>
                 ) : null}
               </button>
               {!isMenuCollapsed ? (
@@ -729,10 +727,10 @@ function SidebarContent({
                   onClick={() => setIsFavoritesCollapsed((current) => !current)}
                   aria-label={
                     isFavoritesCollapsed
-                      ? language === 'en'
+                      ? language !== 'es'
                         ? 'Expand favorites'
                         : 'Expandir favoritos'
-                      : language === 'en'
+                      : language !== 'es'
                         ? 'Collapse favorites'
                         : 'Colapsar favoritos'
                   }
@@ -746,7 +744,7 @@ function SidebarContent({
             {!isFavoritesCollapsed ? (
               <nav
                 className="grid gap-1.5"
-                aria-label={language === 'en' ? 'Favorites menu' : 'Menu de favoritos'}
+                aria-label={language !== 'es' ? 'Favorites menu' : 'Menu de favoritos'}
               >
                 {favoriteTools.map((tool) => (
                   <ToolCard
@@ -796,10 +794,10 @@ function SidebarContent({
                   onClick={() => onToggleCategory(group.category)}
                   aria-label={
                     collapsedCategories.has(group.category)
-                      ? language === 'en'
+                      ? language !== 'es'
                         ? 'Expand category'
                         : 'Expandir categoria'
-                      : language === 'en'
+                      : language !== 'es'
                         ? 'Collapse category'
                         : 'Colapsar categoria'
                   }
@@ -815,7 +813,7 @@ function SidebarContent({
             {!collapsedCategories.has(group.category) ? (
               <nav
                 className="grid gap-1.5"
-                aria-label={`${language === 'en' ? 'Menu' : 'Menu'} ${getCategoryLabel(group.category, language)}`}
+                aria-label={`${language !== 'es' ? 'Menu' : 'Menu'} ${getCategoryLabel(group.category, language)}`}
               >
                 {group.tools.map((tool) => (
                   <ToolCard
@@ -836,7 +834,7 @@ function SidebarContent({
 
       {menuTools.length === 0 ? (
         <p className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs text-slate-600 dark:border-slate-700 dark:bg-slate-900/50 dark:text-slate-300">
-          {language === 'en' ? 'No tools found for:' : 'No se encontraron herramientas para:'}{' '}
+          {language !== 'es' ? 'No tools found for:' : 'No se encontraron herramientas para:'}{' '}
           <strong>{searchTerm}</strong>
         </p>
       ) : null}
@@ -862,9 +860,13 @@ function HomeOverview({
   onSelectTool,
 }: HomeOverviewProps) {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const isEnglish = language !== 'es'
   const totalTools = tools.length
-  const totalCategories = categoryOrder.length
+  const activeCategories = useMemo(() => {
+    const categoriesWithTools = new Set<ToolCategory>(tools.map((tool) => tool.category))
+    return categoryOrder.filter((category) => categoriesWithTools.has(category))
+  }, [])
+  const totalCategories = activeCategories.length
 
   return (
     <section className="grid gap-4">
@@ -929,7 +931,7 @@ function HomeOverview({
       <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 dark:border-slate-700 dark:bg-slate-900/70">
         <h2 className="text-lg font-semibold">{isEnglish ? 'Categories' : 'Categorias'}</h2>
         <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4 [content-visibility:auto] [contain-intrinsic-size:520px]">
-          {categoryOrder.map((category) => (
+          {activeCategories.map((category) => (
             <button
               key={category}
               type="button"
@@ -998,7 +1000,7 @@ function CategoryOverview({
   onToggleFavorite,
 }: CategoryOverviewProps) {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const isEnglish = language !== 'es'
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const favoriteCountInCategory = useMemo(
     () => toolsByCategory.filter((tool) => favoriteToolIdSet.has(tool.id)).length,
@@ -1125,7 +1127,7 @@ function CategoryOverview({
 
 export function ToolList() {
   const { language, setLanguage } = useI18n()
-  const { theme, toggleTheme } = useTheme()
+  const { themeMode, setThemeMode } = useTheme()
   const toolContentRef = useRef<HTMLDivElement | null>(null)
   const [view, setView] = useState<ViewState>(() => parseViewFromPath(window.location.pathname))
   const [favoriteToolIds, setFavoriteToolIds] = useState<ToolId[]>(getInitialFavorites)
@@ -1136,7 +1138,7 @@ export function ToolList() {
   const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
-  const isEnglish = language === 'en'
+  const isEnglish = language !== 'es'
 
   const localizedTools = useMemo(
     () => tools.map((tool) => localizeTool(tool, language)),
@@ -1338,6 +1340,18 @@ export function ToolList() {
     navigateTo(getToolPath(toolId, language))
   }
 
+  const cycleThemeMode = () => {
+    setThemeMode((currentMode) => {
+      if (currentMode === 'light') {
+        return 'dark'
+      }
+      if (currentMode === 'dark') {
+        return 'system'
+      }
+      return 'light'
+    })
+  }
+
   return (
     <section className="relative z-10 flex min-h-[100dvh] w-full flex-col [--app-header-h:64px] lg:h-[100dvh] lg:overflow-hidden">
       <header className="sticky top-0 z-20 flex min-h-[var(--app-header-h)] items-center gap-3 border-b border-slate-200/80 bg-white/85 px-3 py-2 backdrop-blur-xl dark:border-slate-800 dark:bg-slate-950/80 sm:px-4">
@@ -1354,7 +1368,7 @@ export function ToolList() {
           type="button"
           className="inline-flex min-w-0 cursor-pointer items-center gap-2 rounded-xl px-1 py-1 text-left transition hover:bg-slate-100/80 dark:hover:bg-slate-800/70"
           onClick={goHome}
-          aria-label="Ir a inicio"
+          aria-label={isEnglish ? 'Go home' : 'Ir a inicio'}
         >
           <img
             src={`${import.meta.env.BASE_URL}logo.svg`}
@@ -1380,23 +1394,31 @@ export function ToolList() {
           >
             {SUPPORTED_LANGUAGES.map((item) => (
               <option key={item.code} value={item.code}>
-                {item.label}
+                {item.label} - {item.nativeName}
               </option>
             ))}
           </select>
         </label>
 
+        <label className="hidden items-center gap-1 rounded-lg border border-slate-200 bg-white px-2 py-1 text-xs font-semibold text-slate-700 md:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200">
+          <span className="uppercase">{isEnglish ? 'Theme' : 'Tema'}</span>
+          <select
+            value={themeMode}
+            onChange={(event) => setThemeMode(event.target.value as 'light' | 'dark' | 'system')}
+            className="rounded border border-slate-300 bg-white px-1 py-0.5 text-xs dark:border-slate-600 dark:bg-slate-900"
+          >
+            <option value="light">{isEnglish ? 'Light' : 'Claro'}</option>
+            <option value="dark">{isEnglish ? 'Dark' : 'Oscuro'}</option>
+            <option value="system">{isEnglish ? 'System' : 'Sistema'}</option>
+          </select>
+        </label>
         <button
           type="button"
-          className="ml-auto inline-flex cursor-pointer items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm transition hover:border-teal-400 hover:text-teal-700 md:ml-0 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-          onClick={toggleTheme}
+          onClick={cycleThemeMode}
+          className="inline-flex cursor-pointer items-center rounded-xl border border-slate-200 bg-white px-3 py-2 text-xs font-semibold uppercase tracking-wide text-slate-700 md:hidden dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200"
+          aria-label={isEnglish ? 'Change theme mode' : 'Cambiar modo de tema'}
         >
-          {theme === 'dark' ? <Sun className="size-3.5" /> : <MoonStar className="size-3.5" />}
-          <span className="hidden sm:inline">
-            {isEnglish
-              ? `Switch to ${theme === 'dark' ? 'Light' : 'Dark'}`
-              : `Pasar a ${theme === 'dark' ? 'Claro' : 'Oscuro'}`}
-          </span>
+          {themeMode}
         </button>
       </header>
 
@@ -1471,7 +1493,7 @@ export function ToolList() {
                 className="cursor-pointer hover:text-cyan-700 dark:hover:text-cyan-300"
                 onClick={goHome}
               >
-                {isEnglish ? 'Home' : 'Home'}
+                {isEnglish ? 'Home' : 'Inicio'}
               </button>
               {selectedCategory ? (
                 <>
@@ -1636,6 +1658,7 @@ export function ToolList() {
     </section>
   )
 }
+
 
 
 
