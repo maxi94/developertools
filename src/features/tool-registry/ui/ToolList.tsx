@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.7',
+    date: '2026-02-21',
+    title: 'Grafo JSON con layout arbol por defecto',
+    changes: [
+      'La vista grafo ahora abre con layout jerarquico tipo arbol para lectura mas prolija.',
+      'Se agrega selector para alternar entre Layout arbol (nuevo) y Layout actual (compacto).',
+      'Se evita que los hijos queden visualmente por encima del padre en el layout por defecto.',
+    ],
+  },
+  {
     version: 'v2.6.6',
     date: '2026-02-21',
     title: 'Scroll acotado en JSON normalizado y menu persistente',

@@ -46,6 +46,7 @@ interface SvgNodePosition {
 }
 
 type ViewMode = 'tree' | 'graph'
+type GraphLayoutMode = 'tree' | 'compact'
 
 function getValueType(value: unknown): string {
   if (Array.isArray(value)) {
@@ -249,6 +250,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
   const [selectedId, setSelectedId] = useState<string>('root')
   const [zoom, setZoom] = useState(1)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('tree')
   const [isPanning, setIsPanning] = useState(false)
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set())
@@ -351,9 +353,17 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
 
   const svgLayout = useMemo(() => {
     const graphNodes = visibleGraphNodes.slice(0, renderLimit)
-    const byDepth = new Map<number, GraphNode[]>()
     const depthById = new Map<string, number>()
     const nodeById = new Map(graphNodes.map((node) => [node.id, node]))
+    const childMap = new Map<string, GraphNode[]>()
+    for (const node of graphNodes) {
+      if (!node.parentId) {
+        continue
+      }
+      const current = childMap.get(node.parentId) ?? []
+      current.push(node)
+      childMap.set(node.parentId, current)
+    }
 
     const getDepth = (node: GraphNode): number => {
       if (!node.parentId) {
@@ -369,6 +379,49 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       return depth
     }
 
+    const positions: SvgNodePosition[] = []
+    const posById = new Map<string, { x: number; y: number }>()
+
+    if (layoutMode === 'tree') {
+      const roots = graphNodes.filter((node) => !node.parentId)
+      const horizontalGap = 174
+      const verticalGap = 92
+      const marginX = 96
+      const marginY = 54
+      let leafIndex = 0
+      let maxDepth = 0
+
+      const assign = (node: GraphNode, depth: number): number => {
+        maxDepth = Math.max(maxDepth, depth)
+        const children = childMap.get(node.id) ?? []
+        const childXs = children.map((child) => assign(child, depth + 1))
+        const x = childXs.length > 0 ? childXs.reduce((sum, value) => sum + value, 0) / childXs.length : leafIndex++
+        const y = depth
+        const px = marginX + x * horizontalGap
+        const py = marginY + y * verticalGap
+        positions.push({
+          id: node.id,
+          x: px,
+          y: py,
+          label: node.label,
+          type: node.type,
+          preview: node.preview,
+        })
+        posById.set(node.id, { x: px, y: py })
+        return x
+      }
+
+      for (const root of roots) {
+        assign(root, 0)
+        leafIndex += 0.7
+      }
+
+      const width = Math.max(760, marginX * 2 + Math.max(1, leafIndex) * horizontalGap)
+      const height = Math.max(260, marginY * 2 + Math.max(1, maxDepth + 1) * verticalGap)
+      return { width, height, positions, posById }
+    }
+
+    const byDepth = new Map<number, GraphNode[]>()
     for (const node of graphNodes) {
       const depth = getDepth(node)
       const bucket = byDepth.get(depth) ?? []
@@ -377,8 +430,6 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
     }
 
     const depthKeys = Array.from(byDepth.keys()).sort((a, b) => a - b)
-    const positions: SvgNodePosition[] = []
-    const posById = new Map<string, { x: number; y: number }>()
     const colWidth = 210
     const rowHeight = 60
 
@@ -407,7 +458,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       positions,
       posById,
     }
-  }, [renderLimit, visibleGraphNodes])
+  }, [layoutMode, renderLimit, visibleGraphNodes])
 
   const centerOnNode = useCallback((nodeId: string) => {
     const frame = frameRef.current
@@ -604,6 +655,36 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
             {isLargeGraph ? ` | Vista simplificada (${renderLimit})` : ''}
           </div>
           <div className="inline-flex items-center gap-1">
+            <div className="mr-1 inline-flex rounded-md border border-slate-300 p-0.5 dark:border-slate-600">
+              <button
+                type="button"
+                className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                  layoutMode === 'tree'
+                    ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                    : 'text-slate-600 dark:text-slate-300'
+                }`}
+                onClick={() => {
+                  setLayoutMode('tree')
+                  centerOnNode(activeSelectedId)
+                }}
+              >
+                Layout arbol
+              </button>
+              <button
+                type="button"
+                className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                  layoutMode === 'compact'
+                    ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                    : 'text-slate-600 dark:text-slate-300'
+                }`}
+                onClick={() => {
+                  setLayoutMode('compact')
+                  centerOnNode(activeSelectedId)
+                }}
+              >
+                Layout actual
+              </button>
+            </div>
             <button
               type="button"
               className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
@@ -859,13 +940,17 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
                 if (!from || !to) {
                   return null
                 }
+                const x1 = layoutMode === 'tree' ? from.x : from.x + 52
+                const y1 = layoutMode === 'tree' ? from.y + 23 : from.y
+                const x2 = layoutMode === 'tree' ? to.x : to.x - 52
+                const y2 = layoutMode === 'tree' ? to.y - 23 : to.y
                 return (
                   <line
                     key={`${edge.parentId}-${edge.id}`}
-                    x1={from.x + 52}
-                    y1={from.y}
-                    x2={to.x - 52}
-                    y2={to.y}
+                    x1={x1}
+                    y1={y1}
+                    x2={x2}
+                    y2={y2}
                     stroke="currentColor"
                     className="text-slate-400 dark:text-slate-500"
                     strokeWidth={1.4}
