@@ -1,4 +1,22 @@
-# Workflow Rules
+# AGENTS Global
+
+## Objetivo
+Definir reglas generales para colaborar con agentes especialistas (Front/UX, React, Tester, DevOps) en este repositorio.
+
+## Estructura Detectada (referencia)
+- App principal: `src/`
+- UI principal: `src/features/tool-registry/ui/`
+- React compartido (hooks/componentes): `src/shared/`
+- Testing base: `src/test/` y archivos `*.test.ts` en `src/shared/lib/`
+- CI/CD: `.github/workflows/`
+- Documentacion de flujo de agentes: `docs/`
+
+## Reglas Generales (obligatorio)
+- No tocar secretos ni credenciales (`.env*`, tokens, llaves, secretos de CI, credenciales de Git).
+- Mantener cambios atomicos y con proposito unico por commit.
+- Usar mensajes de commit claros en estilo convencional (`feat:`, `fix:`, `chore:`, `docs:`, `test:`, `refactor:`).
+- Preferir Pull Request a merge directo en `main`, con checklist minimo: `lint`, `test`, `build`.
+- Si el cambio toca multiples areas, coordinar en orden: Front/UX -> React -> Tester -> DevOps.
 
 ## Branching Policy (Mandatory)
 - Never implement new functionality directly on `main` or `master`.
@@ -31,6 +49,12 @@
   - run/verify commands (`npm run lint`, `npm run test`, etc.)
   - git commands (branch, add, commit, push)
   - PR command (`gh pr create ...`) when a branch is ready
+
+## Validacion Local (documentacion obligatoria)
+- Desarrollo local: `npm run dev`
+- Lint: `npm run lint`
+- Tests: `npm run test`
+- Build produccion: `npm run build`
 
 ## Versioning & Changelog Policy (Mandatory)
 - Any code change must include a version update.
