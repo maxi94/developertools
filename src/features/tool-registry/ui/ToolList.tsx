@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.4.0',
+    date: '2026-02-21',
+    title: 'Fake Data flexible por esquema',
+    changes: [
+      'Generador fake data redisenado: ahora permite construir datasets por campos sin JSON fijo.',
+      'Se agregan presets y seleccion manual de campos para armar payloads de prueba mas reales.',
+      'Version de Generador fake data actualizada a v1.1.0.',
+    ],
+  },
+  {
     version: 'v1.3.10',
     date: '2026-02-21',
     title: 'Fix definitivo: ocultar titulo interno en tools',
