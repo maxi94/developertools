@@ -17,6 +17,15 @@ describe('byte-array parser', () => {
     expect(Array.from(result.bytes)).toEqual([137, 80, 78, 71])
   })
 
+  it('soporta blob SQL en un solo token 0x...', () => {
+    const result = parseByteArrayInput('INSERT ... 0x89504E470D0A1A0A')
+    expect(Array.from(result.bytes)).toEqual([137, 80, 78, 71, 13, 10, 26, 10])
+  })
+
+  it('falla si el blob hex 0x tiene longitud impar', () => {
+    expect(() => parseByteArrayInput('0xABC')).toThrow(/Hex invalido/)
+  })
+
   it('detecta PDF por magic bytes', () => {
     const type = detectFileType(Uint8Array.from([37, 80, 68, 70, 45]))
     expect(type.mime).toBe('application/pdf')

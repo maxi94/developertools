@@ -39,14 +39,27 @@ export function parseByteArrayInput(raw: string): ByteArrayParseResult {
   const firstHexIndex = tokenMatches.findIndex((token) => /^-?0x/i.test(token))
   const effectiveTokens = firstHexIndex >= 0 ? tokenMatches.slice(firstHexIndex) : tokenMatches
 
-  const values = effectiveTokens.map((token) => {
+  const values: number[] = []
+  for (const token of effectiveTokens) {
     if (/^-?0x/i.test(token)) {
-      const sign = token.startsWith('-') ? -1 : 1
+      const negative = token.startsWith('-')
       const normalized = token.replace(/^-?0x/i, '')
-      return toUnsignedByte(sign * Number.parseInt(normalized, 16))
+      if (!negative && firstHexIndex >= 0 && normalized.length > 2) {
+        if (normalized.length % 2 !== 0) {
+          throw new Error(`Hex invalido (cantidad impar): 0x${normalized}`)
+        }
+        for (let index = 0; index < normalized.length; index += 2) {
+          const chunk = normalized.slice(index, index + 2)
+          values.push(toUnsignedByte(Number.parseInt(chunk, 16)))
+        }
+        continue
+      }
+      const sign = negative ? -1 : 1
+      values.push(toUnsignedByte(sign * Number.parseInt(normalized, 16)))
+      continue
     }
-    return toUnsignedByte(Number.parseInt(token, 10))
-  })
+    values.push(toUnsignedByte(Number.parseInt(token, 10)))
+  }
 
   return {
     bytes: Uint8Array.from(values),

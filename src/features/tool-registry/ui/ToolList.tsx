@@ -100,6 +100,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.3.2',
+    date: '2026-02-21',
+    title: 'Fix parser byte[] para blobs SQL 0x',
+    changes: [
+      'Se corrige parseo de entradas SQL con blob hex continuo (0x89504E...) para convertir en bytes validos.',
+      'Ahora un token 0x largo se procesa por pares hex (1 byte por par), evitando errores de fuera de rango.',
+      'Se valida y reporta error claro cuando el blob hex tiene longitud impar.',
+    ],
+  },
+  {
     version: 'v2.3.1',
     date: '2026-02-21',
     title: 'byte[] parser desde primer 0x',
