@@ -36,6 +36,14 @@ const categoryLabels: Record<AppLanguage, Record<ToolCategory, string>> = {
     'Utilidades web': 'Web Utilities',
     Documentacion: 'Documentation',
   },
+  pt: {
+    Datos: 'Dados',
+    Formateadores: 'Formatadores',
+    'Generadores de codigo': 'Geradores de codigo',
+    'Tokens e identidad': 'Tokens e Identidade',
+    'Utilidades web': 'Utilitarios web',
+    Documentacion: 'Documentacao',
+  },
 }
 
 const categoryDescriptions: Record<AppLanguage, Record<ToolCategory, string>> = {
@@ -47,6 +55,14 @@ const categoryDescriptions: Record<AppLanguage, Record<ToolCategory, string>> = 
     'Tokens e identidad': 'Tools for generating and analyzing identifiers and tokens.',
     'Utilidades web': 'Helpers for encoding, escaping and common web development tasks.',
     Documentacion: 'Generators and helpers to accelerate technical documentation.',
+  },
+  pt: {
+    Datos: 'Utilitarios para transformar e visualizar dados localmente.',
+    Formateadores: 'Ferramentas para formatar conteudos tecnicos de forma legivel.',
+    'Generadores de codigo': 'Utilitarios para gerar classes, modelos e codigo base.',
+    'Tokens e identidad': 'Ferramentas para gerar e analisar identificadores e tokens.',
+    'Utilidades web': 'Helpers para encoding, escaping e tarefas comuns de desenvolvimento web.',
+    Documentacion: 'Geradores e assistentes para acelerar documentacao tecnica.',
   },
 }
 
@@ -74,6 +90,14 @@ export const categorySlugsByLanguage: Record<AppLanguage, Record<ToolCategory, s
     'Tokens e identidad': 'tokens-identity',
     'Utilidades web': 'web-utilities',
     Documentacion: 'documentation',
+  },
+  pt: {
+    Datos: 'dados',
+    Formateadores: 'formatadores',
+    'Generadores de codigo': 'geradores-codigo',
+    'Tokens e identidad': 'tokens-identidade',
+    'Utilidades web': 'utilitarios-web',
+    Documentacion: 'documentacao',
   },
 }
 
