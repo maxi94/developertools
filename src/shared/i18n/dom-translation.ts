@@ -272,6 +272,16 @@ function replaceAll(value: string, from: string, to: string): string {
   return value.split(from).join(to)
 }
 
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+}
+
+function replaceWholeToken(value: string, from: string, to: string): string {
+  const escaped = escapeRegExp(from)
+  const pattern = new RegExp(`(^|[^\\p{L}\\p{N}_])(${escaped})(?=$|[^\\p{L}\\p{N}_])`, 'gu')
+  return value.replace(pattern, `$1${to}`)
+}
+
 function buildReplaceMaps(): LanguageReplaceMap {
   const maps = {
     es: new Map<string, string>(),
@@ -325,7 +335,10 @@ function translateString(value: string, language: AppLanguage): string {
     if (!result.includes(from)) {
       continue
     }
-    result = replaceAll(result, from, to)
+    const isSingleToken = /^[\p{L}\p{N}_-]+$/u.test(from)
+    result = isSingleToken
+      ? replaceWholeToken(result, from, to)
+      : replaceAll(result, from, to)
   }
   return result
 }
