@@ -103,6 +103,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.5',
+    date: '2026-02-21',
+    title: 'Json Viewer Pro alineado al layout estandar',
+    changes: [
+      'Se elimina titulo y descripcion internos de la herramienta para respetar el formato global.',
+      'Los botones de ejemplo, limpiar y refs pasan al encabezado de Entrada JSON para flujo mas directo.',
+      'El panel de JSON normalizado sube y aprovecha el espacio superior disponible con altura unificada.',
+    ],
+  },
+  {
     version: 'v2.6.4',
     date: '2026-02-21',
     title: 'Fix filtro en modo grafo del visor JSON',
