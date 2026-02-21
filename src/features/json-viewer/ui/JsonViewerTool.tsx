@@ -7,8 +7,6 @@ import { JsonCodeViewer } from '@/shared/ui/JsonCodeViewer'
 import { JsonTreeViewer } from '@/shared/ui/JsonTreeViewer'
 
 type UiCopy = {
-  title: string
-  subtitle: string
   useSwaggerSample: string
   clear: string
   refs: string
@@ -28,9 +26,6 @@ type UiCopy = {
 
 const uiCopy: Record<AppLanguage, UiCopy> = {
   es: {
-    title: 'Visor JSON Pro',
-    subtitle:
-      'Pega JSON grande (Swagger/OpenAPI) y exploralo por arbol o grafo con filtros, colapsado de ramas y vista completa.',
     useSwaggerSample: 'Usar ejemplo Swagger',
     clear: 'Limpiar',
     refs: 'Refs',
@@ -48,9 +43,6 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     fullscreenTitle: 'JSON normalizado ampliado',
   },
   en: {
-    title: 'JSON Viewer Pro',
-    subtitle:
-      'Paste large JSON payloads (Swagger/OpenAPI) and inspect them in tree/graph mode with filters, collapse and fullscreen.',
     useSwaggerSample: 'Use Swagger sample',
     clear: 'Clear',
     refs: 'Refs',
@@ -68,9 +60,6 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     fullscreenTitle: 'Expanded normalized JSON',
   },
   pt: {
-    title: 'Visualizador JSON Pro',
-    subtitle:
-      'Cole JSON grande (Swagger/OpenAPI) e navegue em arvore/grafo com filtros, colapso de secoes e tela cheia.',
     useSwaggerSample: 'Usar exemplo Swagger',
     clear: 'Limpar',
     refs: 'Refs',
@@ -276,64 +265,59 @@ export function JsonViewerTool() {
   return (
     <section className="grid gap-3">
       <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
-        <div className="mb-3 flex flex-wrap items-start justify-between gap-2">
-          <div>
-            <h2 className="m-0 text-xl font-semibold">{t.title}</h2>
-            <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{t.subtitle}</p>
-          </div>
-          <div className="inline-flex items-center gap-1.5">
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
-              onClick={() => setSource(swaggerSample)}
-            >
-              <Sparkles className="size-3.5" />
-              {t.useSwaggerSample}
-            </button>
-            <button
-              type="button"
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
-              onClick={() => setSource('')}
-            >
-              <X className="size-3.5" />
-              {t.clear}
-            </button>
-            <button
-              type="button"
-              className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
-                resolveRefs
-                  ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
-                  : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
-              }`}
-              onClick={() => setResolveRefs((state) => !state)}
-            >
-              <Network className="size-3.5" />
-              {t.refs}
-              <span className="rounded bg-black/10 px-1.5 py-0.5 text-[10px] dark:bg-white/15">
-                {resolveRefs ? t.refsOn : t.refsOff}
-              </span>
-            </button>
-          </div>
-        </div>
-
         {isProcessing ? (
           <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">{t.processing}</p>
         ) : null}
 
         <div className="grid gap-3 lg:grid-cols-2">
           <label className="grid gap-2">
-            <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-              {t.input}
-            </span>
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
+                {t.input}
+              </span>
+              <div className="inline-flex flex-wrap items-center gap-1.5">
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-cyan-400 dark:hover:text-cyan-300"
+                  onClick={() => setSource(swaggerSample)}
+                >
+                  <Sparkles className="size-3.5" />
+                  {t.useSwaggerSample}
+                </button>
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1.5 rounded-lg border border-slate-300 bg-white px-2.5 py-1.5 text-[11px] font-semibold text-slate-700 transition hover:border-slate-400 hover:text-slate-900 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-slate-500 dark:hover:text-white"
+                  onClick={() => setSource('')}
+                >
+                  <X className="size-3.5" />
+                  {t.clear}
+                </button>
+                <button
+                  type="button"
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                    resolveRefs
+                      ? 'border-blue-500 bg-blue-600 text-white dark:border-sky-400 dark:bg-sky-500 dark:text-slate-950'
+                      : 'border-slate-300 bg-white text-slate-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200'
+                  }`}
+                  onClick={() => setResolveRefs((state) => !state)}
+                >
+                  <Network className="size-3.5" />
+                  {t.refs}
+                  <span className="rounded bg-black/10 px-1.5 py-0.5 text-[10px] dark:bg-white/15">
+                    {resolveRefs ? t.refsOn : t.refsOff}
+                  </span>
+                </button>
+              </div>
+            </div>
             <textarea
-              className="min-h-[340px] w-full resize-y rounded-2xl border border-slate-300 bg-slate-50 p-3 font-mono text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/30"
+              className="min-h-[340px] w-full resize-y rounded-2xl border border-slate-300 bg-slate-50 p-3 font-mono text-sm text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-500/30 lg:min-h-[420px] dark:border-slate-600 dark:bg-slate-900/70 dark:text-slate-100 dark:focus:border-sky-400 dark:focus:ring-sky-400/30"
               value={source}
               onChange={(event) => setSource(event.target.value)}
               spellCheck={false}
             />
           </label>
 
-          <section className="grid gap-2">
+          <section className="grid min-h-[340px] grid-rows-[auto_1fr] gap-2 lg:min-h-[420px]">
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
                 {t.normalized}
@@ -355,7 +339,7 @@ export function JsonViewerTool() {
                 </button>
               </div>
             </div>
-            <div className="h-[340px] max-h-[56vh] overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
+            <div className="min-h-0 overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-600">
               <JsonCodeViewer value={output.formatted} status={output.status} showLineNumbers />
             </div>
           </section>
@@ -377,7 +361,7 @@ export function JsonViewerTool() {
         <section className="grid gap-2">
           <JsonTreeViewer
             data={output.parsed}
-            title={`${t.title} (${resolveRefs ? `${t.refs}: ${t.refsOn}` : `${t.refs}: ${t.refsOff}`})`}
+            title={`${t.refs}: ${resolveRefs ? t.refsOn : t.refsOff}`}
           />
         </section>
       ) : null}

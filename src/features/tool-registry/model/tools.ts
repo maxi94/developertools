@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.6.4'
+export const WEB_VERSION = 'v2.6.5'
 
 export const tools: ToolDefinition[] = [
   {
@@ -25,7 +25,7 @@ export const tools: ToolDefinition[] = [
     description: 'Explora JSON grande (Swagger/OpenAPI) con arbol, grafo, filtros y pantalla completa.',
     category: 'Datos',
     status: 'ready',
-    version: '1.2.4',
+    version: '1.2.5',
   },
   {
     id: 'base64',
