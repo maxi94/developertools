@@ -12,6 +12,11 @@ describe('byte-array parser', () => {
     expect(Array.from(result.bytes)).toEqual([255, 128, 127, 255])
   })
 
+  it('si hay 0x, toma solo desde el primer 0x en adelante', () => {
+    const result = parseByteArrayInput('byte[4] data = { 4, 5, 0x89, 0x50, 0x4E, 0x47 }')
+    expect(Array.from(result.bytes)).toEqual([137, 80, 78, 71])
+  })
+
   it('detecta PDF por magic bytes', () => {
     const type = detectFileType(Uint8Array.from([37, 80, 68, 70, 45]))
     expect(type.mime).toBe('application/pdf')

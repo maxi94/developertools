@@ -36,7 +36,10 @@ export function parseByteArrayInput(raw: string): ByteArrayParseResult {
     throw new Error('No se encontraron valores byte.')
   }
 
-  const values = tokenMatches.map((token) => {
+  const firstHexIndex = tokenMatches.findIndex((token) => /^-?0x/i.test(token))
+  const effectiveTokens = firstHexIndex >= 0 ? tokenMatches.slice(firstHexIndex) : tokenMatches
+
+  const values = effectiveTokens.map((token) => {
     if (/^-?0x/i.test(token)) {
       const sign = token.startsWith('-') ? -1 : 1
       const normalized = token.replace(/^-?0x/i, '')
