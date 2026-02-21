@@ -102,6 +102,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v1.3.3',
+    date: '2026-02-21',
+    title: 'Barrido i18n completo en herramientas',
+    changes: [
+      'Se amplian traducciones de herramientas (JSON, Base64, Regex, SQL a Mongo, Case Converter y Encoding Suite).',
+      'Se corrige el motor DOM para evitar textos corruptos en portugues al retraducir (ej: Expandiririri).',
+      'Se actualizan versiones de herramientas impactadas por correcciones de idioma.',
+    ],
+  },
+  {
     version: 'v1.3.2',
     date: '2026-02-21',
     title: 'Interfaz minimalista sin informacion duplicada',

@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.3.2'
+export const WEB_VERSION = 'v1.3.3'
 
 export const tools: ToolDefinition[] = [
   {
@@ -9,7 +9,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea y valida JSON localmente en tu navegador.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.5.2',
+    version: '1.5.3',
   },
   {
     id: 'json-table',
@@ -25,7 +25,7 @@ export const tools: ToolDefinition[] = [
     description: 'Codifica y decodifica texto de forma rapida.',
     category: 'Datos',
     status: 'ready',
-    version: '1.1.1',
+    version: '1.1.2',
   },
   {
     id: 'base64-image',
@@ -65,7 +65,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crear, probar, debuggear y exportar regex.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.5.1',
+    version: '1.5.2',
   },
   {
     id: 'sql-mongo-converter',
@@ -73,7 +73,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte SELECT SQL simples a queries MongoDB.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.2.1',
+    version: '1.2.2',
   },
   {
     id: 'json-model-generator',
@@ -113,7 +113,7 @@ export const tools: ToolDefinition[] = [
     description: 'Escapa y desescapa contenido para URLs.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.2',
   },
   {
     id: 'encoding-suite',
@@ -121,7 +121,7 @@ export const tools: ToolDefinition[] = [
     description: 'HTML, Unicode, Hex y URL-safe Base64.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.2',
   },
   {
     id: 'color-tools',

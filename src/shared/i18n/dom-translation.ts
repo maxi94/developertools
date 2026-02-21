@@ -199,18 +199,81 @@ const TRANSLATIONS: TranslationEntry[] = [
   { es: 'Conexiones hijas', en: 'Child connections', pt: 'Conexoes filhas' },
   { es: 'Sin hijos.', en: 'No children.', pt: 'Sem filhos.' },
   { es: 'Sin nodos para mostrar.', en: 'No nodes to display.', pt: 'Sem nos para exibir.' },
+  { es: 'Ordenar', en: 'Sort', pt: 'Ordenar' },
+  { es: 'Claves ordenadas', en: 'Keys sorted', pt: 'Chaves ordenadas' },
+  { es: 'No hay filas para exportar', en: 'No rows to export', pt: 'Nao ha linhas para exportar' },
+  { es: 'CSV exportado', en: 'CSV exported', pt: 'CSV exportado' },
+  { es: 'Archivo Excel exportado', en: 'Excel file exported', pt: 'Arquivo Excel exportado' },
+  { es: 'Validar', en: 'Validate', pt: 'Validar' },
+  { es: 'Datos', en: 'Data', pt: 'Dados' },
+  { es: 'Vista', en: 'View', pt: 'Visualizacao' },
+  { es: 'Lineas', en: 'Lines', pt: 'Linhas' },
+  { es: 'Sin lineas', en: 'No lines', pt: 'Sem linhas' },
+  { es: 'No wrap', en: 'No wrap', pt: 'Sem quebra' },
+  { es: 'Wrap', en: 'Wrap', pt: 'Quebra' },
+  { es: 'Error en linea', en: 'Error at line', pt: 'Erro na linha' },
+  { es: 'columna', en: 'column', pt: 'coluna' },
+  { es: 'Cerrar', en: 'Close', pt: 'Fechar' },
+  { es: 'Intercambiar', en: 'Swap', pt: 'Trocar' },
+  { es: 'Entrada invalida para Base64.', en: 'Invalid Base64 input.', pt: 'Entrada invalida para Base64.' },
+  { es: 'Convierte texto a camelCase, PascalCase, snake_case, kebab-case y otros formatos.', en: 'Convert text to camelCase, PascalCase, snake_case, kebab-case and other formats.', pt: 'Converta texto para camelCase, PascalCase, snake_case, kebab-case e outros formatos.' },
+  { es: 'Codifica o decodifica HTML, Unicode escapes, Hex y URL-safe Base64.', en: 'Encode or decode HTML, Unicode escapes, Hex and URL-safe Base64.', pt: 'Codifique ou decodifique HTML, escapes Unicode, Hex e Base64 URL-safe.' },
+  { es: 'No se pudo procesar el contenido.', en: 'Could not process content.', pt: 'Nao foi possivel processar o conteudo.' },
+  { es: 'Entrada y modo intercambiados', en: 'Input and mode swapped', pt: 'Entrada e modo invertidos' },
+  { es: 'Expresiones regulares', en: 'Regular expressions', pt: 'Expressoes regulares' },
+  { es: 'Crea, prueba, debuggea y evalua regex con vista de matches/grupos y exportacion a C# o JavaScript.', en: 'Create, test, debug and evaluate regex with match/group view and export to C# or JavaScript.', pt: 'Crie, teste, depure e avalie regex com visualizacao de matches/grupos e exportacao para C# ou JavaScript.' },
+  { es: 'Patron', en: 'Pattern', pt: 'Padrao' },
+  { es: 'Texto de prueba', en: 'Test text', pt: 'Texto de teste' },
+  { es: 'Plantilla de reemplazo', en: 'Replacement template', pt: 'Template de substituicao' },
+  { es: 'Estado:', en: 'Status:', pt: 'Status:' },
+  { es: 'Match encontrado', en: 'Match found', pt: 'Match encontrado' },
+  { es: 'Sin coincidencias', en: 'No matches', pt: 'Sem correspondencias' },
+  { es: 'Matches:', en: 'Matches:', pt: 'Matches:' },
+  { es: 'Debug de matches', en: 'Match debug', pt: 'Debug de matches' },
+  { es: 'Sin grupos.', en: 'No groups.', pt: 'Sem grupos.' },
+  { es: 'No hay matches para el patron actual.', en: 'There are no matches for the current pattern.', pt: 'Nao ha matches para o padrao atual.' },
+  { es: 'Resultado de reemplazo', en: 'Replacement result', pt: 'Resultado de substituicao' },
+  { es: 'Explicador del patron', en: 'Pattern explainer', pt: 'Explicador do padrao' },
+  { es: 'Diagrama de estados (aproximado)', en: 'State diagram (approximate)', pt: 'Diagrama de estados (aproximado)' },
+  { es: 'Vista orientativa del flujo de evaluacion de la regex, con ramas y repeticiones.', en: 'Guided view of regex evaluation flow, with branches and repetitions.', pt: 'Visao orientativa do fluxo de avaliacao da regex, com ramificacoes e repeticoes.' },
+  { es: 'Diagrama de estados de expresion regular', en: 'Regular expression state diagram', pt: 'Diagrama de estados de expressao regular' },
+  { es: 'Exportar regex', en: 'Export regex', pt: 'Exportar regex' },
+  { es: 'Expresion invalida.', en: 'Invalid expression.', pt: 'Expressao invalida.' },
+  { es: 'Expresion invalida para exportar.', en: 'Invalid expression for export.', pt: 'Expressao invalida para exportar.' },
+  { es: 'SQL a MongoDB', en: 'SQL to MongoDB', pt: 'SQL para MongoDB' },
+  { es: 'Convierte SQL, o arma filtros estilo Compass, y exporta para distintos targets.', en: 'Convert SQL, or build Compass-style filters, and export to different targets.', pt: 'Converta SQL, ou monte filtros estilo Compass, e exporte para diferentes alvos.' },
+  { es: 'Modo de armado', en: 'Build mode', pt: 'Modo de montagem' },
+  { es: 'Desde SQL', en: 'From SQL', pt: 'A partir de SQL' },
+  { es: 'Filtro tipo Compass', en: 'Compass-style filter', pt: 'Filtro estilo Compass' },
+  { es: 'Salida', en: 'Output', pt: 'Saida' },
+  { es: 'Ejemplos SQL (rapidos)', en: 'SQL examples (quick)', pt: 'Exemplos SQL (rapidos)' },
+  { es: 'Aplicar ejemplo', en: 'Apply example', pt: 'Aplicar exemplo' },
+  { es: 'Basicos', en: 'Basics', pt: 'Basicos' },
+  { es: 'Fechas y rangos', en: 'Dates and ranges', pt: 'Datas e intervalos' },
+  { es: 'Operadores', en: 'Operators', pt: 'Operadores' },
+  { es: 'Consultas especiales', en: 'Special queries', pt: 'Consultas especiais' },
+  { es: 'Filtro basico', en: 'Basic filter', pt: 'Filtro basico' },
+  { es: 'Comparadores', en: 'Comparators', pt: 'Comparadores' },
+  { es: 'Fecha exacta', en: 'Exact date', pt: 'Data exata' },
+  { es: 'Rango por BETWEEN', en: 'Range with BETWEEN', pt: 'Intervalo por BETWEEN' },
+  { es: 'Collection', en: 'Collection', pt: 'Colecao' },
+  { es: 'Limit', en: 'Limit', pt: 'Limite' },
+  { es: 'Filter (JSON)', en: 'Filter (JSON)', pt: 'Filtro (JSON)' },
+  { es: 'Project (JSON)', en: 'Project (JSON)', pt: 'Projecao (JSON)' },
+  { es: 'Sort (JSON)', en: 'Sort (JSON)', pt: 'Ordenacao (JSON)' },
 ]
 
 const SKIPPED_TAGS = new Set(['SCRIPT', 'STYLE', 'TEXTAREA', 'CODE', 'PRE'])
 
-type LanguageReplaceMap = Record<AppLanguage, Map<string, string>>
+type LanguageReplaceMap = Record<AppLanguage, Array<[string, string]>>
+type LanguageTargetSet = Record<AppLanguage, Set<string>>
 
 function replaceAll(value: string, from: string, to: string): string {
   return value.split(from).join(to)
 }
 
 function buildReplaceMaps(): LanguageReplaceMap {
-  const maps: LanguageReplaceMap = {
+  const maps = {
     es: new Map<string, string>(),
     en: new Map<string, string>(),
     pt: new Map<string, string>(),
@@ -234,14 +297,34 @@ function buildReplaceMaps(): LanguageReplaceMap {
     }
   }
 
-  return maps
+  return {
+    es: Array.from(maps.es.entries()).sort((a, b) => b[0].length - a[0].length),
+    en: Array.from(maps.en.entries()).sort((a, b) => b[0].length - a[0].length),
+    pt: Array.from(maps.pt.entries()).sort((a, b) => b[0].length - a[0].length),
+  }
+}
+
+function buildTargetSet(): LanguageTargetSet {
+  return {
+    es: new Set(TRANSLATIONS.map((entry) => entry.es)),
+    en: new Set(TRANSLATIONS.map((entry) => entry.en)),
+    pt: new Set(TRANSLATIONS.map((entry) => entry.pt)),
+  }
 }
 
 const REPLACE_MAPS = buildReplaceMaps()
+const TARGET_SET = buildTargetSet()
 
 function translateString(value: string, language: AppLanguage): string {
+  if (TARGET_SET[language].has(value.trim())) {
+    return value
+  }
+
   let result = value
   for (const [from, to] of REPLACE_MAPS[language]) {
+    if (!result.includes(from)) {
+      continue
+    }
     result = replaceAll(result, from, to)
   }
   return result
