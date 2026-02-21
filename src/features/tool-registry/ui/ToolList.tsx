@@ -102,6 +102,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.2',
+    date: '2026-02-21',
+    title: 'Menu desktop: hover expand y header limpio',
+    changes: [
+      'Se elimina el boton de fijar menu del header principal para reducir ruido visual.',
+      'Cuando el menu fijo esta colapsado verticalmente, al hacer hover se expande con animacion.',
+      'En estado colapsado se evita mostrar botones duplicados en la cabecera del sidebar.',
+    ],
+  },
+  {
     version: 'v2.6.1',
     date: '2026-02-21',
     title: 'UI optimizada para vista de categoria',
@@ -1340,8 +1350,11 @@ export function ToolList() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isDesktopMenuPinned, setIsDesktopMenuPinned] = useState(true)
   const [isDesktopMenuCollapsed, setIsDesktopMenuCollapsed] = useState(false)
+  const [isDesktopMenuHoverExpanded, setIsDesktopMenuHoverExpanded] = useState(false)
   const [collapsedCategories, setCollapsedCategories] = useState<Set<ToolCategory>>(new Set())
   const [searchTerm, setSearchTerm] = useState('')
+  const isDesktopMenuEffectivelyCollapsed =
+    isDesktopMenuPinned && isDesktopMenuCollapsed && !isDesktopMenuHoverExpanded
 
   const localizedTools = useMemo(
     () => tools.map((tool) => localizeTool(tool, language)),
@@ -1507,6 +1520,12 @@ export function ToolList() {
     }
   }, [isMobileMenuOpen])
 
+  useEffect(() => {
+    if (!isDesktopMenuPinned || !isDesktopMenuCollapsed) {
+      setIsDesktopMenuHoverExpanded(false)
+    }
+  }, [isDesktopMenuCollapsed, isDesktopMenuPinned])
+
   const scrollMainToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
@@ -1602,18 +1621,6 @@ export function ToolList() {
         >
           <Menu className="size-4" />
         </button>
-        {!isDesktopMenuPinned ? (
-          <button
-            type="button"
-            className="hidden cursor-pointer items-center gap-1 rounded-xl border border-slate-200 bg-white px-2 py-2 text-xs font-semibold text-slate-700 transition hover:bg-slate-100 lg:inline-flex dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
-            onClick={toggleDesktopMenuPinned}
-            aria-label={ui.pinMenu}
-          >
-            <Pin className="size-3.5" />
-            {ui.pin}
-          </button>
-        ) : null}
-
         <button
           type="button"
           className="inline-flex min-w-0 cursor-pointer items-center gap-2 rounded-xl px-1 py-1 text-left transition hover:bg-slate-100/80 dark:hover:bg-slate-800/70"
@@ -1673,25 +1680,35 @@ export function ToolList() {
       <div
         className={`grid min-h-0 flex-1 ${
           isDesktopMenuPinned
-            ? isDesktopMenuCollapsed
+            ? isDesktopMenuEffectivelyCollapsed
               ? 'lg:grid-cols-[82px_minmax(0,1fr)]'
               : 'lg:grid-cols-[280px_minmax(0,1fr)]'
             : 'lg:grid-cols-[minmax(0,1fr)]'
-        } lg:h-[calc(100dvh-var(--app-header-h))]`}
+        } transition-[grid-template-columns] duration-300 lg:h-[calc(100dvh-var(--app-header-h))]`}
       >
         <aside
-          className={`hidden overflow-x-hidden border-r border-slate-200/80 bg-white/70 py-4 dark:border-slate-800 dark:bg-slate-950/55 lg:h-full lg:overflow-y-auto ${
-            isDesktopMenuCollapsed ? 'px-2' : 'px-3'
+          className={`hidden overflow-x-hidden border-r border-slate-200/80 bg-white/70 py-4 transition-all duration-300 dark:border-slate-800 dark:bg-slate-950/55 lg:h-full lg:overflow-y-auto ${
+            isDesktopMenuEffectivelyCollapsed ? 'px-2' : 'px-3'
           } ${
             isDesktopMenuPinned ? 'lg:block' : 'lg:hidden'
           }`}
+          onMouseEnter={() => {
+            if (isDesktopMenuPinned && isDesktopMenuCollapsed) {
+              setIsDesktopMenuHoverExpanded(true)
+            }
+          }}
+          onMouseLeave={() => {
+            if (isDesktopMenuPinned && isDesktopMenuCollapsed) {
+              setIsDesktopMenuHoverExpanded(false)
+            }
+          }}
         >
           <div
             className={`mb-3 flex items-center gap-2 ${
-              isDesktopMenuCollapsed ? 'justify-center' : 'justify-between'
+              isDesktopMenuEffectivelyCollapsed ? 'justify-center' : 'justify-between'
             }`}
           >
-            {!isDesktopMenuCollapsed ? (
+            {!isDesktopMenuEffectivelyCollapsed ? (
               <p className="inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
                 <PanelLeft className="size-3.5" />
                 {ui.navigation}
@@ -1710,7 +1727,7 @@ export function ToolList() {
                   <ChevronsLeft className="size-4" />
                 )}
               </button>
-              {!isDesktopMenuCollapsed ? (
+              {!isDesktopMenuEffectivelyCollapsed ? (
                 <button
                   type="button"
                   className="inline-flex size-8 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:bg-slate-100 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:bg-slate-800"
@@ -1729,7 +1746,7 @@ export function ToolList() {
             selectedCategory={selectedCategory}
             activeToolId={activeTool?.id ?? null}
             viewType={view.type}
-            isMenuCollapsed={isDesktopMenuCollapsed}
+            isMenuCollapsed={isDesktopMenuEffectivelyCollapsed}
             collapsedCategories={collapsedCategories}
             onSelectCategory={selectCategory}
             onSelectTool={selectTool}
