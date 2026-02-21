@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.3.1'
+export const WEB_VERSION = 'v1.3.2'
 
 export const tools: ToolDefinition[] = [
   {

@@ -1,4 +1,4 @@
-﻿import {
+import {
   Binary,
   Braces,
   Clock3,
@@ -13,7 +13,6 @@
   KeyRound,
   KeySquare,
   Link2,
-  Pin,
   ScanSearch,
   Scissors,
   Star,
@@ -41,6 +40,7 @@ export function ToolCard({
 }: ToolCardProps) {
   const { language } = useI18n()
   const ui = getI18nCopy(language, 'toolCard')
+
   const iconByTool = {
     'json-formatter': Braces,
     'json-table': FileJson2,
@@ -67,15 +67,16 @@ export function ToolCard({
     'svg-optimizer': FileCode2,
     'image-to-base64': FileImage,
   } as const
+
   const ToolIcon = iconByTool[tool.id] ?? FileCode2
 
   return (
     <article
       role="button"
       tabIndex={0}
-      className={`group w-full cursor-pointer rounded-xl border ${compact ? 'px-1.5 py-1.5' : 'px-2 py-1.5'} text-left transition ${
+      className={`group w-full cursor-pointer rounded-lg border ${compact ? 'px-1.5 py-1.5' : 'px-2 py-1.5'} text-left transition ${
         isActive
-          ? 'border-cyan-300/70 bg-cyan-50 text-slate-900 shadow-[0_8px_18px_-14px_rgba(8,145,178,0.75)] dark:border-cyan-400/50 dark:bg-cyan-950/35 dark:text-white'
+          ? 'border-cyan-300/70 bg-cyan-50 text-slate-900 dark:border-cyan-400/50 dark:bg-cyan-950/35 dark:text-white'
           : 'border-transparent bg-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-900/70'
       }`}
       onClick={() => onSelect(tool.id)}
@@ -86,10 +87,28 @@ export function ToolCard({
         }
       }}
       aria-pressed={isActive}
-      title={`${tool.name} (v${tool.version})`}
+      title={tool.name}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}>
+      <div className="flex items-center gap-2">
+        <button
+          type="button"
+          className={`inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition ${
+            isFavorite
+              ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
+              : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-200'
+          } ${compact ? 'hidden' : ''}`}
+          onClick={(event) => {
+            event.stopPropagation()
+            onToggleFavorite(tool.id)
+          }}
+          aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
+        >
+          <Star className={`size-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+        </button>
+
+        <div
+          className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}
+        >
           <span
             className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg border ${
               isActive
@@ -99,31 +118,12 @@ export function ToolCard({
           >
             <ToolIcon className="size-3.5" />
           </span>
+
           {!compact ? (
-            <div className="min-w-0">
-              <h3 className="text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
-              <p className="overflow-hidden text-[10px] leading-snug text-slate-500 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-400">
-                v{tool.version} · {tool.description}
-              </p>
-            </div>
-          ) : <span className="sr-only">{tool.name}</span>}
-        </div>
-        <div className={`flex shrink-0 items-center gap-1 ${compact ? 'hidden' : ''}`}>
-          <button
-            type="button"
-            className={`inline-flex size-6 cursor-pointer items-center justify-center rounded-lg transition ${
-              isFavorite
-                ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
-                : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-200'
-            }`}
-            onClick={(event) => {
-              event.stopPropagation()
-              onToggleFavorite(tool.id)
-            }}
-            aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
-          >
-            {isFavorite ? <Star className="size-4 fill-current" /> : <Pin className="size-4" />}
-          </button>
+            <h3 className="truncate text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
+          ) : (
+            <span className="sr-only">{tool.name}</span>
+          )}
         </div>
       </div>
     </article>

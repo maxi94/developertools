@@ -14,7 +14,6 @@ import {
   BookOpenText,
   Braces,
   ChevronDown,
-  ChevronRight,
   ChevronsLeft,
   ChevronsRight,
   Code2,
@@ -26,7 +25,6 @@ import {
   Pin,
   PinOff,
   Search,
-  Sparkles,
   Star,
   X,
 } from 'lucide-react'
@@ -103,6 +101,16 @@ const categoryMeta: Record<
 }
 
 const releaseNotes = [
+  {
+    version: 'v1.3.2',
+    date: '2026-02-21',
+    title: 'Interfaz minimalista sin informacion duplicada',
+    changes: [
+      'Se simplifica la navegacion lateral: cada herramienta muestra favorito + nombre, sin descripcion/version repetida.',
+      'La version web se muestra solo en el header superior para evitar ruido visual en vistas internas.',
+      'Home y categoria se compactan a listados simples, eliminando cards pesadas y bloques redundantes.',
+    ],
+  },
   {
     version: 'v1.3.1',
     date: '2026-02-21',
@@ -922,52 +930,21 @@ function HomeOverview({
 }: HomeOverviewProps) {
   const { language } = useI18n()
   const ui = getI18nCopy(language, 'toolRegistry')
-  const totalTools = tools.length
   const activeCategories = useMemo(() => {
     const categoriesWithTools = new Set<ToolCategory>(tools.map((tool) => tool.category))
     return categoryOrder.filter((category) => categoriesWithTools.has(category))
   }, [])
-  const totalCategories = activeCategories.length
 
   return (
-    <section className="grid gap-4">
-      <section className="relative overflow-hidden rounded-3xl border border-slate-200/80 bg-gradient-to-br from-cyan-50 via-white to-emerald-50 p-5 text-slate-900 shadow-xl shadow-slate-900/10 dark:border-slate-700 dark:bg-gradient-to-br dark:from-slate-900 dark:via-slate-800 dark:to-teal-950 dark:text-slate-100 dark:shadow-slate-900/25">
-        <div className="pointer-events-none absolute -right-16 -top-16 size-44 rounded-full bg-cyan-300/25 blur-3xl dark:bg-cyan-300/20" />
-        <div className="pointer-events-none absolute -bottom-16 left-1/4 size-40 rounded-full bg-emerald-300/20 blur-3xl dark:bg-emerald-300/15" />
-        <p className="inline-flex items-center gap-1.5 rounded-full border border-cyan-300/60 bg-cyan-100/80 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.14em] text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
-          <Sparkles className="size-3.5" />
-          Web {WEB_VERSION}
-        </p>
-        <h2 className="mt-3 text-2xl font-semibold text-slate-900 dark:text-white md:text-3xl">
-          {ui.developerHub}
-        </h2>
-        <p className="mt-1 text-sm text-slate-600 dark:text-slate-200">
-          {ui.developerHubSubtitle}
-        </p>
-        <div className="mt-4 flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide">
-          <span className="rounded-full border border-cyan-300/60 bg-cyan-100/75 px-2.5 py-1 text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
-            {totalTools} {ui.activeTools}
-          </span>
-          <span className="rounded-full border border-emerald-300/60 bg-emerald-100/75 px-2.5 py-1 text-emerald-800 dark:border-white/20 dark:bg-white/10 dark:text-emerald-100">
-            {totalCategories} {ui.categories}
-          </span>
-          <span className="rounded-full border border-slate-300/80 bg-white/80 px-2.5 py-1 text-slate-700 dark:border-white/20 dark:bg-white/10 dark:text-slate-100">
-            {ui.favorites}: {favorites.length}
-          </span>
-          <span className="rounded-full border border-violet-300/60 bg-violet-100/75 px-2.5 py-1 text-violet-800 dark:border-white/20 dark:bg-white/10 dark:text-violet-100">
-            Release: {latest.version}
-          </span>
-        </div>
-      </section>
-
+    <section className="grid gap-5">
       {showLatestRelease ? (
-        <section className="rounded-3xl border border-teal-300/70 bg-teal-50/80 p-4 dark:border-teal-500/40 dark:bg-teal-950/25">
+        <section className="rounded-xl border border-teal-300/70 bg-teal-50/80 p-3 dark:border-teal-500/40 dark:bg-teal-950/25">
           <div className="flex flex-wrap items-start justify-between gap-2">
             <div>
-              <p className="text-xs font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
+              <p className="text-[11px] font-semibold uppercase tracking-wide text-teal-700 dark:text-teal-300">
                 {ui.whatsNew} {latest.version} - {latest.date}
               </p>
-              <h2 className="mt-1 text-lg font-semibold text-slate-900 dark:text-slate-100">
+              <h2 className="mt-1 text-base font-semibold text-slate-900 dark:text-slate-100">
                 {latest.title}
               </h2>
             </div>
@@ -987,44 +964,36 @@ function HomeOverview({
         </section>
       ) : null}
 
-      <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 dark:border-slate-700 dark:bg-slate-900/70">
-        <h2 className="text-lg font-semibold">{ui.categories}</h2>
-        <div className="mt-3 grid gap-3 md:grid-cols-2 xl:grid-cols-4 [content-visibility:auto] [contain-intrinsic-size:520px]">
+      <section>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{ui.categories}</h2>
+        <div className="mt-2 flex flex-wrap gap-2">
           {activeCategories.map((category) => (
             <button
               key={category}
               type="button"
               onClick={() => onSelectCategory(category)}
-              className={`group cursor-pointer rounded-lg border p-3 text-left transition ${categoryMeta[category].cardClass}`}
+              className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
             >
-              <div className="flex items-start justify-between gap-2">
-                <span
-                  className={`inline-flex size-8 shrink-0 items-center justify-center rounded-lg transition group-hover:scale-105 ${categoryMeta[category].badgeClass}`}
-                >
-                  {categoryMeta[category].icon}
-                </span>
-                <ChevronRight className="mt-1 size-4 text-slate-500 transition group-hover:translate-x-0.5 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-slate-200" />
-              </div>
-              <p className="mt-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                {getCategoryLabel(category, language)}
-              </p>
-              <p className="mt-1 text-xs text-slate-600 dark:text-slate-300">
-                {getCategoryDescription(category, language)}
-              </p>
+              <span
+                className={`inline-flex size-5 shrink-0 items-center justify-center rounded ${categoryMeta[category].badgeClass}`}
+              >
+                {categoryMeta[category].icon}
+              </span>
+              {getCategoryLabel(category, language)}
             </button>
           ))}
         </div>
       </section>
 
-      <section className="rounded-3xl border border-slate-200/80 bg-white/85 p-4 dark:border-slate-700 dark:bg-slate-900/70">
-        <h2 className="text-lg font-semibold">{ui.favorites}</h2>
+      <section>
+        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{ui.favorites}</h2>
         {favorites.length > 0 ? (
-          <div className="mt-3 flex flex-wrap gap-2">
+          <div className="mt-2 flex flex-wrap gap-2">
             {favorites.map((tool) => (
               <button
                 key={tool.id}
                 type="button"
-                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-700 dark:bg-slate-950 dark:text-slate-200 dark:hover:border-sky-500 dark:hover:text-sky-300"
+                className="rounded-md border border-slate-300 bg-white px-3 py-1.5 text-xs font-semibold text-slate-700 transition hover:border-cyan-400 hover:text-cyan-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-cyan-500 dark:hover:text-cyan-300"
                 onClick={() => onSelectTool(tool.id)}
               >
                 {tool.name}
@@ -1044,7 +1013,6 @@ function HomeOverview({
 interface CategoryOverviewProps {
   toolsByCategory: ToolDefinition[]
   favoriteToolIds: ToolId[]
-  latest: ReleaseNote
   onSelectTool: (toolId: ToolId) => void
   onToggleFavorite: (toolId: ToolId) => void
 }
@@ -1052,97 +1020,48 @@ interface CategoryOverviewProps {
 function CategoryOverview({
   toolsByCategory,
   favoriteToolIds,
-  latest,
   onSelectTool,
   onToggleFavorite,
 }: CategoryOverviewProps) {
   const { language } = useI18n()
   const ui = getI18nCopy(language, 'toolRegistry')
   const favoriteToolIdSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
-  const favoriteCountInCategory = useMemo(
-    () => toolsByCategory.filter((tool) => favoriteToolIdSet.has(tool.id)).length,
-    [favoriteToolIdSet, toolsByCategory],
-  )
 
   return (
-    <section className="grid gap-4">
-      <section className="rounded-2xl border border-slate-200/80 bg-white/85 p-3 dark:border-slate-700 dark:bg-slate-900/70">
-        <p className="text-xs text-slate-600 dark:text-slate-300">
-          {ui.latestUpdate} <span className="font-semibold">{latest.title}</span> ({latest.version})
-        </p>
-        <div className="mt-2 flex flex-wrap gap-2 text-[11px] font-semibold uppercase tracking-wide">
-          <span className="rounded-full border border-cyan-300/60 bg-cyan-100/75 px-2 py-0.5 text-cyan-800 dark:border-white/20 dark:bg-white/10 dark:text-cyan-100">
-            {toolsByCategory.length} {ui.tools}
-          </span>
-          <span className="rounded-full border border-amber-300/60 bg-amber-100/75 px-2 py-0.5 text-amber-800 dark:border-white/20 dark:bg-white/10 dark:text-amber-100">
-            {favoriteCountInCategory} {ui.favorites}
-          </span>
-        </div>
-      </section>
-
-      <section className="grid gap-3 md:grid-cols-2 xl:grid-cols-3 [content-visibility:auto] [contain-intrinsic-size:740px]">
-        {toolsByCategory.map((tool, index) => (
+    <section className="grid gap-2 [content-visibility:auto] [contain-intrinsic-size:740px]">
+      {toolsByCategory.map((tool) => (
           <article
             key={tool.id}
-            className="group overflow-hidden rounded-2xl border border-slate-300/80 bg-white shadow-sm transition hover:-translate-y-0.5 hover:border-slate-400 hover:shadow-xl dark:border-slate-700 dark:bg-slate-900/90 dark:hover:border-slate-500"
+            className="rounded-lg border border-slate-200/80 bg-white px-3 py-2 dark:border-slate-700 dark:bg-slate-900/70"
           >
-            <div className="h-1.5 w-full bg-gradient-to-r from-cyan-500 via-teal-400 to-emerald-400" />
-            <div className="p-3">
-              <div className="flex items-start justify-between gap-2">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
-                    Tool {String(index + 1).padStart(2, '0')}
-                  </p>
-                  <h3 className="mt-1 text-sm font-semibold text-slate-900 dark:text-slate-100">
-                    {tool.name}
-                  </h3>
-                </div>
-                <span
-                  className={`rounded px-1.5 py-0.5 text-[10px] font-semibold uppercase ${
-                    tool.status === 'ready'
-                      ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-300/20 dark:text-emerald-100'
-                      : 'bg-amber-100 text-amber-700 dark:bg-amber-300/25 dark:text-amber-100'
-                  }`}
-                >
-                  {tool.status === 'ready' ? ui.statusOn : ui.statusSoon}
-                </span>
+            <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="min-w-0">
+                <h3 className="truncate text-sm font-semibold text-slate-900 dark:text-slate-100">{tool.name}</h3>
+                <p className="mt-0.5 text-xs text-slate-600 dark:text-slate-300">{tool.description}</p>
               </div>
-
-              <p className="mt-2 text-xs text-slate-600 dark:text-slate-300">
-                {tool.description}
-              </p>
-              <p className="mt-1 text-[11px] font-semibold text-cyan-700 dark:text-cyan-300">
-                Version tool: v{tool.version}
-              </p>
-
-              <div className="mt-3 flex items-center justify-between gap-2">
+              <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => onToggleFavorite(tool.id)}
-                  className={`cursor-pointer rounded-lg border px-2.5 py-1.5 text-[11px] font-semibold transition ${
+                  className={`cursor-pointer rounded-md border px-2 py-1 text-[11px] font-semibold transition ${
                     favoriteToolIdSet.has(tool.id)
-                      ? 'border-amber-300/60 bg-amber-50 text-amber-700 hover:bg-amber-100 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
-                      : 'border-slate-300 bg-white text-slate-600 hover:border-slate-400 hover:bg-slate-50 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+                      ? 'border-amber-300/60 bg-amber-50 text-amber-700 dark:border-amber-400/60 dark:bg-amber-900/30 dark:text-amber-200'
+                      : 'border-slate-300 bg-white text-slate-600 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
                   }`}
                 >
-                  {favoriteToolIdSet.has(tool.id)
-                    ? ui.favorite
-                    : ui.pin}
+                  {favoriteToolIdSet.has(tool.id) ? ui.favorite : ui.pin}
                 </button>
-
                 <button
                   type="button"
-                  className="inline-flex cursor-pointer items-center gap-1 rounded-lg border border-cyan-300 bg-cyan-50 px-2.5 py-1.5 text-[11px] font-semibold text-cyan-700 transition hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-500/40 dark:bg-cyan-900/20 dark:text-cyan-200 dark:hover:bg-cyan-900/30"
+                  className="inline-flex cursor-pointer items-center rounded-md border border-cyan-300 bg-cyan-50 px-2 py-1 text-[11px] font-semibold text-cyan-700 transition hover:border-cyan-400 hover:bg-cyan-100 dark:border-cyan-500/40 dark:bg-cyan-900/20 dark:text-cyan-200 dark:hover:bg-cyan-900/30"
                   onClick={() => onSelectTool(tool.id)}
                 >
                   {ui.open}
-                  <ChevronRight className="size-3.5" />
                 </button>
               </div>
             </div>
           </article>
-        ))}
-      </section>
+      ))}
     </section>
   )
 }
@@ -1425,8 +1344,8 @@ export function ToolList() {
             <span className="block truncate text-[11px] font-semibold uppercase tracking-[0.18em] text-slate-500 dark:text-slate-400">
               Developer Tools
             </span>
-            <span className="block truncate text-sm font-semibold text-slate-900 dark:text-slate-100">
-              {ui.controlCenter}
+            <span className="block truncate text-xs font-semibold text-slate-900 dark:text-slate-100">
+              {ui.controlCenter} · Web {WEB_VERSION}
             </span>
           </span>
         </button>
@@ -1528,7 +1447,7 @@ export function ToolList() {
         </aside>
 
         <main className="min-w-0 overflow-x-clip px-3 py-3 lg:h-full lg:overflow-y-auto lg:px-6 lg:py-5">
-          <section className="mb-4 rounded-3xl border border-slate-200/80 bg-white/85 p-4 shadow-[0_18px_42px_-30px_rgba(15,23,42,0.55)] dark:border-slate-700 dark:bg-slate-900/70">
+          <section className="mb-4 border-b border-slate-200/80 pb-3 dark:border-slate-700">
             <div className="inline-flex flex-wrap items-center gap-1 text-[11px] font-semibold uppercase tracking-[0.11em] text-slate-500 dark:text-slate-400">
               <button
                 type="button"
@@ -1553,31 +1472,21 @@ export function ToolList() {
 
             <div className="mt-1 flex flex-wrap items-start justify-between gap-3">
               <div>
-                <div className="flex flex-wrap items-center gap-2">
-                  <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
-                    {view.type === 'home'
-                      ? ui.mainDashboard
-                      : (activeToolLocalized?.name ??
-                        (selectedCategory ? getCategoryLabel(selectedCategory, language) : null))}
-                  </h1>
-                  <span className="inline-flex items-center gap-1 rounded-full border border-slate-300 bg-slate-100 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.13em] text-slate-700 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-200">
-                    <Sparkles className="size-3" />
-                    Web {WEB_VERSION}
-                  </span>
-                  {activeTool ? (
-                    <span className="inline-flex items-center rounded-full border border-cyan-300 bg-cyan-50 px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.13em] text-cyan-700 dark:border-cyan-500/40 dark:bg-cyan-900/25 dark:text-cyan-200">
-                      Tool v{activeTool.version}
-                    </span>
-                  ) : null}
-                </div>
-                <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                <h1 className="text-2xl font-semibold tracking-tight text-slate-900 dark:text-slate-100 md:text-3xl">
                   {view.type === 'home'
-                    ? ui.statusSummary
-                    : (activeToolLocalized?.description ??
-                      (selectedCategory
+                    ? ui.mainDashboard
+                    : (activeToolLocalized?.name ??
+                      (selectedCategory ? getCategoryLabel(selectedCategory, language) : null))}
+                </h1>
+                {view.type !== 'tool' ? (
+                  <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
+                    {view.type === 'home'
+                      ? ui.statusSummary
+                      : (selectedCategory
                         ? getCategoryDescription(selectedCategory, language)
-                        : ui.selectFromMenu))}
-                </p>
+                        : ui.selectFromMenu)}
+                  </p>
+                ) : null}
               </div>
               {activeTool ? (
                 <button
@@ -1617,7 +1526,6 @@ export function ToolList() {
             <CategoryOverview
               toolsByCategory={toolsForSelectedCategory}
               favoriteToolIds={favoriteToolIds}
-              latest={latestRelease}
               onSelectTool={selectTool}
               onToggleFavorite={toggleFavorite}
             />
@@ -1656,7 +1564,7 @@ export function ToolList() {
         <div className="mb-4 flex items-center justify-between">
           <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-slate-500 dark:text-slate-400">
             <PanelLeft className="size-3.5" />
-            Menu
+            {ui.menu}
           </p>
           <button
             type="button"
