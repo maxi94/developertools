@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.8',
+    date: '2026-02-21',
+    title: 'Default de grafo en arbol horizontal',
+    changes: [
+      'La vista grafo ahora inicia por defecto en modo Arbol horizontal.',
+      'Se mantiene la opcion Actual para volver al layout anterior cuando se necesite.',
+      'Se conserva el orden por niveles y subarboles para mejorar lectura de estructuras grandes.',
+    ],
+  },
+  {
     version: 'v2.6.7',
     date: '2026-02-21',
     title: 'Grafo JSON horizontal ordenado por niveles',

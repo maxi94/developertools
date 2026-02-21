@@ -250,7 +250,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
   const [selectedId, setSelectedId] = useState<string>('root')
   const [zoom, setZoom] = useState(1)
   const [isFullscreen, setIsFullscreen] = useState(false)
-  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('compact')
+  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('tree')
   const [isPanning, setIsPanning] = useState(false)
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set())
