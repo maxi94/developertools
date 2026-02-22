@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Copy, Layers } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 function toCssColor(hex: string, opacity: number): string {
@@ -16,7 +17,7 @@ function toCssColor(hex: string, opacity: number): string {
 
 export function BoxShadowGeneratorTool() {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const ui = getI18nCopy(language, 'boxShadowGenerator')
   const [offsetX, setOffsetX] = useState(0)
   const [offsetY, setOffsetY] = useState(18)
   const [blur, setBlur] = useState(34)
@@ -40,12 +41,10 @@ export function BoxShadowGeneratorTool() {
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
       <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
         <Layers className="size-5" />
-        {isEnglish ? 'Box Shadow Generator' : 'Generador de Box Shadow'}
+        {ui.title}
       </h2>
       <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {isEnglish
-          ? 'Centered wide preview to tweak shadows without clipping.'
-          : 'Preview centrado y amplio para ajustar sombras sin recortes.'}
+        {ui.description}
       </p>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
@@ -105,7 +104,7 @@ export function BoxShadowGeneratorTool() {
               checked={inset}
               onChange={(event) => setInset(event.target.checked)}
             />
-            {isEnglish ? 'Inset' : 'Interna (inset)'}
+            {ui.inset}
           </label>
         </section>
 
@@ -117,7 +116,7 @@ export function BoxShadowGeneratorTool() {
                   className="grid h-36 w-full max-w-[420px] place-items-center border border-white/70 bg-white px-2 text-center text-sm font-semibold text-slate-700 transition-all sm:h-44 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
                   style={{ boxShadow: shadowValue, borderRadius: `${radius}px` }}
                 >
-                  {isEnglish ? 'Shadow Preview' : 'Vista previa sombra'}
+                  {ui.preview}
                 </div>
               </div>
             </div>
@@ -135,7 +134,7 @@ export function BoxShadowGeneratorTool() {
               className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <Copy className="size-3.5" />
-              {isEnglish ? 'Copy' : 'Copiar'}
+              {ui.copy}
             </button>
           </div>
         </section>

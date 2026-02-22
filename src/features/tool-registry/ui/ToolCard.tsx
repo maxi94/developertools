@@ -1,4 +1,4 @@
-﻿import {
+import {
   Binary,
   Braces,
   Clock3,
@@ -9,15 +9,15 @@
   FileJson2,
   FileText,
   FingerprintPattern as Fingerprint,
-  FlaskConical,
   KeyRound,
   KeySquare,
   Link2,
-  Pin,
   ScanSearch,
   Scissors,
   Star,
 } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
+import { useI18n } from '@/shared/i18n/useI18n'
 import type { ToolDefinition } from '@/shared/types/tool'
 
 interface ToolCardProps {
@@ -37,12 +37,17 @@ export function ToolCard({
   onSelect,
   onToggleFavorite,
 }: ToolCardProps) {
+  const { language } = useI18n()
+  const ui = getI18nCopy(language, 'toolCard')
+
   const iconByTool = {
     'json-formatter': Braces,
+    'json-viewer': FileJson2,
     'json-table': FileJson2,
     base64: Binary,
     'base64-image': FileImage,
     'base64-pdf': FileText,
+    'byte-array-converter': FileCode2,
     'sql-formatter': Database,
     'code-minifier': Scissors,
     'case-converter': FileCode2,
@@ -59,19 +64,21 @@ export function ToolCard({
     'spacing-preview': FileCode2,
     'datetime-tools': Clock3,
     'id-toolkit': Fingerprint,
-    'fake-data-generator': FlaskConical,
     'svg-optimizer': FileCode2,
     'image-to-base64': FileImage,
   } as const
+
   const ToolIcon = iconByTool[tool.id] ?? FileCode2
 
   return (
     <article
       role="button"
       tabIndex={0}
-      className={`group w-full cursor-pointer rounded-xl border ${compact ? 'px-1.5 py-1.5' : 'px-2 py-1.5'} text-left transition ${
+      className={`group w-full cursor-pointer rounded-lg border ${
+        compact ? 'px-1.5 py-1.5' : 'px-2.5 py-2'
+      } text-left transition ${
         isActive
-          ? 'border-cyan-300/70 bg-cyan-50 text-slate-900 shadow-[0_8px_18px_-14px_rgba(8,145,178,0.75)] dark:border-cyan-400/50 dark:bg-cyan-950/35 dark:text-white'
+          ? 'border-slate-300 bg-white text-slate-900 dark:border-slate-600 dark:bg-slate-900 dark:text-white'
           : 'border-transparent bg-transparent text-slate-700 hover:border-slate-200 hover:bg-slate-100 dark:text-slate-200 dark:hover:border-slate-700 dark:hover:bg-slate-900/70'
       }`}
       onClick={() => onSelect(tool.id)}
@@ -82,45 +89,56 @@ export function ToolCard({
         }
       }}
       aria-pressed={isActive}
-      title={`${tool.name} (v${tool.version})`}
+      title={tool.name}
     >
-      <div className="flex items-center justify-between gap-2">
-        <div className={`flex min-w-0 flex-1 items-center ${compact ? 'justify-center' : ''} gap-2 text-left`}>
+      <div className="flex items-start justify-between gap-2">
+        {compact ? (
           <span
             className={`inline-flex size-7 shrink-0 items-center justify-center rounded-lg border ${
               isActive
-                ? 'border-cyan-300/70 bg-white/90 text-cyan-700 dark:border-cyan-400/60 dark:bg-cyan-500/20 dark:text-cyan-200'
-                : 'border-slate-200 bg-white text-slate-700 group-hover:border-slate-300 group-hover:bg-white dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300 dark:group-hover:border-cyan-500/60 dark:group-hover:bg-slate-800 dark:group-hover:text-cyan-200'
+                ? 'border-slate-300 bg-white text-slate-700 dark:border-slate-500 dark:bg-slate-800 dark:text-slate-200'
+                : 'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900/80 dark:text-slate-300'
             }`}
           >
             <ToolIcon className="size-3.5" />
+            <span className="sr-only">{tool.name}</span>
           </span>
-          {!compact ? (
-            <div className="min-w-0">
-              <h3 className="text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
-              <p className="overflow-hidden text-[10px] leading-snug text-slate-500 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-400">
+        ) : (
+          <div className="flex min-w-0 flex-1 items-start gap-2">
+            <span
+              className={`mt-0.5 inline-flex size-7 shrink-0 items-center justify-center rounded-md border ${
+                isActive
+                  ? 'border-cyan-200 bg-cyan-50 text-cyan-700 dark:border-cyan-500/40 dark:bg-cyan-900/25 dark:text-cyan-200'
+                  : 'border-slate-200 bg-white text-slate-700 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-300'
+              }`}
+            >
+              <ToolIcon className="size-3.5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h3 className="truncate text-sm font-semibold leading-tight tracking-tight">{tool.name}</h3>
+              <p className="mt-0.5 overflow-hidden text-[11px] leading-snug text-slate-500 [display:-webkit-box] [-webkit-box-orient:vertical] [-webkit-line-clamp:2] dark:text-slate-400">
                 v{tool.version} · {tool.description}
               </p>
             </div>
-          ) : <span className="sr-only">{tool.name}</span>}
-        </div>
-        <div className={`flex shrink-0 items-center gap-1 ${compact ? 'hidden' : ''}`}>
+          </div>
+        )}
+        {!compact ? (
           <button
             type="button"
-            className={`inline-flex size-6 cursor-pointer items-center justify-center rounded-lg transition ${
+            className={`inline-flex size-6 shrink-0 cursor-pointer items-center justify-center rounded-md transition ${
               isFavorite
                 ? 'bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-200'
-                : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-cyan-200'
+                : 'text-slate-500 hover:bg-slate-200/80 hover:text-slate-800 dark:text-slate-400 dark:hover:bg-slate-800 dark:hover:text-slate-100'
             }`}
             onClick={(event) => {
               event.stopPropagation()
               onToggleFavorite(tool.id)
             }}
-            aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
+            aria-label={isFavorite ? ui.removeFromFavorites : ui.addToFavorites}
           >
-            {isFavorite ? <Star className="size-4 fill-current" /> : <Pin className="size-4" />}
+            <Star className={`size-3.5 ${isFavorite ? 'fill-current' : ''}`} />
           </button>
-        </div>
+        ) : null}
       </div>
     </article>
   )

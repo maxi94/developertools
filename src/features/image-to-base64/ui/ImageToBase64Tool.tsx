@@ -1,5 +1,6 @@
 import { useMemo, useState } from 'react'
 import { Copy, FileImage } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 interface ConvertedImage {
@@ -9,18 +10,18 @@ interface ConvertedImage {
   size: number
 }
 
-function readAsDataUrl(file: File): Promise<string> {
+function readAsDataUrl(file: File, readFileError: string): Promise<string> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = () => resolve(String(reader.result ?? ''))
-    reader.onerror = () => reject(new Error('No se pudo leer el archivo.'))
+    reader.onerror = () => reject(new Error(readFileError))
     reader.readAsDataURL(file)
   })
 }
 
 export function ImageToBase64Tool() {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const ui = getI18nCopy(language, 'imageToBase64')
   const [items, setItems] = useState<ConvertedImage[]>([])
   const [error, setError] = useState<string | null>(null)
 
@@ -38,13 +39,13 @@ export function ImageToBase64Tool() {
         files.map(async (file, index) => ({
           id: `${file.name}-${index}-${file.lastModified}`,
           name: file.name,
-          dataUrl: await readAsDataUrl(file),
+          dataUrl: await readAsDataUrl(file, ui.readFileError),
           size: file.size,
         })),
       )
       setItems(converted)
     } catch {
-      setError(isEnglish ? 'Images could not be processed.' : 'No se pudieron procesar las imagenes.')
+      setError(ui.processError)
     }
   }
 
@@ -52,17 +53,13 @@ export function ImageToBase64Tool() {
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
       <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
         <FileImage className="size-5" />
-        Image to Base64
+        {ui.title}
       </h2>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {isEnglish
-          ? 'Upload one or more images and get their Data URL in Base64.'
-          : 'Carga una o varias imagenes y obten su Data URL en Base64.'}
-      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.description}</p>
 
       <label className="mt-4 grid gap-2">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-          {isEnglish ? 'Image files' : 'Archivos imagen'}
+          {ui.imageFiles}
         </span>
         <input
           type="file"
@@ -103,7 +100,7 @@ export function ImageToBase64Tool() {
           <section className="grid gap-2">
             <div className="flex items-center justify-between">
               <span className="text-xs font-semibold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                Data URLs
+                {ui.dataUrls}
               </span>
               <button
                 type="button"
@@ -111,7 +108,7 @@ export function ImageToBase64Tool() {
                 className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 py-1 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
               >
                 <Copy className="size-3.5" />
-                {isEnglish ? 'Copy all' : 'Copiar todo'}
+                {ui.copyAll}
               </button>
             </div>
             <textarea

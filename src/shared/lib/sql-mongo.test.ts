@@ -1,4 +1,4 @@
-import { describe, expect, it } from 'vitest'
+﻿import { describe, expect, it } from 'vitest'
 import { convertSqlToMongo } from '@/shared/lib/sql-mongo'
 
 describe('sql to mongo', () => {
@@ -42,5 +42,30 @@ describe('sql to mongo', () => {
 
     expect(output).toContain('db.orders.distinct("status"')
     expect(output).toContain('active: true')
+  })
+
+  it('soporta mezcla AND/OR con parentesis', () => {
+    const output = convertSqlToMongo(
+      "SELECT id FROM users WHERE (plan = 'pro' OR plan = 'enterprise') AND active = true",
+    )
+
+    expect(output).toContain('$and')
+    expect(output).toContain('$or')
+    expect(output).toContain('active: true')
+  })
+
+  it('soporta LIMIT + OFFSET', () => {
+    const output = convertSqlToMongo('SELECT id FROM users ORDER BY id DESC LIMIT 10 OFFSET 20')
+
+    expect(output).toContain('.sort({ id: -1 })')
+    expect(output).toContain('.skip(20)')
+    expect(output).toContain('.limit(10)')
+  })
+
+  it('soporta TOP en SELECT', () => {
+    const output = convertSqlToMongo("SELECT TOP 3 id, name FROM users WHERE country = 'AR'")
+
+    expect(output).toContain('.limit(3)')
+    expect(output).toContain('country: "AR"')
   })
 })

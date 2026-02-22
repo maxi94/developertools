@@ -1,10 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Copy, Ruler } from 'lucide-react'
+import { getI18nCopy } from '@/shared/i18n/catalog'
 import { useI18n } from '@/shared/i18n/useI18n'
 
 export function SpacingPreviewTool() {
   const { language } = useI18n()
-  const isEnglish = language === 'en'
+  const ui = getI18nCopy(language, 'spacingPreview')
   const [radius, setRadius] = useState(16)
   const [padding, setPadding] = useState(20)
   const [margin, setMargin] = useState(24)
@@ -27,13 +28,9 @@ export function SpacingPreviewTool() {
     <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
       <h2 className="inline-flex items-center gap-2 text-xl font-semibold">
         <Ruler className="size-5" />
-        {isEnglish ? 'Border Radius / Spacing Preview' : 'Preview de Border Radius / Espaciado'}
+        {ui.title}
       </h2>
-      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">
-        {isEnglish
-          ? 'Redesigned preview: centered card, stable layout and clear visual rhythm.'
-          : 'Preview rediseñado: card centrada, bloque estable y lectura visual clara.'}
-      </p>
+      <p className="mt-1 text-sm text-slate-600 dark:text-slate-300">{ui.description}</p>
 
       <div className="mt-4 grid gap-4 xl:grid-cols-[minmax(0,360px)_minmax(0,1fr)]">
         <section className="grid gap-3 rounded-2xl border border-slate-300/70 bg-white/70 p-3 dark:border-slate-700 dark:bg-slate-900/60">
@@ -72,15 +69,13 @@ export function SpacingPreviewTool() {
                   >
                     <div className="grid" style={{ gap: `${gap}px` }}>
                       <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm font-semibold text-slate-700 dark:bg-slate-800 dark:text-slate-100">
-                        {isEnglish ? 'Header block' : 'Bloque cabecera'}
+                        {ui.headerBlock}
                       </div>
                       <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-200">
-                        {isEnglish
-                          ? 'This block simulates card content to validate vertical rhythm.'
-                          : 'Este bloque simula contenido de una card y permite validar ritmo vertical.'}
+                        {ui.contentBlock}
                       </div>
                       <div className="rounded-lg bg-slate-100 px-3 py-2 text-sm text-slate-600 dark:bg-slate-800 dark:text-slate-200">
-                        {isEnglish ? 'Footer/actions' : 'Pie/acciones'}
+                        {ui.footerBlock}
                       </div>
                     </div>
                   </div>
@@ -101,7 +96,7 @@ export function SpacingPreviewTool() {
               className="inline-flex h-10 w-full shrink-0 items-center justify-center gap-1 rounded-lg border border-slate-300 bg-white px-2.5 text-xs font-semibold text-slate-700 hover:border-blue-400 hover:text-blue-700 sm:w-auto dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
             >
               <Copy className="size-3.5" />
-              {isEnglish ? 'Copy' : 'Copiar'}
+              {ui.copy}
             </button>
           </div>
         </section>

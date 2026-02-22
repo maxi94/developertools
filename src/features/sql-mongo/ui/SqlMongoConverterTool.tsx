@@ -75,6 +75,19 @@ const sqlExampleGroups: SqlExampleGroup[] = [
         name: 'OR simple',
         value: "SELECT id, name FROM users WHERE plan = 'pro' OR plan = 'enterprise'",
       },
+      {
+        name: 'AND/OR con parentesis',
+        value:
+          "SELECT id, name FROM users WHERE (plan = 'pro' OR plan = 'enterprise') AND active = true",
+      },
+      {
+        name: 'LIMIT + OFFSET',
+        value: "SELECT id, name FROM users WHERE active = 1 ORDER BY id DESC LIMIT 10 OFFSET 20",
+      },
+      {
+        name: 'TOP N',
+        value: "SELECT TOP 5 id, name FROM users WHERE country = 'AR' ORDER BY id DESC",
+      },
     ],
   },
 ]
@@ -85,6 +98,19 @@ const outputModes: Array<{ value: MongoOutputMode; label: string }> = [
   { value: 'powershell', label: 'PowerShell' },
   { value: 'csharp', label: 'C# Driver' },
 ]
+
+const mongoOperatorGuide = [
+  { op: '$eq', meaning: 'igual', example: '{ "status": { "$eq": "active" } }' },
+  { op: '$ne', meaning: 'distinto', example: '{ "role": { "$ne": "admin" } }' },
+  { op: '$gt/$gte', meaning: 'mayor / mayor o igual', example: '{ "score": { "$gte": 80 } }' },
+  { op: '$lt/$lte', meaning: 'menor / menor o igual', example: '{ "age": { "$lt": 30 } }' },
+  { op: '$in', meaning: 'incluido en lista', example: '{ "status": { "$in": ["new","done"] } }' },
+  { op: '$nin', meaning: 'no incluido en lista', example: '{ "country": { "$nin": ["US","CA"] } }' },
+  { op: '$regex', meaning: 'patron de texto', example: '{ "email": { "$regex": ".*@mail.dev$", "$options": "i" } }' },
+  { op: '$exists', meaning: 'campo existe/no existe', example: '{ "deletedAt": { "$exists": false } }' },
+  { op: '$and', meaning: 'todas las condiciones', example: '{ "$and": [{ "active": true }, { "plan": "pro" }] }' },
+  { op: '$or', meaning: 'alguna condicion', example: '{ "$or": [{ "plan": "pro" }, { "plan": "enterprise" }] }' },
+] as const
 
 type BuilderMode = 'sql' | 'compass-filter'
 
@@ -112,6 +138,7 @@ export function SqlMongoConverterTool() {
         filter: filter.trim() || '{}',
         projection: projection.trim() || '{}',
         sort: sort.trim() || '{}',
+        skip: null,
         limit: limit.trim() ? Number.parseInt(limit.trim(), 10) : null,
         distinctField: null,
       }
@@ -165,6 +192,32 @@ export function SqlMongoConverterTool() {
           </select>
         </label>
       </div>
+
+      <details className="mt-3 rounded-xl border border-slate-300/70 bg-white/70 p-2.5 dark:border-slate-700 dark:bg-slate-900/50">
+        <summary className="cursor-pointer list-none text-xs font-semibold uppercase tracking-wide text-slate-600 dark:text-slate-300">
+          Guia rapida de operadores MongoDB
+        </summary>
+        <div className="mt-2 overflow-auto rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900/70">
+          <table className="min-w-full border-collapse text-xs">
+            <thead className="bg-slate-100 dark:bg-slate-800">
+              <tr>
+                <th className="border-b border-r border-slate-300 px-2 py-1.5 text-left font-semibold dark:border-slate-700">Operador</th>
+                <th className="border-b border-r border-slate-300 px-2 py-1.5 text-left font-semibold dark:border-slate-700">Uso</th>
+                <th className="border-b border-slate-300 px-2 py-1.5 text-left font-semibold dark:border-slate-700">Ejemplo</th>
+              </tr>
+            </thead>
+            <tbody>
+              {mongoOperatorGuide.map((item) => (
+                <tr key={item.op} className="odd:bg-slate-50 dark:odd:bg-slate-900/40">
+                  <td className="border-b border-r border-slate-200 px-2 py-1.5 font-mono text-[11px] dark:border-slate-700">{item.op}</td>
+                  <td className="border-b border-r border-slate-200 px-2 py-1.5 text-slate-600 dark:border-slate-700 dark:text-slate-300">{item.meaning}</td>
+                  <td className="border-b border-slate-200 px-2 py-1.5 font-mono text-[11px] dark:border-slate-700">{item.example}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </details>
 
       {builderMode === 'sql' ? (
         <>

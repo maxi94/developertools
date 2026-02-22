@@ -1,6 +1,6 @@
-import type { ToolDefinition } from '@/shared/types/tool'
+﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v1.0.0'
+export const WEB_VERSION = 'v2.6.8'
 
 export const tools: ToolDefinition[] = [
   {
@@ -9,7 +9,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea y valida JSON localmente en tu navegador.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.5.0',
+    version: '1.6.6',
   },
   {
     id: 'json-table',
@@ -17,7 +17,15 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte JSON (incluyendo objetos anidados) a tabla y exporta CSV/Excel.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.4',
+  },
+  {
+    id: 'json-viewer',
+    name: 'Visor JSON Pro',
+    description: 'Explora JSON grande (Swagger/OpenAPI) con arbol, grafo, filtros y pantalla completa.',
+    category: 'Datos',
+    status: 'ready',
+    version: '1.2.8',
   },
   {
     id: 'base64',
@@ -25,7 +33,7 @@ export const tools: ToolDefinition[] = [
     description: 'Codifica y decodifica texto de forma rapida.',
     category: 'Datos',
     status: 'ready',
-    version: '1.1.0',
+    version: '1.1.2',
   },
   {
     id: 'base64-image',
@@ -33,7 +41,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte una o varias cadenas Base64 en imagenes.',
     category: 'Datos',
     status: 'ready',
-    version: '1.2.0',
+    version: '1.2.2',
   },
   {
     id: 'base64-pdf',
@@ -41,7 +49,15 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte una o varias cadenas Base64 en archivos PDF.',
     category: 'Datos',
     status: 'ready',
-    version: '1.2.0',
+    version: '1.2.1',
+  },
+  {
+    id: 'byte-array-converter',
+    name: 'byte[] a archivo',
+    description: 'Convierte byte[] (C#/JSON/lista) a imagen, PDF y otros archivos.',
+    category: 'Datos',
+    status: 'ready',
+    version: '1.0.3',
   },
   {
     id: 'sql-formatter',
@@ -49,7 +65,7 @@ export const tools: ToolDefinition[] = [
     description: 'Formatea consultas SQL con soporte multi dialecto.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.3.0',
+    version: '1.3.1',
   },
   {
     id: 'code-minifier',
@@ -57,7 +73,7 @@ export const tools: ToolDefinition[] = [
     description: 'Minifica y expande JavaScript o CSS desde texto o archivo.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.3',
   },
   {
     id: 'regex-tool',
@@ -65,7 +81,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crear, probar, debuggear y exportar regex.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.5.0',
+    version: '1.5.2',
   },
   {
     id: 'sql-mongo-converter',
@@ -73,7 +89,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte SELECT SQL simples a queries MongoDB.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.2.0',
+    version: '1.4.0',
   },
   {
     id: 'json-model-generator',
@@ -81,7 +97,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera clases desde JSON en C#, TypeScript, Java, Python, Kotlin y Go.',
     category: 'Generadores de codigo',
     status: 'ready',
-    version: '1.2.0',
+    version: '1.2.1',
   },
   {
     id: 'jwt-builder',
@@ -89,7 +105,7 @@ export const tools: ToolDefinition[] = [
     description: 'Crea tokens JWT y firma HS256 localmente.',
     category: 'Tokens e identidad',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'jwt',
@@ -97,7 +113,7 @@ export const tools: ToolDefinition[] = [
     description: 'Decodifica header y payload para inspeccion.',
     category: 'Tokens e identidad',
     status: 'ready',
-    version: '1.1.0',
+    version: '1.1.6',
   },
   {
     id: 'uuid',
@@ -105,7 +121,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera UUID v4 y valida su formato.',
     category: 'Tokens e identidad',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
   {
     id: 'url-codec',
@@ -113,7 +129,7 @@ export const tools: ToolDefinition[] = [
     description: 'Escapa y desescapa contenido para URLs.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.2',
   },
   {
     id: 'encoding-suite',
@@ -121,7 +137,7 @@ export const tools: ToolDefinition[] = [
     description: 'HTML, Unicode, Hex y URL-safe Base64.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.2',
   },
   {
     id: 'color-tools',
@@ -129,7 +145,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte HEX/RGB/HSL y valida contraste WCAG.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.2',
   },
   {
     id: 'box-shadow-generator',
@@ -137,7 +153,7 @@ export const tools: ToolDefinition[] = [
     description: 'Genera sombras CSS con preview y salida lista para copiar.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.3',
   },
   {
     id: 'spacing-preview',
@@ -145,7 +161,7 @@ export const tools: ToolDefinition[] = [
     description: 'Previsualiza border-radius, padding y margin con CSS exportable.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.0.1',
+    version: '1.0.3',
   },
   {
     id: 'datetime-tools',
@@ -153,7 +169,7 @@ export const tools: ToolDefinition[] = [
     description: 'Timezone convert, Unix timestamp e ISO formatter.',
     category: 'Utilidades web',
     status: 'ready',
-    version: '1.1.0',
+    version: '1.1.1',
   },
   {
     id: 'id-toolkit',
@@ -161,15 +177,7 @@ export const tools: ToolDefinition[] = [
     description: 'Generador, validador y export batch de IDs.',
     category: 'Tokens e identidad',
     status: 'ready',
-    version: '1.1.0',
-  },
-  {
-    id: 'fake-data-generator',
-    name: 'Generador fake data',
-    description: 'Genera JSON fake con nombres, emails, UUID y fechas.',
-    category: 'Datos',
-    status: 'ready',
-    version: '1.0.0',
+    version: '1.1.1',
   },
   {
     id: 'image-to-base64',
@@ -177,7 +185,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte imagenes locales a Data URL/Base64.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.2',
   },
   {
     id: 'svg-optimizer',
@@ -185,7 +193,7 @@ export const tools: ToolDefinition[] = [
     description: 'Minifica SVG, previsualiza y exporta el resultado.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.2',
   },
   {
     id: 'case-converter',
@@ -193,7 +201,8 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte texto entre camelCase, snake_case, kebab-case y mas.',
     category: 'Formateadores',
     status: 'ready',
-    version: '1.0.0',
+    version: '1.0.1',
   },
 ]
+
 

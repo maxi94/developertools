@@ -5,14 +5,14 @@
   :root {
     --font-body: 'IBM Plex Sans', 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
     --font-display: 'Fraunces', 'Iowan Old Style', 'Times New Roman', serif;
-    --surface-0: #f5f8ff;
+    --surface-0: #f7fafc;
     --surface-1: #ffffff;
-    --surface-2: #edf3ff;
-    --text-1: #122033;
-    --text-2: #4b5b72;
-    --line-soft: rgba(46, 79, 120, 0.14);
+    --surface-2: #edf3f8;
+    --text-1: #0f1b2d;
+    --text-2: #4d6078;
+    --line-soft: rgba(41, 64, 94, 0.12);
     --accent-1: #0f766e;
-    --accent-2: #145aa4;
+    --accent-2: #0f5ea8;
   }
 
   .dark {
@@ -37,8 +37,9 @@
     font-family: var(--font-body);
     color: var(--text-1);
     background:
-      radial-gradient(circle at 12% 8%, rgb(56 189 248 / 0.2), transparent 34%),
-      radial-gradient(circle at 88% 3%, rgb(16 185 129 / 0.12), transparent 28%),
+      radial-gradient(circle at 10% 9%, rgb(14 165 233 / 0.14), transparent 36%),
+      radial-gradient(circle at 86% 4%, rgb(59 130 246 / 0.1), transparent 30%),
+      radial-gradient(circle at 76% 82%, rgb(20 184 166 / 0.09), transparent 36%),
       linear-gradient(160deg, var(--surface-0) 0%, var(--surface-2) 100%);
     text-rendering: optimizeLegibility;
   }
@@ -126,5 +127,15 @@
   .tool-content input,
   .tool-content select {
     max-width: 100%;
+  }
+
+  .tool-content > section > h2:first-child,
+  .tool-content > section > div:first-child > h2:first-child {
+    display: none !important;
+  }
+
+  .tool-content > section > h2:first-child + p,
+  .tool-content > section > div:first-child > h2:first-child + p {
+    display: none !important;
   }
 }

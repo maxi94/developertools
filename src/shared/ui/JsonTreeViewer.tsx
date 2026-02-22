@@ -46,6 +46,7 @@ interface SvgNodePosition {
 }
 
 type ViewMode = 'tree' | 'graph'
+type GraphLayoutMode = 'tree' | 'compact'
 
 function getValueType(value: unknown): string {
   if (Array.isArray(value)) {
@@ -55,6 +56,22 @@ function getValueType(value: unknown): string {
     return 'null'
   }
   return typeof value === 'object' ? 'Object' : typeof value
+}
+
+function getLeafValueClass(value: unknown): string {
+  if (value === null) {
+    return 'bg-rose-50 text-rose-700 dark:bg-rose-900/30 dark:text-rose-300'
+  }
+  if (typeof value === 'string') {
+    return 'bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-300'
+  }
+  if (typeof value === 'number') {
+    return 'bg-violet-50 text-violet-700 dark:bg-violet-900/30 dark:text-violet-300'
+  }
+  if (typeof value === 'boolean') {
+    return 'bg-amber-50 text-amber-700 dark:bg-amber-900/30 dark:text-amber-300'
+  }
+  return 'bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-200'
 }
 
 function matchesQuery(path: string, label: string, value: unknown, query: string): boolean {
@@ -131,7 +148,9 @@ function JsonTreeNode({
     return (
       <div className="grid grid-cols-1 gap-1.5 rounded-lg px-2 py-1.5 text-xs sm:grid-cols-[minmax(0,180px)_1fr] sm:gap-2">
         <span className="truncate font-semibold text-slate-600 dark:text-slate-300">{label}</span>
-        <code className="truncate rounded bg-slate-100 px-1.5 py-0.5 text-slate-700 dark:bg-slate-800 dark:text-slate-200">
+        <code
+          className={`truncate rounded px-1.5 py-0.5 font-semibold ${getLeafValueClass(value)}`}
+        >
           {JSON.stringify(value)}
         </code>
       </div>
@@ -231,20 +250,41 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
   const [selectedId, setSelectedId] = useState<string>('root')
   const [zoom, setZoom] = useState(1)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [layoutMode, setLayoutMode] = useState<GraphLayoutMode>('tree')
   const [isPanning, setIsPanning] = useState(false)
   const [isSpacePressed, setIsSpacePressed] = useState(false)
   const [collapsedNodeIds, setCollapsedNodeIds] = useState<Set<string>>(new Set())
   const nodes = useMemo(() => collectGraphNodes(data, 'root', 'root', null), [data])
+  const nodeById = useMemo(() => new Map(nodes.map((node) => [node.id, node])), [nodes])
   const filteredNodes = useMemo(
-    () =>
-      nodes.filter((node) => {
+    () => {
+      if (!query) {
+        return nodes
+      }
+
+      const matchedNodes = nodes.filter((node) => {
         if (!query) {
           return true
         }
         const target = `${node.label} ${node.path} ${node.preview}`.toLowerCase()
         return target.includes(query)
-      }),
-    [nodes, query],
+      })
+
+      const includedIds = new Set<string>()
+      for (const node of matchedNodes) {
+        let current: GraphNode | undefined = node
+        while (current) {
+          includedIds.add(current.id)
+          if (!current.parentId) {
+            break
+          }
+          current = nodeById.get(current.parentId)
+        }
+      }
+
+      return nodes.filter((node) => includedIds.has(node.id))
+    },
+    [nodeById, nodes, query],
   )
   const deferredNodes = useDeferredValue(filteredNodes)
   const isRendering = deferredNodes !== filteredNodes
@@ -313,9 +353,17 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
 
   const svgLayout = useMemo(() => {
     const graphNodes = visibleGraphNodes.slice(0, renderLimit)
-    const byDepth = new Map<number, GraphNode[]>()
     const depthById = new Map<string, number>()
     const nodeById = new Map(graphNodes.map((node) => [node.id, node]))
+    const childMap = new Map<string, GraphNode[]>()
+    for (const node of graphNodes) {
+      if (!node.parentId) {
+        continue
+      }
+      const current = childMap.get(node.parentId) ?? []
+      current.push(node)
+      childMap.set(node.parentId, current)
+    }
 
     const getDepth = (node: GraphNode): number => {
       if (!node.parentId) {
@@ -331,6 +379,53 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       return depth
     }
 
+    const positions: SvgNodePosition[] = []
+    const posById = new Map<string, { x: number; y: number }>()
+
+    if (layoutMode === 'tree') {
+      const roots = graphNodes.filter((node) => !node.parentId)
+      const colWidth = 210
+      const rowHeight = 60
+      const marginX = 120
+      const marginY = 52
+      let rowCursor = 0
+      let maxDepth = 0
+
+      const assignTreeHorizontal = (node: GraphNode, depth: number): number => {
+        maxDepth = Math.max(maxDepth, depth)
+        const children = childMap.get(node.id) ?? []
+        const childRows = children.map((child) => assignTreeHorizontal(child, depth + 1))
+        const row = childRows.length > 0
+          ? childRows.reduce((sum, value) => sum + value, 0) / childRows.length
+          : rowCursor++
+        const x = marginX + depth * colWidth
+        const y = marginY + row * rowHeight
+        positions.push({
+          id: node.id,
+          x,
+          y,
+          label: node.label,
+          type: node.type,
+          preview: node.preview,
+        })
+        posById.set(node.id, { x, y })
+        return row
+      }
+
+      for (const root of roots) {
+        assignTreeHorizontal(root, getDepth(root))
+        rowCursor += 0.7
+      }
+
+      return {
+        width: Math.max(760, (maxDepth + 1) * colWidth + 220),
+        height: Math.max(260, rowCursor * rowHeight + 100),
+        positions,
+        posById,
+      }
+    }
+
+    const byDepth = new Map<number, GraphNode[]>()
     for (const node of graphNodes) {
       const depth = getDepth(node)
       const bucket = byDepth.get(depth) ?? []
@@ -339,8 +434,6 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
     }
 
     const depthKeys = Array.from(byDepth.keys()).sort((a, b) => a - b)
-    const positions: SvgNodePosition[] = []
-    const posById = new Map<string, { x: number; y: number }>()
     const colWidth = 210
     const rowHeight = 60
 
@@ -369,7 +462,7 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
       positions,
       posById,
     }
-  }, [renderLimit, visibleGraphNodes])
+  }, [layoutMode, renderLimit, visibleGraphNodes])
 
   const centerOnNode = useCallback((nodeId: string) => {
     const frame = frameRef.current
@@ -445,6 +538,28 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
     event.key === '-' ||
     event.key === '_'
 
+  const collectDescendantIds = useCallback(
+    (nodeId: string): string[] => {
+      const descendants: string[] = []
+      const stack = [...(childrenByParent.get(nodeId) ?? [])]
+
+      while (stack.length > 0) {
+        const current = stack.pop()
+        if (!current) {
+          continue
+        }
+        descendants.push(current.id)
+        const children = childrenByParent.get(current.id) ?? []
+        for (const child of children) {
+          stack.push(child)
+        }
+      }
+
+      return descendants
+    },
+    [childrenByParent],
+  )
+
   const toggleNodeCollapse = useCallback((nodeId: string) => {
     setSelectedId(nodeId)
     setCollapsedNodeIds((current) => {
@@ -453,10 +568,16 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
         next.delete(nodeId)
       } else {
         next.add(nodeId)
+        const descendants = collectDescendantIds(nodeId)
+        for (const descendantId of descendants) {
+          if (hasChildrenSet.has(descendantId)) {
+            next.add(descendantId)
+          }
+        }
       }
       return next
     })
-  }, [])
+  }, [collectDescendantIds, hasChildrenSet])
 
   const collapseAll = useCallback(() => {
     const next = new Set<string>()
@@ -538,6 +659,36 @@ function GraphView({ data, query }: { data: unknown; query: string }) {
             {isLargeGraph ? ` | Vista simplificada (${renderLimit})` : ''}
           </div>
           <div className="inline-flex items-center gap-1">
+            <div className="mr-1 inline-flex rounded-md border border-slate-300 p-0.5 dark:border-slate-600">
+              <button
+                type="button"
+                className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                  layoutMode === 'tree'
+                    ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                    : 'text-slate-600 dark:text-slate-300'
+                }`}
+                onClick={() => {
+                  setLayoutMode('tree')
+                  centerOnNode(activeSelectedId)
+                }}
+              >
+                Arbol horizontal
+              </button>
+              <button
+                type="button"
+                className={`rounded px-2 py-1 text-[11px] font-semibold ${
+                  layoutMode === 'compact'
+                    ? 'bg-blue-600 text-white dark:bg-sky-500 dark:text-slate-950'
+                    : 'text-slate-600 dark:text-slate-300'
+                }`}
+                onClick={() => {
+                  setLayoutMode('compact')
+                  centerOnNode(activeSelectedId)
+                }}
+              >
+                Actual
+              </button>
+            </div>
             <button
               type="button"
               className="inline-flex cursor-pointer items-center gap-1 rounded-md border border-slate-300 px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
