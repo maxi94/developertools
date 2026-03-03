@@ -105,6 +105,16 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.9',
+    date: '2026-03-03',
+    title: 'Titulo dinamico en pestana por vista activa',
+    changes: [
+      'La pestana del navegador ahora muestra el nombre de la herramienta seleccionada.',
+      'En vistas de categoria, el titulo refleja la categoria activa para mejorar contexto.',
+      'En Home se mantiene un titulo estable de Developer Tools.',
+    ],
+  },
+  {
     version: 'v2.6.8',
     date: '2026-02-21',
     title: 'Default de grafo en arbol horizontal',
@@ -1489,6 +1499,17 @@ export function ToolList() {
     () => (activeTool ? (localizedToolById.get(activeTool.id) ?? activeTool) : null),
     [activeTool, localizedToolById],
   )
+  const pageTitle = useMemo(() => {
+    if (view.type === 'tool' && activeToolLocalized?.name) {
+      return `${activeToolLocalized.name} | Developer Tools`
+    }
+
+    if (view.type === 'category') {
+      return `${getCategoryLabel(view.category, language)} | Developer Tools`
+    }
+
+    return 'Developer Tools'
+  }, [activeToolLocalized?.name, language, view])
   const favoriteSet = useMemo(() => new Set(favoriteToolIds), [favoriteToolIds])
   const isActiveToolFavorite = !!activeTool && favoriteSet.has(activeTool.id)
 
@@ -1653,6 +1674,10 @@ export function ToolList() {
       setIsDesktopMenuHoverExpanded(false)
     }
   }, [isDesktopMenuCollapsed, isDesktopMenuPinned])
+
+  useEffect(() => {
+    document.title = pageTitle
+  }, [pageTitle])
 
   const scrollMainToTop = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' })
