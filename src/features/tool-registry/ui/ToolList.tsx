@@ -105,6 +105,18 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.10',
+    date: '2026-03-03',
+    title: 'JSON a tabla: Excel, refs, scroll y loading',
+    changes: [
+      'JSON a tabla: se corrige exportar Excel con formato XML compatible (.xls).',
+      'Se agrega deteccion visible de referencias JSON ($ref/$id).',
+      'El preview mejora scroll horizontal/vertical y se incorpora copiar tabla para pegar en Excel.',
+      'Se agrega loading durante el procesamiento para inputs pesados.',
+      'Version de la herramienta JSON a tabla actualizada a v1.0.5.',
+    ],
+  },
+  {
     version: 'v2.6.9',
     date: '2026-03-03',
     title: 'Titulo dinamico en pestana por vista activa',

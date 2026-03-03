@@ -1,6 +1,6 @@
 ﻿import type { ToolDefinition } from '@/shared/types/tool'
 
-export const WEB_VERSION = 'v2.6.9'
+export const WEB_VERSION = 'v2.6.10'
 
 export const tools: ToolDefinition[] = [
   {
@@ -17,7 +17,7 @@ export const tools: ToolDefinition[] = [
     description: 'Convierte JSON (incluyendo objetos anidados) a tabla y exporta CSV/Excel.',
     category: 'Datos',
     status: 'ready',
-    version: '1.0.4',
+    version: '1.0.5',
   },
   {
     id: 'json-viewer',
