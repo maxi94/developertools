@@ -1,5 +1,15 @@
 import { useDeferredValue, useEffect, useMemo, useState } from 'react'
-import { Braces, Expand, Minimize2, Network, Sparkles, X } from 'lucide-react'
+import {
+  Braces,
+  Check,
+  Copy,
+  Expand,
+  Loader2,
+  Minimize2,
+  Network,
+  Sparkles,
+  X,
+} from 'lucide-react'
 import { parseAndFormatJson } from '@/shared/lib/json'
 import type { AppLanguage } from '@/shared/i18n/config'
 import { useI18n } from '@/shared/i18n/useI18n'
@@ -15,6 +25,9 @@ type UiCopy = {
   input: string
   normalized: string
   processing: string
+  copyResult: string
+  copySuccess: string
+  copyError: string
   parseError: string
   stats: string
   nodeCount: string
@@ -34,6 +47,9 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     input: 'Entrada JSON',
     normalized: 'JSON normalizado',
     processing: 'Procesando JSON...',
+    copyResult: 'Copiar resultado',
+    copySuccess: 'Copiado',
+    copyError: 'Error al copiar',
     parseError: 'Error al parsear JSON',
     stats: 'Resumen',
     nodeCount: 'Nodos',
@@ -51,6 +67,9 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     input: 'JSON input',
     normalized: 'Normalized JSON',
     processing: 'Processing JSON...',
+    copyResult: 'Copy result',
+    copySuccess: 'Copied',
+    copyError: 'Copy failed',
     parseError: 'JSON parse error',
     stats: 'Summary',
     nodeCount: 'Nodes',
@@ -68,6 +87,9 @@ const uiCopy: Record<AppLanguage, UiCopy> = {
     input: 'Entrada JSON',
     normalized: 'JSON normalizado',
     processing: 'Processando JSON...',
+    copyResult: 'Copiar resultado',
+    copySuccess: 'Copiado',
+    copyError: 'Erro ao copiar',
     parseError: 'Erro ao processar JSON',
     stats: 'Resumo',
     nodeCount: 'Nos',
@@ -213,12 +235,35 @@ function parseErrorDetails(raw: string, message: string) {
   return { line, column, preview: `${lineContent}\n${pointer}` }
 }
 
+async function copyTextToClipboard(text: string): Promise<boolean> {
+  if (typeof navigator !== 'undefined' && navigator.clipboard?.writeText) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return true
+    } catch {
+      // fallback below
+    }
+  }
+
+  const textarea = document.createElement('textarea')
+  textarea.value = text
+  textarea.style.position = 'fixed'
+  textarea.style.opacity = '0'
+  document.body.appendChild(textarea)
+  textarea.focus()
+  textarea.select()
+  const success = document.execCommand('copy')
+  document.body.removeChild(textarea)
+  return success
+}
+
 export function JsonViewerTool() {
   const { language } = useI18n()
   const t = uiCopy[language]
   const [source, setSource] = useState(swaggerSample)
   const [resolveRefs, setResolveRefs] = useState(true)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const [copyState, setCopyState] = useState<'idle' | 'copied' | 'error'>('idle')
   const deferredSource = useDeferredValue(source)
   const isProcessing = deferredSource !== source
 
@@ -262,11 +307,24 @@ export function JsonViewerTool() {
     return () => window.removeEventListener('keydown', onKeyDown)
   }, [isFullscreen])
 
+  const copyOutput = async () => {
+    if (output.status !== 'success') {
+      return
+    }
+
+    const success = await copyTextToClipboard(output.formatted)
+    setCopyState(success ? 'copied' : 'error')
+    window.setTimeout(() => setCopyState('idle'), 1800)
+  }
+
   return (
     <section className="grid gap-3">
       <section className="rounded-3xl border border-slate-300/70 bg-white/80 p-4 shadow-lg shadow-slate-900/10 backdrop-blur dark:border-slate-700/70 dark:bg-slate-900/75 dark:shadow-black/40">
         {isProcessing ? (
-          <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">{t.processing}</p>
+          <p className="mb-3 inline-flex items-center gap-2 rounded-lg border border-blue-300 bg-blue-50 px-2.5 py-1.5 text-xs text-blue-700 dark:border-sky-700/60 dark:bg-sky-950/30 dark:text-sky-300">
+            <Loader2 className="size-3.5 animate-spin" />
+            {t.processing}
+          </p>
         ) : null}
 
         <div className="grid gap-3 lg:grid-cols-2">
@@ -329,6 +387,19 @@ export function JsonViewerTool() {
                     {stats.maxDepth}
                   </p>
                 ) : null}
+                <button
+                  type="button"
+                  className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-emerald-400 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-50 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-emerald-400 dark:hover:text-emerald-300"
+                  onClick={() => void copyOutput()}
+                  disabled={output.status !== 'success' || isProcessing || !resolveRefs}
+                >
+                  {copyState === 'copied' ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                  {copyState === 'copied'
+                    ? t.copySuccess
+                    : copyState === 'error'
+                      ? t.copyError
+                      : t.copyResult}
+                </button>
                 <button
                   type="button"
                   className="inline-flex items-center gap-1 rounded-lg border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700 transition hover:border-blue-400 hover:text-blue-700 dark:border-slate-600 dark:bg-slate-800 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
