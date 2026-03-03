@@ -105,6 +105,17 @@ const categoryMeta: Record<
 
 const releaseNotes = [
   {
+    version: 'v2.6.11',
+    date: '2026-03-03',
+    title: 'Json Viewer Pro: loading y copia de resultado',
+    changes: [
+      'Se mejora el estado de procesamiento con loading visible mientras se normaliza el JSON.',
+      'Se agrega accion para copiar el JSON resultado desde el panel normalizado.',
+      'La copia muestra feedback inmediato de exito/error para validar la accion.',
+      'Version de la herramienta Visor JSON Pro actualizada a v1.2.9.',
+    ],
+  },
+  {
     version: 'v2.6.10',
     date: '2026-03-03',
     title: 'JSON a tabla: Excel, refs, scroll y loading',
